@@ -1,0 +1,6 @@
+#!/bin/sh
+
+javac tests/*.java
+#./hornet tests/NoMainTest
+./hornet tests/StartupTest
+#./hornet tests/GcLatencyTest
