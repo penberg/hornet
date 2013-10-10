@@ -57,6 +57,7 @@ struct attr_info {
 };
 
 struct code_attr : attr_info {
+    uint16_t max_locals;
     char*    code;
     uint32_t code_length;
 
@@ -97,6 +98,8 @@ private:
     size_t _size;
     char *_data;
 };
+
+bool verify_method(std::shared_ptr<method> method);
 
 }
 

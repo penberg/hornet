@@ -41,6 +41,8 @@ struct klass {
     klass(const method_list_type &methods);
     ~klass();
 
+    bool verify();
+
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
 
 private:
@@ -53,6 +55,7 @@ struct field {
 struct method {
     std::string name;
     std::string descriptor;
+    uint16_t    max_locals;
     char*       code;
     uint32_t    code_length;
 
@@ -107,6 +110,7 @@ inline void throw_exception(struct object *exception)
 
 #define java_lang_NoClassDefFoundError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
+#define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)
 
 }
 

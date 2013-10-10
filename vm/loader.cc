@@ -26,6 +26,7 @@ std::shared_ptr<klass> loader::load_file(const char *pathname)
 {
     auto fd = open(pathname, O_RDONLY);
     if (fd < 0) {
+        hornet::throw_exception(java_lang_NoClassDefFoundError);
         return nullptr;
     }
 
@@ -49,6 +50,11 @@ std::shared_ptr<klass> loader::load_file(const char *pathname)
 
     if (close(fd) < 0) {
         THROW_ERRNO("close");
+    }
+
+    if (!klass->verify()) {
+        throw_exception(java_lang_VerifyError);
+        return nullptr;
     }
 
     hornet::_jvm->register_klass(klass);

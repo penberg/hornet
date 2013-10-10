@@ -1,5 +1,7 @@
 #include "hornet/vm.hh"
 
+#include "hornet/java.hh"
+
 #include <string>
 
 namespace hornet {
@@ -21,6 +23,15 @@ std::shared_ptr<method> klass::lookup_method(std::string name, std::string descr
     }
 
     return nullptr;
+}
+
+bool klass::verify()
+{
+    for (auto method : _methods) {
+        if (!verify_method(method))
+            return false;
+    }
+    return true;
 }
 
 };

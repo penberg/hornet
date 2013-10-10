@@ -1,3 +1,5 @@
+#include "hornet/java.hh"
+
 #include <hornet/vm.hh>
 
 #include <classfile_constants.h>
@@ -6,21 +8,8 @@
 
 namespace hornet {
 
-jvm *_jvm;
-
-void jvm::register_klass(std::shared_ptr<klass> klass)
+bool verify_method(std::shared_ptr<method> method)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-
-    _klasses.push_back(klass);
-}
-
-void jvm::invoke(method* method)
-{
-    std::valarray<object*> locals(method->max_locals);
-
-    std::stack<object*> ostack;
-
     uint16_t pc = 0;
 
     for (;;) {
@@ -32,16 +21,15 @@ void jvm::invoke(method* method)
         case JVM_OPC_aload_2:
         case JVM_OPC_aload_3: {
             uint16_t idx = opc - JVM_OPC_aload_0;
-            ostack.push(locals[idx]);
-            break;
+            if (idx >= method->max_locals)
+                return false;
         }
         case JVM_OPC_return: {
-            ostack.empty();
-            return;
+            return true;
         }
         default:
-            fprintf(stderr, "unsupported bytecode: %u\n", opc);
-            assert(0);
+            fprintf(stderr, "error: Unsupported bytecode: %u\n", opc);
+            return false;
         }
     }
 }

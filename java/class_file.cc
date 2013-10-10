@@ -215,6 +215,7 @@ std::shared_ptr<method> class_file::read_method_info(constant_pool &constant_poo
         switch (attr->type) {
         case attr_type::code: {
             code_attr* c = static_cast<code_attr*>(attr.get());
+            m->max_locals  = c->max_locals;
             m->code        = c->code;
             m->code_length = c->code_length;
             break;
@@ -252,7 +253,7 @@ class_file::read_code_attribute(constant_pool& constant_pool)
 {
     auto* attr = new code_attr();
     /*auto max_stack = */read_u2();
-    /*auto max_locals = */read_u2();
+    attr->max_locals = read_u2();
     attr->code_length = read_u4();
     attr->code = new char[attr->code_length];
     for (uint32_t i = 0; i < attr->code_length; i++)

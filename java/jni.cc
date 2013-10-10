@@ -83,7 +83,6 @@ static jclass HORNET_JNI(FindClass)(JNIEnv *env, const char *name)
 
     auto klass = loader->load_class(name);
     if (!klass) {
-        hornet::throw_exception(java_lang_NoClassDefFoundError);
         return nullptr;
     }
 
