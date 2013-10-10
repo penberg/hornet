@@ -2,3 +2,5 @@
 *.d
 /hornet
 /tests/*.class
+/TAGS
+/tags

@@ -72,4 +72,10 @@ clean:
 	$(E) "  CLEAN"
 	$(Q) rm -f $(PROGRAMS) $(OBJS) $(DEPS) hornet.d
 
+tags TAGS:
+	rm -f -- "$@"
+	find . -name "*.cc" -o -name "*.hh" -o -name "*.h" -o -name "*.c" |\
+		xargs $(if $(filter $@, tags),ctags,etags) -a
+.PHONY: tags TAGS
+
 -include $(DEPS)
