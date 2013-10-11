@@ -13,6 +13,9 @@ bool verify_method(std::shared_ptr<method> method)
     uint16_t pc = 0;
 
     for (;;) {
+        if (pc >= method->code_length)
+            break;
+
         uint8_t opc = method->code[pc++];
 
         switch (opc) {
@@ -23,15 +26,22 @@ bool verify_method(std::shared_ptr<method> method)
             uint16_t idx = opc - JVM_OPC_aload_0;
             if (idx >= method->max_locals)
                 return false;
+            break;
         }
         case JVM_OPC_return: {
-            return true;
+            break;
+        }
+        case JVM_OPC_invokespecial: {
+            pc += 2;
+            break;
         }
         default:
             fprintf(stderr, "error: Unsupported bytecode: %u\n", opc);
             return false;
         }
     }
+
+    return true;
 }
 
 }
