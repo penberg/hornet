@@ -41,17 +41,7 @@ std::shared_ptr<klass> class_file::parse()
     if (minor_version != JVM_CLASSFILE_MINOR_VERSION)
         assert(0);
 
-    auto constant_pool_count = read_u2();
-
-    assert(constant_pool_count > 0);
-
-    constant_pool constant_pool(constant_pool_count);
-
-    for (auto i = 0; i < constant_pool_count-1; i++) {
-        auto cp_info = read_cp_info();
-
-        constant_pool.set(i, cp_info);
-    }
+    auto constant_pool = read_constant_pool();
 
     /*auto access_flags = */read_u2();
 
@@ -86,49 +76,72 @@ std::shared_ptr<klass> class_file::parse()
     return std::make_shared<klass>(methods);
 }
 
-std::shared_ptr<cp_info> class_file::read_cp_info()
+constant_pool class_file::read_constant_pool()
 {
-    auto tag = read_u1();
+    auto constant_pool_count = read_u2();
 
-    switch (tag) {
-    case JVM_CONSTANT_Class:
-        return read_const_class();
-    case JVM_CONSTANT_Fieldref:
-        read_const_fieldref();
-        break;
-    case JVM_CONSTANT_Methodref:
-        read_const_methodref();
-        break;
-    case JVM_CONSTANT_InterfaceMethodref:
-        assert(0);
-    case JVM_CONSTANT_String:
-        read_const_string();
-        break;
-    case JVM_CONSTANT_Integer:
-        assert(0);
-    case JVM_CONSTANT_Float:
-        assert(0);
-    case JVM_CONSTANT_Long:
-        assert(0);
-    case JVM_CONSTANT_Double:
-        assert(0);
-    case JVM_CONSTANT_NameAndType:
-        read_const_name_and_type();
-        break;
-    case JVM_CONSTANT_Utf8:
-        return read_const_utf8();
-    case JVM_CONSTANT_MethodHandle:
-        assert(0);
-    case JVM_CONSTANT_MethodType:
-        assert(0);
-    case JVM_CONSTANT_InvokeDynamic:
-        assert(0);
-    default:
-        fprintf(stderr, "error: tag %u not supported.\n", tag);
-        assert(0);
+    assert(constant_pool_count > 0);
+
+    constant_pool constant_pool(constant_pool_count);
+
+    for (auto idx = 0; idx < constant_pool_count-1; idx++) {
+        auto tag = read_u1();
+        std::shared_ptr<cp_info> cp_info;
+        switch (tag) {
+        case JVM_CONSTANT_Class:
+            cp_info = read_const_class();
+            break;
+        case JVM_CONSTANT_Fieldref:
+            read_const_fieldref();
+            break;
+        case JVM_CONSTANT_Methodref:
+            read_const_methodref();
+            break;
+        case JVM_CONSTANT_InterfaceMethodref:
+            read_const_interface_methodref();
+            break;
+        case JVM_CONSTANT_String:
+            read_const_string();
+            break;
+        case JVM_CONSTANT_Integer:
+            read_const_integer();
+            break;
+        case JVM_CONSTANT_Float:
+            read_const_float();
+            break;
+        case JVM_CONSTANT_Long:
+            read_const_long();
+            break;
+        case JVM_CONSTANT_Double:
+            read_const_double();
+            break;
+        case JVM_CONSTANT_NameAndType:
+            read_const_name_and_type();
+            break;
+        case JVM_CONSTANT_Utf8:
+            cp_info = read_const_utf8();
+            break;
+        case JVM_CONSTANT_MethodHandle:
+            read_const_method_handle();
+            break;
+        case JVM_CONSTANT_MethodType:
+            read_const_method_type();
+            break;
+        case JVM_CONSTANT_InvokeDynamic:
+            read_const_invoke_dynamic();
+            break;
+        default:
+            fprintf(stderr, "error: tag %u not supported.\n", tag);
+            assert(0);
+        }
+        constant_pool.set(idx, cp_info);
+        if (tag == JVM_CONSTANT_Long || tag == JVM_CONSTANT_Double) {
+            // 8-byte constants take up two entries in the constant pool.
+            idx++;
+        }
     }
 
-    return std::shared_ptr<cp_info>(nullptr);
+    return constant_pool;
 }
 
 std::shared_ptr<const_class_info> class_file::read_const_class()
@@ -152,9 +165,37 @@ void class_file::read_const_methodref()
     /*auto name_and_type_index = */read_u2();
 }
 
+void class_file::read_const_interface_methodref()
+{
+    /*auto class_index = */read_u2();
+    /*auto name_and_type_index = */read_u2();
+}
+
 void class_file::read_const_string()
 {
     /*auto string_index = */read_u2();
+}
+
+void class_file::read_const_integer()
+{
+    /*auto bytes = */read_u4();
+}
+
+void class_file::read_const_float()
+{
+    /*auto bytes = */read_u4();
+}
+
+void class_file::read_const_long()
+{
+    /*auto high_bytes = */read_u4();
+    /*auto low_bytes = */read_u4();
+}
+
+void class_file::read_const_double()
+{
+    /*auto high_bytes = */read_u4();
+    /*auto low_bytes = */read_u4();
 }
 
 void class_file::read_const_name_and_type()
@@ -177,6 +218,23 @@ std::shared_ptr<const_utf8_info> class_file::read_const_utf8()
     ret->bytes[length] = '\0';
 
     return std::shared_ptr<const_utf8_info>(ret);
+}
+
+void class_file::read_const_method_handle()
+{
+    /*auto reference_kind = */read_u1();
+    /*auto reference_index = */read_u2();
+}
+
+void class_file::read_const_method_type()
+{
+    /*auto descriptor_index = */read_u2();
+}
+
+void class_file::read_const_invoke_dynamic()
+{
+    /*auto bootstrap_method_attr_index = */read_u2();
+    /*auto name_and_type_index = */read_u2();
 }
 
 std::shared_ptr<field> class_file::read_field_info()

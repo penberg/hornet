@@ -76,13 +76,21 @@ public:
     std::shared_ptr<klass> parse();
 private:
 
-    std::shared_ptr<cp_info> read_cp_info();
+    constant_pool read_constant_pool();
     std::shared_ptr<const_class_info> read_const_class();
     void read_const_fieldref();
     void read_const_methodref();
+    void read_const_interface_methodref();
     void read_const_string();
+    void read_const_integer();
+    void read_const_float();
+    void read_const_long();
+    void read_const_double();
     void read_const_name_and_type();
     std::shared_ptr<const_utf8_info> read_const_utf8();
+    void read_const_method_handle();
+    void read_const_method_type();
+    void read_const_invoke_dynamic();
 
     std::shared_ptr<field> read_field_info();
     std::shared_ptr<method> read_method_info(constant_pool &constant_pool);
