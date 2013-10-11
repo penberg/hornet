@@ -32,4 +32,6 @@ usage: hornet [-options] class [args...]
 
 ## License
 
+Copyright © 2013 Pekka Enberg
+
 Hornet is distributed under the 3-clause BSD license.
