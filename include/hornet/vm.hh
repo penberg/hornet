@@ -88,19 +88,6 @@ private:
 
 };
 
-class loader {
-public:
-    std::shared_ptr<klass> load_class(const char *class_name);
-    std::shared_ptr<klass> load_file(const char *file_name);
-};
-
-inline loader *system_loader()
-{
-    static loader loader;
-
-    return &loader;
-}
-
 inline void throw_exception(struct object *exception)
 {
     thread *current = thread::current();

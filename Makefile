@@ -21,6 +21,7 @@ INST_PROGRAMS += hornet
 
 OBJS += java/class_file.o
 OBJS += java/constant_pool.o
+OBJS += java/jar.o
 OBJS += java/jni.o
 OBJS += java/verify.o
 OBJS += vm/gc.o
@@ -47,7 +48,7 @@ all: $(PROGRAMS)
 
 hornet: $(OBJS) hornet.cc
 	$(E) "  LINK  " $@
-	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) hornet.cc -o hornet
+	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) -lzip hornet.cc -o hornet
 
 define INSTALL_EXEC
 	install -v $1 $(DESTDIR)$2/$1 || exit 1;

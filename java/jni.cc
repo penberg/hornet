@@ -1,4 +1,6 @@
 #include "hornet/jni.hh"
+
+#include "hornet/java.hh"
 #include "hornet/vm.hh"
 
 #include <cassert>
@@ -73,6 +75,8 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
 
     *vm	= &HORNET_JNI(JavaVM);
     *env	= &HORNET_JNI(JNIEnv);
+
+    hornet::system_loader::init();
 
     return JNI_OK;
 }

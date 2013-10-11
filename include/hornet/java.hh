@@ -109,6 +109,43 @@ private:
 
 bool verify_method(std::shared_ptr<method> method);
 
+class jar {
+public:
+    jar(std::string filename);
+
+    std::shared_ptr<klass> load_class(std::string class_name);
+
+private:
+    std::string _filename;
+};
+
+class loader {
+public:
+    void register_jar(jar jar);
+
+    std::shared_ptr<klass> load_class(const char *class_name);
+private:
+    std::shared_ptr<klass> try_to_load_class(const char *class_name);
+    std::shared_ptr<klass> load_file(const char *file_name);
+    std::vector<jar> _jars;
+};
+
+class system_loader {
+public:
+    static void init() {
+        get()->register_jar(jar("/usr/lib/jvm/java/jre/lib/rt.jar"));
+    }
+    static loader *get() {
+        static loader loader;
+        return &loader;
+    }
+};
+
+inline loader *system_loader()
+{
+    return system_loader::get();
+}
+
 }
 
 #endif
