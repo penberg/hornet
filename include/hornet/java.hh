@@ -92,7 +92,7 @@ private:
     void read_const_method_type();
     void read_const_invoke_dynamic();
 
-    std::shared_ptr<field> read_field_info();
+    std::shared_ptr<field> read_field_info(constant_pool &constant_pool);
     std::shared_ptr<method> read_method_info(constant_pool &constant_pool);
     std::unique_ptr<attr_info> read_attr_info(constant_pool &constant_pool);
     std::unique_ptr<code_attr> read_code_attribute(constant_pool &constant_pool);
