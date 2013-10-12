@@ -6,6 +6,11 @@
 #include <cassert>
 #include <jni.h>
 
+#define STUB \
+    do { \
+        fprintf(stderr, "jni: %s: stubbed out\n", __func__); \
+    } while (0);
+
 static jint HORNET_JNI(DestroyJavaVM)(JavaVM *vm)
 {
     delete hornet::_jvm;
@@ -122,6 +127,14 @@ static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodI
     HORNET_JNI(CallStaticVoidMethodV)(env, clazz, methodID, args);
 }
 
+static jobjectArray
+HORNET_JNI(NewObjectArray)(JNIEnv* env, jsize len, jclass clazz, jobject init)
+{
+    STUB
+
+    return nullptr;
+}
+
 static jboolean HORNET_JNI(ExceptionCheck)(JNIEnv *env)
 {
     hornet::thread *current = hornet::thread::current();
@@ -137,5 +150,6 @@ const struct JNINativeInterface_ HORNET_JNI(JNINativeInterface) = {
     HORNET_DEFINE_JNI(GetStaticMethodID),
     HORNET_DEFINE_JNI(CallStaticVoidMethod),
     HORNET_DEFINE_JNI(CallStaticVoidMethodV),
+    HORNET_DEFINE_JNI(NewObjectArray),
     HORNET_DEFINE_JNI(ExceptionCheck),
 };
