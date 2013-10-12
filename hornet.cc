@@ -37,7 +37,6 @@ static int vm_run(JavaVM *vm, JNIEnv *env, char *initial_class_name, int argc, c
         return EXIT_FAILURE;
     }
 
-#if 0
     jclass string_class = env->FindClass("java/lang/String");
 
     if (env->ExceptionCheck())
@@ -48,6 +47,7 @@ static int vm_run(JavaVM *vm, JNIEnv *env, char *initial_class_name, int argc, c
     if (env->ExceptionCheck())
         goto caught_exception;
 
+#if 0
     for (auto i = 0; i < argc; i++) {
         auto value = env->NewStringUTF(argv[i]);
 
@@ -59,8 +59,6 @@ static int vm_run(JavaVM *vm, JNIEnv *env, char *initial_class_name, int argc, c
         if (env->ExceptionCheck())
             goto caught_exception;
     }
-#else
-    args = nullptr;
 #endif
 
     env->CallStaticVoidMethod(initial_class, main_method, args);
