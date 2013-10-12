@@ -36,8 +36,8 @@ bool verify_method(std::shared_ptr<method> method)
             break;
         }
         default:
-            fprintf(stderr, "error: Unsupported bytecode: %u\n", opc);
-            return false;
+            fprintf(stderr, "warning: Unsupported bytecode: %u, skipping verification...\n", opc);
+            return true;
         }
     }
 
