@@ -14,17 +14,23 @@ public:
     explicit memory_block(size_t size);
     ~memory_block();
 
+    bool is_enough_space(size_t size) {
+        return _next + size < _end;
+    }
+
+    // The caller is expected to ensure there's enough space for the
+    // allocation.
     char* alloc(size_t size) {
-        if (_offset + size > _size)
-            return nullptr;
-        auto offset = _offset;
-        _offset += size;
-        return _addr + offset;
+        auto start = _next;
+        _next += size;
+        return start;
     }
 private:
     char*  _addr;
     size_t _size;
-    size_t _offset;
+
+    char*  _next;
+    char*  _end;
 };
 
 }

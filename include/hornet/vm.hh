@@ -84,6 +84,8 @@ public:
     }
 
     void *alloc(size_t length) {
+        if (!_alloc_buffer.is_enough_space(length))
+            return nullptr;
         return _alloc_buffer.alloc(length);
     }
 

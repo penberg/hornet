@@ -9,7 +9,6 @@ namespace hornet {
 
 memory_block::memory_block(size_t size)
     : _size(size)
-    , _offset(0)
 {
     constexpr int mmap_prot  = PROT_READ   | PROT_WRITE;
     constexpr int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS;
@@ -22,7 +21,8 @@ memory_block::memory_block(size_t size)
     if (posix_madvise(addr, size, MADV_HUGEPAGE) < 0)
         THROW_ERRNO("posix_madvise");
 
-    _addr = reinterpret_cast<char *>(addr);
+    _addr = _next = reinterpret_cast<char *>(addr);
+    _end  = _addr + size;
 }
 
 memory_block::~memory_block()
