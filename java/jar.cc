@@ -30,7 +30,10 @@ std::shared_ptr<klass> jar::load_class(std::string class_name)
     char *data = new char[st.size];
 
     zip_file *f = zip_fopen(zip, pathname, 0);
-    assert(f != nullptr);
+    if (!f) {
+        zip_close(zip);
+        return nullptr;
+    }
 
     if (zip_fread(f, data, st.size) < 0)
         assert(0);
