@@ -9,7 +9,7 @@
 
 #define STUB \
     do { \
-        fprintf(stderr, "jni: %s: stubbed out\n", __func__); \
+        fprintf(stderr, "warning: jni: %s: stubbed out\n", __func__); \
     } while (0);
 
 static jint HORNET_JNI(DestroyJavaVM)(JavaVM *vm)
