@@ -13,7 +13,8 @@ endif
 
 WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
 INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux
-CXXFLAGS = $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
+OPTIMIZATIONS = -O3
+CXXFLAGS = $(OPTIMIZATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
 
 PROGRAMS = hornet
 
