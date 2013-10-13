@@ -85,14 +85,27 @@ int main(int argc, char *argv[])
     if (argc == 1)
         usage();
 
-    auto initial_class_name = argv[1];
-
     vm_args.version = JNI_VERSION_1_6;
 
     if (JNI_GetDefaultJavaVMInitArgs(&vm_args) != JNI_OK) {
         fprintf(stderr, "error: Cannot get default VM init arguments.\n");
         exit(EXIT_FAILURE);
     }
+
+    JavaVMOption options[argc - 1];
+    int idx;
+
+    for (idx = 1; idx < argc; idx++) {
+        if (*argv[idx] != '-')
+            break;
+
+        options[idx-1].optionString = argv[idx];
+    }
+
+    vm_args.nOptions = idx - 1;
+    vm_args.options  = options;
+
+    auto initial_class_name = argv[idx];
 
     if (JNI_CreateJavaVM(&vm, reinterpret_cast<void **>(&env), &vm_args) != JNI_OK) {
         fprintf(stderr, "error: Cannot create a virtual machine.\n");

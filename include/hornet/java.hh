@@ -107,7 +107,9 @@ private:
     char *_data;
 };
 
+extern bool verbose_verifier;
 bool verify_method(std::shared_ptr<method> method);
+void verifier_stats();
 
 class jar {
 public:

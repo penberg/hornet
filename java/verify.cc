@@ -8,15 +8,19 @@
 
 namespace hornet {
 
+bool verbose_verifier;
+unsigned char unsupported_opcode[JVM_OPC_MAX+1];
+unsigned char opcode_length[JVM_OPC_MAX+1] = JVM_OPCODE_LENGTH_INITIALIZER;
+
 bool verify_method(std::shared_ptr<method> method)
 {
-    uint16_t pc = 0;
+    unsigned int pc = 0;
 
     for (;;) {
         if (pc >= method->code_length)
             break;
 
-        uint8_t opc = method->code[pc++];
+        uint8_t opc = method->code[pc];
 
         switch (opc) {
         case JVM_OPC_aload_0:
@@ -31,17 +35,29 @@ bool verify_method(std::shared_ptr<method> method)
         case JVM_OPC_return: {
             break;
         }
-        case JVM_OPC_invokespecial: {
-            pc += 2;
+        default:
+            unsupported_opcode[opc]++;
             break;
         }
-        default:
-            fprintf(stderr, "warning: Unsupported bytecode: %u, skipping verification...\n", opc);
-            return true;
-        }
+
+        pc += opcode_length[opc];
     }
 
     return true;
+}
+
+void verifier_stats()
+{
+    if (!verbose_verifier) {
+        return;
+    }
+    fprintf(stderr, "Unsupported opcodes:\n");
+    fprintf(stderr, "    #  opcode\n");
+    for (auto opc = 0; opc < JVM_OPC_MAX; opc++) {
+        if (unsupported_opcode[opc]) {
+            fprintf(stderr, "%5d  %d\n", unsupported_opcode[opc], opc);
+        } 
+    }
 }
 
 }

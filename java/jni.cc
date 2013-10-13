@@ -4,6 +4,7 @@
 #include "hornet/vm.hh"
 
 #include <cassert>
+#include <cstring>
 #include <jni.h>
 
 #define STUB \
@@ -13,6 +14,8 @@
 
 static jint HORNET_JNI(DestroyJavaVM)(JavaVM *vm)
 {
+    hornet::verifier_stats();
+
     delete hornet::_jvm;
 
     return JNI_OK;
@@ -74,6 +77,20 @@ static JavaVM HORNET_JNI(JavaVM) = {
 
 jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
 {
+    auto vm_args = reinterpret_cast<JavaVMInitArgs*>(args);
+
+    for (auto i = 0; i < vm_args->nOptions; i++) {
+        const char *opt = vm_args->options[i].optionString;
+
+        if (!strcmp(opt, "-verbose:verifier")) {
+            hornet::verbose_verifier = true;
+            continue;
+        }
+
+        fprintf(stderr, "error: Unknown option: '%s'\n", opt);
+        return JNI_ERR;
+    }
+
     hornet::_jvm = new hornet::jvm();
 
     auto env = reinterpret_cast<JNIEnv **>(penv);
