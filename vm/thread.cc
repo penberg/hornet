@@ -6,7 +6,7 @@
 namespace hornet {
 
 thread::thread()
-    : _tlb(thread_local_buffer(hugepage_size))
+    : _alloc_buffer(memory_block(hugepage_size))
 {
 }
 

@@ -7,7 +7,7 @@
 
 namespace hornet {
 
-thread_local_buffer::thread_local_buffer(size_t size)
+memory_block::memory_block(size_t size)
     : _size(size)
     , _offset(0)
 {
@@ -25,7 +25,7 @@ thread_local_buffer::thread_local_buffer(size_t size)
     _addr = reinterpret_cast<char *>(addr);
 }
 
-thread_local_buffer::~thread_local_buffer()
+memory_block::~memory_block()
 {
     if (munmap(_addr, _size) < 0)
         THROW_ERRNO("munmap");

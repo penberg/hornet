@@ -84,11 +84,11 @@ public:
     }
 
     void *alloc(size_t length) {
-        return _tlb.alloc(length);
+        return _alloc_buffer.alloc(length);
     }
 
 private:
-    thread_local_buffer _tlb;
+    memory_block _alloc_buffer;
 
 };
 
