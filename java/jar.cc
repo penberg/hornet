@@ -44,7 +44,11 @@ std::shared_ptr<klass> jar::load_class(std::string class_name)
 
     auto file = class_file{data, static_cast<size_t>(st.size)};
 
-    return file.parse();
+    auto klass = file.parse();
+
+    delete[] data;
+
+    return klass;
 }
 
 };
