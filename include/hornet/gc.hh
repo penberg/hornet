@@ -15,7 +15,7 @@ public:
     ~memory_block();
 
     bool is_enough_space(size_t size) {
-        return _next + size < _end;
+        return _next + size <= _end;
     }
 
     // The caller is expected to ensure there's enough space for the
