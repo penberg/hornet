@@ -147,9 +147,11 @@ static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodI
 static jobjectArray
 HORNET_JNI(NewObjectArray)(JNIEnv* env, jsize len, jclass clazz, jobject init)
 {
-    STUB
+    assert(init == nullptr);
 
-    return nullptr;
+    auto array = hornet::gc_new_object_array(nullptr, len);
+
+    return hornet::to_jobjectArray(array);
 }
 
 static jboolean HORNET_JNI(ExceptionCheck)(JNIEnv *env)

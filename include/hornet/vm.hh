@@ -29,7 +29,7 @@ private:
 extern jvm *_jvm;
 
 struct object {
-    std::shared_ptr<klass> klass;
+    klass *klass;
 };
 
 using method_list_type = std::valarray<std::shared_ptr<method>>;
@@ -83,6 +83,10 @@ public:
         return &thread;
     }
 
+    void *alloc(size_t length) {
+        return _tlb.alloc(length);
+    }
+
 private:
     thread_local_buffer _tlb;
 
@@ -98,6 +102,8 @@ inline void throw_exception(struct object *exception)
 #define java_lang_NoClassDefFoundError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)
+
+array* gc_new_object_array(klass* klass, size_t length);
 
 }
 

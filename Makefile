@@ -24,6 +24,7 @@ OBJS += java/constant_pool.o
 OBJS += java/jar.o
 OBJS += java/jni.o
 OBJS += java/verify.o
+OBJS += vm/alloc.o
 OBJS += vm/gc.o
 OBJS += vm/jvm.o
 OBJS += vm/klass.o

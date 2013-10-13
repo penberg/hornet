@@ -41,6 +41,10 @@ inline jarray to_jarray(array *array) {
     return reinterpret_cast<jarray>(&array->object);
 }
 
+inline jobjectArray to_jobjectArray(array *array) {
+    return reinterpret_cast<jobjectArray>(&array->object);
+}
+
 inline jclass to_jclass(klass *klass) {
     return reinterpret_cast<jclass>(&klass->object);
 }
