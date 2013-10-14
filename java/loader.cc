@@ -1,6 +1,7 @@
-#include "hornet/vm.hh"
 #include "hornet/java.hh"
+
 #include "hornet/system_error.hh"
+#include "hornet/vm.hh"
 
 #include <sys/types.h>
 #include <sys/stat.h>

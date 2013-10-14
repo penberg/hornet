@@ -24,12 +24,12 @@ OBJS += java/class_file.o
 OBJS += java/constant_pool.o
 OBJS += java/jar.o
 OBJS += java/jni.o
+OBJS += java/loader.o
 OBJS += java/verify.o
 OBJS += vm/alloc.o
 OBJS += vm/gc.o
 OBJS += vm/jvm.o
 OBJS += vm/klass.o
-OBJS += vm/loader.o
 OBJS += vm/method.o
 OBJS += vm/thread.o
 
