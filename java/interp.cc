@@ -62,8 +62,8 @@ next_insn:
         break;
     }
     default:
-        fprintf(stderr, "unsupported bytecode: %u\n", opc);
-        assert(0);
+        fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
+        abort();
     }
 
     pc += opcode_length[opc];
