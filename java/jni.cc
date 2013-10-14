@@ -134,7 +134,7 @@ static void HORNET_JNI(CallStaticVoidMethodV)(JNIEnv *env, jclass clazz, jmethod
 {
     auto* method = hornet::from_jmethodID(methodID);
 
-    hornet::_jvm->invoke(method);
+    interp(method);
 }
 
 static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodID methodID, ...)

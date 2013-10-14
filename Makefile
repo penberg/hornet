@@ -22,6 +22,7 @@ INST_PROGRAMS += hornet
 
 OBJS += java/class_file.o
 OBJS += java/constant_pool.o
+OBJS += java/interp.o
 OBJS += java/jar.o
 OBJS += java/jni.o
 OBJS += java/loader.o

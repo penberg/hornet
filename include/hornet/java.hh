@@ -150,6 +150,8 @@ inline loader *system_loader()
 
 extern unsigned char opcode_length[];
 
+void interp(method* method);
+
 }
 
 #endif
