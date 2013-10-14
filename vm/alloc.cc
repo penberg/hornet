@@ -14,7 +14,7 @@ object* gc_new_object(klass* klass)
 {
     thread *current = thread::current();
 
-    auto ret = reinterpret_cast<object*>(current->alloc(sizeof(object)));
+    auto ret = current->alloc<object>();
     if (!ret) {
         out_of_memory();
     }
@@ -27,8 +27,7 @@ array* gc_new_object_array(klass* klass, size_t length)
 {
     thread *current = thread::current();
 
-    auto size = sizeof(array) + length * sizeof(void*);
-    auto ret = reinterpret_cast<array*>(current->alloc(size));
+    auto ret = current->alloc<array>(length * sizeof(void*));
     if (!ret) {
         out_of_memory();
     }

@@ -83,10 +83,16 @@ public:
         return &thread;
     }
 
-    void *alloc(size_t length) {
-        if (!_alloc_buffer.is_enough_space(length))
+    template<typename T>
+    T* alloc() { return alloc<T>(0); }
+
+    template<typename T>
+    T* alloc(size_t extra) {
+        auto size = sizeof(T) + extra;
+        if (!_alloc_buffer.is_enough_space(size))
             return nullptr;
-        return _alloc_buffer.alloc(length);
+        auto p = _alloc_buffer.alloc(size);
+        return reinterpret_cast<T*>(p);
     }
 
 private:
