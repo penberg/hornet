@@ -105,6 +105,7 @@ inline void throw_exception(struct object *exception)
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)
 
+object* gc_new_object(klass* klass);
 array* gc_new_object_array(klass* klass, size_t length);
 
 }

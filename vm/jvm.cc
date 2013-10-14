@@ -62,6 +62,14 @@ next_insn:
         ostack.empty();
         return;
     }
+    case JVM_OPC_invokespecial: {
+        break;
+    }
+    case JVM_OPC_new: {
+        auto obj = gc_new_object(nullptr);
+        ostack.push(obj);
+        break;
+    }
     default:
         fprintf(stderr, "unsupported bytecode: %u\n", opc);
         assert(0);
