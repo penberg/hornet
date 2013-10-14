@@ -39,6 +39,15 @@ void jvm::invoke(method* method)
             ostack.push(locals[idx]);
             break;
         }
+        case JVM_OPC_pop: {
+            ostack.pop();
+            break;
+        }
+        case JVM_OPC_dup: {
+            auto value = ostack.top();
+            ostack.push(value);
+            break;
+        }
         case JVM_OPC_return: {
             ostack.empty();
             return;
