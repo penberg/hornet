@@ -1,5 +1,7 @@
 #include <hornet/vm.hh>
 
+#include "hornet/java.hh"
+
 #include <classfile_constants.h>
 #include <cassert>
 #include <stack>
@@ -24,7 +26,9 @@ void jvm::invoke(method* method)
     uint16_t pc = 0;
 
     for (;;) {
-        uint8_t opc = method->code[pc++];
+        assert(pc < method->code_length);
+
+        uint8_t opc = method->code[pc];
 
         switch (opc) {
         case JVM_OPC_aload_0:
@@ -43,6 +47,8 @@ void jvm::invoke(method* method)
             fprintf(stderr, "unsupported bytecode: %u\n", opc);
             assert(0);
         }
+
+        pc += opcode_length[opc];
     }
 }
 

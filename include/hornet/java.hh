@@ -148,6 +148,8 @@ inline loader *system_loader()
     return system_loader::get();
 }
 
+extern unsigned char opcode_length[];
+
 }
 
 #endif
