@@ -30,6 +30,8 @@ extern jvm *_jvm;
 
 struct object {
     klass *klass;
+
+    object(struct klass* _klass) : klass(_klass) {}
 };
 
 using method_list_type = std::valarray<std::shared_ptr<method>>;
@@ -68,6 +70,10 @@ struct method {
 struct array {
     object   object;
     uint32_t length;
+
+    array(klass* klass, uint32_t length)
+        : object(klass)
+        , length(length) {}
 };
 
 class thread {

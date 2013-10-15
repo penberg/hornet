@@ -7,7 +7,8 @@
 namespace hornet {
 
 klass::klass(const method_list_type &methods)
-    : _methods(methods)
+    : object(nullptr)
+    , _methods(methods)
 {
 }
 

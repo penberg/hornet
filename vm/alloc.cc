@@ -14,27 +14,22 @@ object* gc_new_object(klass* klass)
 {
     thread *current = thread::current();
 
-    auto ret = current->alloc<object>();
-    if (!ret) {
+    auto p = current->alloc<object>();
+    if (!p) {
         out_of_memory();
     }
-    ret->klass = klass;
-
-    return ret;
+    return new (p) object{klass};
 }
 
 array* gc_new_object_array(klass* klass, size_t length)
 {
     thread *current = thread::current();
 
-    auto ret = current->alloc<array>(length * sizeof(void*));
-    if (!ret) {
+    auto p = current->alloc<array>(length * sizeof(void*));
+    if (!p) {
         out_of_memory();
     }
-    ret->object.klass = klass;
-    ret->length = length;
-
-    return ret;
+    return new (p) array{klass, static_cast<uint32_t>(length)};
 }
 
 }
