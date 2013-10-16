@@ -1,6 +1,7 @@
 #include "hornet/gc.hh"
 
 #include "hornet/system_error.hh"
+#include "hornet/os.hh"
 
 #include <sys/mman.h>
 #include <cassert>
@@ -29,6 +30,22 @@ memory_block::~memory_block()
 {
     if (munmap(_addr, _size) < 0)
         THROW_ERRNO("munmap");
+}
+
+memory_block* memory_block::get()
+{
+    return new memory_block(hugepage_size);
+}
+
+void memory_block::put(memory_block* block)
+{
+    delete block;
+}
+
+memory_block* memory_block::swap(memory_block* block)
+{
+    put(block);
+    return get();
 }
 
 }

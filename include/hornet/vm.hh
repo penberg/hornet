@@ -95,14 +95,18 @@ public:
     template<typename T>
     T* alloc(size_t extra) {
         auto size = sizeof(T) + extra;
-        if (!_alloc_buffer.is_enough_space(size))
+        if (!_alloc_buffer->is_enough_space(size)) {
+            _alloc_buffer = memory_block::swap(_alloc_buffer);
+        }
+        if (!_alloc_buffer) {
             return nullptr;
-        auto p = _alloc_buffer.alloc(size);
+        }
+        auto p = _alloc_buffer->alloc(size);
         return reinterpret_cast<T*>(p);
     }
 
 private:
-    memory_block _alloc_buffer;
+    memory_block* _alloc_buffer;
 
 };
 

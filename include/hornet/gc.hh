@@ -25,6 +25,13 @@ public:
         _next += size;
         return start;
     }
+
+    //
+    // Block allocator:
+    //
+    static memory_block* get();
+    static void put(memory_block* block);
+    static memory_block* swap(memory_block* block);
 private:
     char*  _addr;
     size_t _size;
