@@ -14,6 +14,8 @@ public:
     explicit memory_block(size_t size);
     ~memory_block();
 
+    void reset();
+
     bool is_enough_space(size_t size) {
         return _next + size <= _end;
     }

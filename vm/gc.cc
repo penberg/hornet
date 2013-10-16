@@ -4,7 +4,10 @@
 #include "hornet/os.hh"
 
 #include <sys/mman.h>
-#include <cassert>
+#include <cstring>
+#include <memory>
+#include <vector>
+#include <mutex>
 
 namespace hornet {
 
@@ -32,14 +35,36 @@ memory_block::~memory_block()
         THROW_ERRNO("munmap");
 }
 
-memory_block* memory_block::get()
+void memory_block::reset()
 {
+    memset(_addr, 0, _size);
+    _next = _addr;
+}
+
+std::vector<std::unique_ptr<memory_block>> blocks;
+std::mutex block_mutex;
+
+memory_block *memory_block::get()
+{
+    std::lock_guard<std::mutex> lock{block_mutex};
+
+    if (!blocks.empty()) {
+        auto block = blocks.back().release();
+        blocks.pop_back();
+        block->reset();
+        return block;
+    }
+
+    block_mutex.unlock();
+
     return new memory_block(hugepage_size);
 }
 
 void memory_block::put(memory_block* block)
 {
-    delete block;
+    std::lock_guard<std::mutex> lock{block_mutex};
+
+    blocks.push_back(std::unique_ptr<memory_block>(block));
 }
 
 memory_block* memory_block::swap(memory_block* block)
