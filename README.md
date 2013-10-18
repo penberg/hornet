@@ -1,7 +1,12 @@
 # Hornet
 
-Hornet is a Java virtual machine written in C++11.  It uses OpenJDK for
-runtime services, and builds and runs on x86-64 Linux machines.
+An implementation of the Java virtual machine.
+
+## Features
+
+* Interpreter
+* Uses OpenJDK for essential classes
+* Written in C++11
 
 ## Installation
 
