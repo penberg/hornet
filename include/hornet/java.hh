@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
@@ -136,7 +137,11 @@ private:
 class system_loader {
 public:
     static void init() {
-        get()->register_jar(jar("/usr/lib/jvm/java/jre/lib/rt.jar"));
+        const char *java_home = getenv("JAVA_HOME");
+        if (!java_home)
+            java_home = "/usr/lib/jvm/java";
+
+        get()->register_jar(jar(std::string(java_home) + "/jre/lib/rt.jar"));
     }
     static loader *get() {
         static loader loader;
