@@ -13,8 +13,10 @@ ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
 endif
 
+LIBZIP_INCLUDES = $(shell pkg-config --cflags libzip)
+
 WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
-INCLUDES = -Iinclude -I$(JAVA_HOME)/include/
+INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
 CXXFLAGS = $(OPTIMIZATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
 
