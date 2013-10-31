@@ -29,7 +29,7 @@ private:
 extern jvm *_jvm;
 
 struct object {
-    klass *klass;
+    struct klass *klass;
 
     object(struct klass* _klass) : klass(_klass) {}
 };
@@ -37,7 +37,7 @@ struct object {
 using method_list_type = std::valarray<std::shared_ptr<method>>;
 
 struct klass {
-    object      object;
+    struct object object;
     std::string name;
 
     klass(const method_list_type &methods);
@@ -68,7 +68,7 @@ struct method {
 };
 
 struct array {
-    object   object;
+    struct object object;
     uint32_t length;
 
     array(klass* klass, uint32_t length)
