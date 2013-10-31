@@ -9,6 +9,7 @@ An implementation of the Java virtual machine.
 * Interpreter
 * Uses OpenJDK for essential classes
 * Written in C++11
+* Runs on Linux and Darwin
 
 ## Installation
 
