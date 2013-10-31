@@ -1,3 +1,5 @@
+uname_S := $(shell sh -c 'uname -s 2> /dev/null || echo not')
+
 JAVA_HOME ?= /usr/lib/jvm/java
 
 PREFIX ?= $(HOME)
@@ -11,10 +13,20 @@ ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
 endif
 
+LIBZIP_INCLUDES = $(shell pkg-config --cflags libzip)
+
 WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
-INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux
+INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
-CXXFLAGS = $(OPTIMIZATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
+CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
+
+ifeq ($(uname_S),Darwin)
+	INCLUDES += -I$(JAVA_HOME)/include/darwin
+	CONFIGURATIONS += -DCONFIG_NEED_MADV_HUGEPAGE
+	CONFIGURATIONS += -DCONFIG_NEED_MAP_ANONYMOUS
+else
+	INCLUDES += -I$(JAVA_HOME)/include/linux
+endif
 
 PROGRAMS = hornet
 

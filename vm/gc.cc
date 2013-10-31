@@ -1,6 +1,7 @@
 #include "hornet/gc.hh"
 
 #include "hornet/system_error.hh"
+#include "hornet/compat.hh"
 #include "hornet/os.hh"
 
 #include <sys/mman.h>
