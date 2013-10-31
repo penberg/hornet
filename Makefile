@@ -1,4 +1,4 @@
-JAVA_HOME = /usr/lib/jvm/java
+JAVA_HOME ?= /usr/lib/jvm/java
 
 PREFIX ?= $(HOME)
 
