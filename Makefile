@@ -18,10 +18,11 @@ LIBZIP_INCLUDES = $(shell pkg-config --cflags libzip)
 WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
 INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
-CXXFLAGS = $(OPTIMIZATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
+CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
 
 ifeq ($(uname_S),Darwin)
 	INCLUDES += -I$(JAVA_HOME)/include/darwin
+	CONFIGURATIONS += -DCONFIG_NEED_MAP_ANONYMOUS
 else
 	INCLUDES += -I$(JAVA_HOME)/include/linux
 endif

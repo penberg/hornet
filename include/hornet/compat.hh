@@ -1,0 +1,8 @@
+#ifndef HORNET_COMPAT_HH
+#define HORNET_COMPAT_HH
+
+#ifdef CONFIG_NEED_MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+
+#endif
