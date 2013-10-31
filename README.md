@@ -1,5 +1,7 @@
 # Hornet
 
+[![Build Status](https://secure.travis-ci.org/penberg/hornet.png?branch=master)](http://travis-ci.org/penberg/hornet)
+
 An implementation of the Java virtual machine.
 
 ## Features
