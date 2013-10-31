@@ -5,7 +5,7 @@ PREFIX ?= $(HOME)
 DESTDIR=
 BINDIR=$(PREFIX)/bin
 
-CXX = clang++
+CXX ?= clang++
 
 ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
