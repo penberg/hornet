@@ -13,11 +13,23 @@ static inline uint16_t read_opc_u2(char *p)
     return p[1] << 8 | p[2];
 }
 
+typedef uint64_t value_t;
+
+value_t object_to_value(object* obj)
+{
+    return reinterpret_cast<value_t>(obj);
+}
+
+value_t int32_to_value(int32_t n)
+{
+    return static_cast<value_t>(n);
+}
+
 void interp(method* method)
 {
-    std::valarray<object*> locals(method->max_locals);
+    std::valarray<value_t> locals(method->max_locals);
 
-    std::stack<object*> ostack;
+    std::stack<value_t> ostack;
 
     uint16_t pc = 0;
 
@@ -58,7 +70,7 @@ next_insn:
     }
     case JVM_OPC_new: {
         auto obj = gc_new_object(nullptr);
-        ostack.push(obj);
+        ostack.push(object_to_value(obj));
         break;
     }
     default:
