@@ -23,6 +23,15 @@ bool verify_method(std::shared_ptr<method> method)
         uint8_t opc = method->code[pc];
 
         switch (opc) {
+        case JVM_OPC_iconst_m1:
+        case JVM_OPC_iconst_0:
+        case JVM_OPC_iconst_1:
+        case JVM_OPC_iconst_2:
+        case JVM_OPC_iconst_3:
+        case JVM_OPC_iconst_4:
+        case JVM_OPC_iconst_5: {
+            break;
+        }
         case JVM_OPC_iload_0:
         case JVM_OPC_iload_1:
         case JVM_OPC_iload_2:

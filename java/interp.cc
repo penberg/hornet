@@ -39,6 +39,17 @@ next_insn:
     uint8_t opc = method->code[pc];
 
     switch (opc) {
+    case JVM_OPC_iconst_m1:
+    case JVM_OPC_iconst_0:
+    case JVM_OPC_iconst_1:
+    case JVM_OPC_iconst_2:
+    case JVM_OPC_iconst_3:
+    case JVM_OPC_iconst_4:
+    case JVM_OPC_iconst_5: {
+        int32_t value = opc - JVM_OPC_iconst_0;
+        ostack.push(int32_to_value(value));
+        break;
+    }
     case JVM_OPC_iload_0:
     case JVM_OPC_iload_1:
     case JVM_OPC_iload_2:
