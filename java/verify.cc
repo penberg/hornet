@@ -23,6 +23,15 @@ bool verify_method(std::shared_ptr<method> method)
         uint8_t opc = method->code[pc];
 
         switch (opc) {
+        case JVM_OPC_iload_0:
+        case JVM_OPC_iload_1:
+        case JVM_OPC_iload_2:
+        case JVM_OPC_iload_3: {
+            uint16_t idx = opc - JVM_OPC_iload_0;
+            if (idx >= method->max_locals)
+                return false;
+            break;
+        }
         case JVM_OPC_aload_0:
         case JVM_OPC_aload_1:
         case JVM_OPC_aload_2:
