@@ -32,6 +32,16 @@ value_t jint_to_value(jint n)
     return static_cast<value_t>(n);
 }
 
+#define BINOP_INTERP(type, op)				\
+    do {						\
+        auto value2 = value_to_##type(ostack.top());	\
+        ostack.pop();					\
+        auto value1 = value_to_##type(ostack.top());	\
+        ostack.pop();					\
+        type result = value1 op value2;			\
+        ostack.push(type##_to_value(result));		\
+   } while (0)
+
 void interp(method* method)
 {
     std::valarray<value_t> locals(method->max_locals);
@@ -92,12 +102,7 @@ next_insn:
         break;
     }
     case JVM_OPC_iadd: {
-        auto value2 = value_to_jint(ostack.top());
-        ostack.pop();
-        auto value1 = value_to_jint(ostack.top());
-        ostack.pop();
-        jint result = value1 + value2;
-        ostack.push(jint_to_value(result));
+        BINOP_INTERP(jint, +);
         break;
     }
     case JVM_OPC_goto: {
