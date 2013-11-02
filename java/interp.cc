@@ -2,9 +2,11 @@
 
 #include "hornet/vm.hh"
 
-#include <classfile_constants.h>
 #include <cassert>
 #include <stack>
+
+#include <classfile_constants.h>
+#include <jni.h>
 
 namespace hornet {
 
@@ -20,12 +22,12 @@ value_t object_to_value(object* obj)
     return reinterpret_cast<value_t>(obj);
 }
 
-int32_t value_to_int32(value_t value)
+jint value_to_jint(value_t value)
 {
-    return static_cast<int32_t>(value);
+    return static_cast<jint>(value);
 }
 
-value_t int32_to_value(int32_t n)
+value_t jint_to_value(jint n)
 {
     return static_cast<value_t>(n);
 }
@@ -51,8 +53,8 @@ next_insn:
     case JVM_OPC_iconst_3:
     case JVM_OPC_iconst_4:
     case JVM_OPC_iconst_5: {
-        int32_t value = opc - JVM_OPC_iconst_0;
-        ostack.push(int32_to_value(value));
+        jint value = opc - JVM_OPC_iconst_0;
+        ostack.push(jint_to_value(value));
         break;
     }
     case JVM_OPC_iload_0:
@@ -90,12 +92,12 @@ next_insn:
         break;
     }
     case JVM_OPC_iadd: {
-        auto value2 = value_to_int32(ostack.top());
+        auto value2 = value_to_jint(ostack.top());
         ostack.pop();
-        auto value1 = value_to_int32(ostack.top());
+        auto value1 = value_to_jint(ostack.top());
         ostack.pop();
-        int32_t result = value1 + value2;
-        ostack.push(int32_to_value(result));
+        jint result = value1 + value2;
+        ostack.push(jint_to_value(result));
         break;
     }
     case JVM_OPC_goto: {
