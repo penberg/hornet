@@ -105,6 +105,22 @@ next_insn:
         BINOP_INTERP(jint, +);
         break;
     }
+    case JVM_OPC_isub: {
+        BINOP_INTERP(jint, -);
+        break;
+    }
+    case JVM_OPC_imul: {
+        BINOP_INTERP(jint, *);
+        break;
+    }
+    case JVM_OPC_idiv: {
+        BINOP_INTERP(jint, /);
+        break;
+    }
+    case JVM_OPC_irem: {
+        BINOP_INTERP(jint, %);
+        break;
+    }
     case JVM_OPC_goto: {
         int16_t offset = read_opc_u2(method->code + pc);
         pc += offset;

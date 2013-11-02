@@ -62,6 +62,18 @@ bool verify_method(std::shared_ptr<method> method)
         case JVM_OPC_iadd: {
             break;
         }
+        case JVM_OPC_isub: {
+            break;
+        }
+        case JVM_OPC_imul: {
+            break;
+        }
+        case JVM_OPC_idiv: {
+            break;
+        }
+        case JVM_OPC_irem: {
+            break;
+        }
         case JVM_OPC_return: {
             break;
         }
