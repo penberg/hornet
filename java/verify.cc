@@ -59,6 +59,9 @@ bool verify_method(std::shared_ptr<method> method)
                 return false;
             break;
         }
+        case JVM_OPC_iadd: {
+            break;
+        }
         case JVM_OPC_return: {
             break;
         }

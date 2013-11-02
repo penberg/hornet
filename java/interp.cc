@@ -20,6 +20,11 @@ value_t object_to_value(object* obj)
     return reinterpret_cast<value_t>(obj);
 }
 
+int32_t value_to_int32(value_t value)
+{
+    return static_cast<int32_t>(value);
+}
+
 value_t int32_to_value(int32_t n)
 {
     return static_cast<value_t>(n);
@@ -82,6 +87,15 @@ next_insn:
     case JVM_OPC_dup: {
         auto value = ostack.top();
         ostack.push(value);
+        break;
+    }
+    case JVM_OPC_iadd: {
+        auto value2 = value_to_int32(ostack.top());
+        ostack.pop();
+        auto value1 = value_to_int32(ostack.top());
+        ostack.pop();
+        int32_t result = value1 + value2;
+        ostack.push(int32_to_value(result));
         break;
     }
     case JVM_OPC_goto: {
