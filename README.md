@@ -40,6 +40,6 @@ usage: hornet [-options] class [args...]
 
 ## License
 
-Copyright © 2013 Pekka Enberg
+Copyright © 2013 Pekka Enberg and contributors
 
-Hornet is distributed under the 3-clause BSD license.
+Hornet is distributed under the 2-clause BSD license.
