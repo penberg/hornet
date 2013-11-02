@@ -97,6 +97,14 @@ next_insn:
         LOAD_INTERP(jint, idx);
         break;
     }
+    case JVM_OPC_lload_0:
+    case JVM_OPC_lload_1:
+    case JVM_OPC_lload_2:
+    case JVM_OPC_lload_3: {
+        uint16_t idx = opc - JVM_OPC_lload_0;
+        LOAD_INTERP(jlong, idx);
+        break;
+    }
     case JVM_OPC_aload_0:
     case JVM_OPC_aload_1:
     case JVM_OPC_aload_2:
