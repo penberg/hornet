@@ -61,6 +61,16 @@ value_t jlong_to_value(jlong n)
         frame.ostack.push(type##_to_value(result));             \
    } while (0)
 
+#define SHL_INTERP(type, mask)                                  \
+    do {                                                        \
+        auto value2 = value_to_jint(frame.ostack.top());        \
+        frame.ostack.pop();                                     \
+        auto value1 = value_to_##type(frame.ostack.top());      \
+        frame.ostack.pop();                                     \
+        type result = value1 << (value2 & mask);                \
+        frame.ostack.push(type##_to_value(result));             \
+    } while (0)
+
 void interp(method* method, frame& frame)
 {
 next_insn:
@@ -186,12 +196,11 @@ next_insn:
         break;
     }
     case JVM_OPC_ishl: {
-        auto value2 = value_to_jint(ostack.top());
-        ostack.pop();
-        auto value1 = value_to_jint(ostack.top());
-        ostack.pop();
-        jint result = value1 << (value2 & 0x1f);
-        ostack.push(jint_to_value(result));
+        SHL_INTERP(jint, 0x1f);
+        break;
+    }
+    case JVM_OPC_lshl: {
+        SHL_INTERP(jlong, 0x3f);
         break;
     }
     case JVM_OPC_iand: {
