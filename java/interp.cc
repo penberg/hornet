@@ -10,11 +10,6 @@
 
 namespace hornet {
 
-static inline uint16_t read_opc_u2(char *p)
-{
-    return p[1] << 8 | p[2];
-}
-
 typedef uint64_t value_t;
 
 value_t object_to_value(object* obj)
@@ -81,6 +76,12 @@ next_insn:
     case JVM_OPC_aload_3: {
         uint16_t idx = opc - JVM_OPC_aload_0;
         ostack.push(locals[idx]);
+        break;
+    }
+    case JVM_OPC_istore: {
+        auto idx = read_opc_u1(method->code + pc);
+        locals[idx] = ostack.top();
+        ostack.pop();
         break;
     }
     case JVM_OPC_istore_0:

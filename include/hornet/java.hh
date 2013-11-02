@@ -158,6 +158,16 @@ extern unsigned char opcode_length[];
 
 void interp(method* method);
 
+static inline uint8_t read_opc_u1(char *p)
+{
+    return p[1];
+}
+
+static inline uint16_t read_opc_u2(char *p)
+{
+    return p[1] << 8 | p[2];
+}
+
 }
 
 #endif
