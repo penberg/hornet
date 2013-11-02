@@ -118,6 +118,11 @@ next_insn:
         STORE_INTERP(jint, idx);
         break;
     }
+    case JVM_OPC_lstore: {
+        auto idx = read_opc_u1(method->code + pc);
+        STORE_INTERP(jlong, idx);
+        break;
+    }
     case JVM_OPC_istore_0:
     case JVM_OPC_istore_1:
     case JVM_OPC_istore_2:
