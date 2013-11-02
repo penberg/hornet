@@ -27,6 +27,11 @@ value_t jint_to_value(jint n)
     return static_cast<value_t>(n);
 }
 
+value_t jlong_to_value(jlong n)
+{
+    return static_cast<value_t>(n);
+}
+
 #define CONST_INTERP(type, value)			\
     do {						\
         ostack.push(type##_to_value(value));		\
@@ -76,6 +81,12 @@ next_insn:
     case JVM_OPC_iconst_5: {
         jint value = opc - JVM_OPC_iconst_0;
         CONST_INTERP(jint, value);
+        break;
+    }
+    case JVM_OPC_lconst_0:
+    case JVM_OPC_lconst_1: {
+        jlong value = opc - JVM_OPC_lconst_0;
+        CONST_INTERP(jlong, value);
         break;
     }
     case JVM_OPC_iload_0:
