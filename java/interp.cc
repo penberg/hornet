@@ -22,7 +22,17 @@ jint value_to_jint(value_t value)
     return static_cast<jint>(value);
 }
 
+jlong value_to_jlong(value_t value)
+{
+   return static_cast<jlong>(value);
+}
+
 value_t jint_to_value(jint n)
+{
+    return static_cast<value_t>(n);
+}
+
+value_t jlong_to_value(jlong n)
 {
     return static_cast<value_t>(n);
 }
@@ -78,12 +88,26 @@ next_insn:
         CONST_INTERP(jint, value);
         break;
     }
+    case JVM_OPC_lconst_0:
+    case JVM_OPC_lconst_1: {
+        jlong value = opc - JVM_OPC_lconst_0;
+        CONST_INTERP(jlong, value);
+        break;
+    }
     case JVM_OPC_iload_0:
     case JVM_OPC_iload_1:
     case JVM_OPC_iload_2:
     case JVM_OPC_iload_3: {
         uint16_t idx = opc - JVM_OPC_iload_0;
         LOAD_INTERP(jint, idx);
+        break;
+    }
+    case JVM_OPC_lload_0:
+    case JVM_OPC_lload_1:
+    case JVM_OPC_lload_2:
+    case JVM_OPC_lload_3: {
+        uint16_t idx = opc - JVM_OPC_lload_0;
+        LOAD_INTERP(jlong, idx);
         break;
     }
     case JVM_OPC_aload_0:
@@ -99,12 +123,25 @@ next_insn:
         STORE_INTERP(jint, idx);
         break;
     }
+    case JVM_OPC_lstore: {
+        auto idx = read_opc_u1(method->code + pc);
+        STORE_INTERP(jlong, idx);
+        break;
+    }
     case JVM_OPC_istore_0:
     case JVM_OPC_istore_1:
     case JVM_OPC_istore_2:
     case JVM_OPC_istore_3: {
         uint16_t idx = opc - JVM_OPC_istore_0;
         STORE_INTERP(jint, idx);
+        break;
+    }
+    case JVM_OPC_lstore_0:
+    case JVM_OPC_lstore_1:
+    case JVM_OPC_lstore_2:
+    case JVM_OPC_lstore_3: {
+        uint16_t idx = opc - JVM_OPC_lstore_0;
+        STORE_INTERP(jlong, idx);
         break;
     }
     case JVM_OPC_pop: {
@@ -120,20 +157,40 @@ next_insn:
         BINOP_INTERP(jint, +);
         break;
     }
+    case JVM_OPC_ladd: {
+        BINOP_INTERP(jlong, +);
+        break;
+    }
     case JVM_OPC_isub: {
         BINOP_INTERP(jint, -);
+        break;
+    }
+    case JVM_OPC_lsub: {
+        BINOP_INTERP(jlong, -);
         break;
     }
     case JVM_OPC_imul: {
         BINOP_INTERP(jint, *);
         break;
     }
+    case JVM_OPC_lmul: {
+        BINOP_INTERP(jlong, *);
+        break;
+    }
     case JVM_OPC_idiv: {
         BINOP_INTERP(jint, /);
         break;
     }
+    case JVM_OPC_ldiv: {
+        BINOP_INTERP(jlong, /);
+        break;
+    }
     case JVM_OPC_irem: {
         BINOP_INTERP(jint, %);
+        break;
+    }
+    case JVM_OPC_lrem: {
+        BINOP_INTERP(jlong, %);
         break;
     }
     case JVM_OPC_goto: {
