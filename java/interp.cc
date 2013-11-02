@@ -66,6 +66,15 @@ next_insn:
         ostack.push(locals[idx]);
         break;
     }
+    case JVM_OPC_istore_0:
+    case JVM_OPC_istore_1:
+    case JVM_OPC_istore_2:
+    case JVM_OPC_istore_3: {
+        uint16_t idx = opc - JVM_OPC_istore_0;
+        locals[idx] = ostack.top();
+        ostack.pop();
+        break;
+    }
     case JVM_OPC_pop: {
         ostack.pop();
         break;

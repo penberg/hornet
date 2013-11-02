@@ -50,6 +50,15 @@ bool verify_method(std::shared_ptr<method> method)
                 return false;
             break;
         }
+        case JVM_OPC_istore_0:
+        case JVM_OPC_istore_1:
+        case JVM_OPC_istore_2:
+        case JVM_OPC_istore_3: {
+            uint16_t idx = opc - JVM_OPC_istore_0;
+            if (idx >= method->max_locals)
+                return false;
+            break;
+        }
         case JVM_OPC_return: {
             break;
         }
