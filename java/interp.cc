@@ -185,6 +185,18 @@ next_insn:
         BINOP_INTERP(jlong, %);
         break;
     }
+    case JVM_OPC_iand: {
+        BINOP_INTERP(jint, &);
+        break;
+    }
+    case JVM_OPC_ior: {
+        BINOP_INTERP(jint, |);
+        break;
+    }
+    case JVM_OPC_ixor: {
+        BINOP_INTERP(jint, ^);
+        break;
+    }
     case JVM_OPC_goto: {
         int16_t offset = read_opc_u2(method->code + frame.pc);
         frame.pc += offset;
