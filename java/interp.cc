@@ -37,30 +37,30 @@ value_t jlong_to_value(jlong n)
     return static_cast<value_t>(n);
 }
 
-#define CONST_INTERP(type, value)			\
-    do {						\
-        ostack.push(type##_to_value(value));		\
+#define CONST_INTERP(type, value)                       \
+    do {                                                \
+        ostack.push(type##_to_value(value));            \
     } while (0)
 
-#define LOAD_INTERP(type, idx)				\
-    do {						\
-        ostack.push(locals[idx]);			\
+#define LOAD_INTERP(type, idx)                          \
+    do {                                                \
+        ostack.push(locals[idx]);                       \
     } while (0)
 
-#define STORE_INTERP(type, idx)				\
-    do {						\
-        locals[idx] = ostack.top();			\
-        ostack.pop();					\
+#define STORE_INTERP(type, idx)                         \
+    do {                                                \
+        locals[idx] = ostack.top();                     \
+        ostack.pop();                                   \
     } while (0)
 
-#define BINOP_INTERP(type, op)				\
-    do {						\
-        auto value2 = value_to_##type(ostack.top());	\
-        ostack.pop();					\
-        auto value1 = value_to_##type(ostack.top());	\
-        ostack.pop();					\
-        type result = value1 op value2;			\
-        ostack.push(type##_to_value(result));		\
+#define BINOP_INTERP(type, op)                          \
+    do {                                                \
+        auto value2 = value_to_##type(ostack.top());    \
+        ostack.pop();                                   \
+        auto value1 = value_to_##type(ostack.top());    \
+        ostack.pop();                                   \
+        type result = value1 op value2;                 \
+        ostack.push(type##_to_value(result));           \
    } while (0)
 
 void interp(method* method)
