@@ -131,6 +131,14 @@ next_insn:
         STORE_INTERP(jint, idx);
         break;
     }
+    case JVM_OPC_lstore_0:
+    case JVM_OPC_lstore_1:
+    case JVM_OPC_lstore_2:
+    case JVM_OPC_lstore_3: {
+        uint16_t idx = opc - JVM_OPC_lstore_0;
+        STORE_INTERP(jlong, idx);
+        break;
+    }
     case JVM_OPC_pop: {
         ostack.pop();
         break;
