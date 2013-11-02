@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <stack>
 
 namespace hornet {
 
@@ -156,8 +157,6 @@ inline loader *system_loader()
 
 extern unsigned char opcode_length[];
 
-void interp(method* method);
-
 static inline uint8_t read_opc_u1(char *p)
 {
     return p[1];
@@ -167,6 +166,18 @@ static inline uint16_t read_opc_u2(char *p)
 {
     return p[1] << 8 | p[2];
 }
+
+typedef uint64_t value_t;
+
+struct frame {
+    frame(uint16_t max_locals)
+       : locals(max_locals) {}
+
+    std::valarray<value_t> locals;
+    std::stack<value_t>    ostack;
+};
+
+void interp(method* method, frame& frame);
 
 }
 

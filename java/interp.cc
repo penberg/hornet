@@ -10,8 +10,6 @@
 
 namespace hornet {
 
-typedef uint64_t value_t;
-
 value_t object_to_value(object* obj)
 {
     return reinterpret_cast<value_t>(obj);
@@ -37,38 +35,34 @@ value_t jlong_to_value(jlong n)
     return static_cast<value_t>(n);
 }
 
-#define CONST_INTERP(type, value)                       \
-    do {                                                \
-        ostack.push(type##_to_value(value));            \
+#define CONST_INTERP(type, value)                               \
+    do {                                                        \
+        frame.ostack.push(type##_to_value(value));              \
     } while (0)
 
-#define LOAD_INTERP(type, idx)                          \
-    do {                                                \
-        ostack.push(locals[idx]);                       \
+#define LOAD_INTERP(type, idx)                                  \
+    do {                                                        \
+        frame.ostack.push(frame.locals[idx]);                   \
     } while (0)
 
-#define STORE_INTERP(type, idx)                         \
-    do {                                                \
-        locals[idx] = ostack.top();                     \
-        ostack.pop();                                   \
+#define STORE_INTERP(type, idx)                                 \
+    do {                                                        \
+        frame.locals[idx] = frame.ostack.top();                 \
+        frame.ostack.pop();                                     \
     } while (0)
 
-#define BINOP_INTERP(type, op)                          \
-    do {                                                \
-        auto value2 = value_to_##type(ostack.top());    \
-        ostack.pop();                                   \
-        auto value1 = value_to_##type(ostack.top());    \
-        ostack.pop();                                   \
-        type result = value1 op value2;                 \
-        ostack.push(type##_to_value(result));           \
+#define BINOP_INTERP(type, op)                                  \
+    do {                                                        \
+        auto value2 = value_to_##type(frame.ostack.top());      \
+        frame.ostack.pop();                                     \
+        auto value1 = value_to_##type(frame.ostack.top());      \
+        frame.ostack.pop();                                     \
+        type result = value1 op value2;                         \
+        frame.ostack.push(type##_to_value(result));             \
    } while (0)
 
-void interp(method* method)
+void interp(method* method, frame& frame)
 {
-    std::valarray<value_t> locals(method->max_locals);
-
-    std::stack<value_t> ostack;
-
     uint16_t pc = 0;
 
 next_insn:
@@ -145,12 +139,12 @@ next_insn:
         break;
     }
     case JVM_OPC_pop: {
-        ostack.pop();
+        frame.ostack.pop();
         break;
     }
     case JVM_OPC_dup: {
-        auto value = ostack.top();
-        ostack.push(value);
+        auto value = frame.ostack.top();
+        frame.ostack.push(value);
         break;
     }
     case JVM_OPC_iadd: {
@@ -199,7 +193,7 @@ next_insn:
         goto next_insn;
     }
     case JVM_OPC_return: {
-        ostack.empty();
+        frame.ostack.empty();
         return;
     }
     case JVM_OPC_invokespecial: {
@@ -207,7 +201,7 @@ next_insn:
     }
     case JVM_OPC_new: {
         auto obj = gc_new_object(nullptr);
-        ostack.push(object_to_value(obj));
+        frame.ostack.push(object_to_value(obj));
         break;
     }
     default:
