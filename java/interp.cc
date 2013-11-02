@@ -165,16 +165,32 @@ next_insn:
         BINOP_INTERP(jint, -);
         break;
     }
+    case JVM_OPC_lsub: {
+        BINOP_INTERP(jlong, -);
+        break;
+    }
     case JVM_OPC_imul: {
         BINOP_INTERP(jint, *);
+        break;
+    }
+    case JVM_OPC_lmul: {
+        BINOP_INTERP(jlong, *);
         break;
     }
     case JVM_OPC_idiv: {
         BINOP_INTERP(jint, /);
         break;
     }
+    case JVM_OPC_ldiv: {
+        BINOP_INTERP(jlong, /);
+        break;
+    }
     case JVM_OPC_irem: {
         BINOP_INTERP(jint, %);
+        break;
+    }
+    case JVM_OPC_lrem: {
+        BINOP_INTERP(jlong, %);
         break;
     }
     case JVM_OPC_goto: {
