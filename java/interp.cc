@@ -185,6 +185,15 @@ next_insn:
         BINOP_INTERP(jlong, %);
         break;
     }
+    case JVM_OPC_ishl: {
+        auto value2 = value_to_jint(ostack.top());
+        ostack.pop();
+        auto value1 = value_to_jint(ostack.top());
+        ostack.pop();
+        jint result = value1 << (value2 & 0x1f);
+        ostack.push(jint_to_value(result));
+        break;
+    }
     case JVM_OPC_iand: {
         BINOP_INTERP(jint, &);
         break;
