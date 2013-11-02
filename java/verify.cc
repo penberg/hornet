@@ -32,6 +32,10 @@ bool verify_method(std::shared_ptr<method> method)
         case JVM_OPC_iconst_5: {
             break;
         }
+        case JVM_OPC_lconst_0:
+        case JVM_OPC_lconst_1: {
+            break;
+        }
         case JVM_OPC_iload_0:
         case JVM_OPC_iload_1:
         case JVM_OPC_iload_2:
@@ -56,6 +60,12 @@ bool verify_method(std::shared_ptr<method> method)
                 return false;
             break;
         }
+        case JVM_OPC_lstore: {
+            auto idx = read_opc_u1(method->code + pc);
+            if (idx >= method->max_locals)
+                return false;
+            break;
+        }
         case JVM_OPC_istore_0:
         case JVM_OPC_istore_1:
         case JVM_OPC_istore_2:
@@ -65,19 +75,43 @@ bool verify_method(std::shared_ptr<method> method)
                 return false;
             break;
         }
+        case JVM_OPC_lstore_0:
+        case JVM_OPC_lstore_1:
+        case JVM_OPC_lstore_2:
+        case JVM_OPC_lstore_3: {
+            uint16_t idx = opc - JVM_OPC_lstore_0;
+            if (idx >= method->max_locals)
+                return false;
+            break;
+        }
         case JVM_OPC_iadd: {
+            break;
+        }
+        case JVM_OPC_ladd: {
             break;
         }
         case JVM_OPC_isub: {
             break;
         }
+        case JVM_OPC_lsub: {
+            break;
+        }
         case JVM_OPC_imul: {
+            break;
+        }
+        case JVM_OPC_lmul: {
             break;
         }
         case JVM_OPC_idiv: {
             break;
         }
+        case JVM_OPC_ldiv: {
+            break;
+        }
         case JVM_OPC_irem: {
+            break;
+        }
+        case JVM_OPC_lrem: {
             break;
         }
         case JVM_OPC_return: {
