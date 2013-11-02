@@ -198,12 +198,24 @@ next_insn:
         BINOP_INTERP(jint, &);
         break;
     }
+    case JVM_OPC_land: {
+        BINOP_INTERP(jlong, &);
+        break;
+    }
     case JVM_OPC_ior: {
         BINOP_INTERP(jint, |);
         break;
     }
+    case JVM_OPC_lor: {
+        BINOP_INTERP(jlong, |);
+        break;
+    }
     case JVM_OPC_ixor: {
         BINOP_INTERP(jint, ^);
+        break;
+    }
+    case JVM_OPC_lxor: {
+        BINOP_INTERP(jlong, ^);
         break;
     }
     case JVM_OPC_goto: {
