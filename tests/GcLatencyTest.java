@@ -13,9 +13,11 @@ public class GcLatencyTest {
 
     System.out.println("Running " + mutatorCount + " mutators and 1 non-mutator for " + cycles + " million cycles...");
 
-    System.out.println("Thread       Latency (usec)");
+    System.out.println("Thread       min/avg/max (ns)");
 
     Thread nonMutator = new Thread(new Runnable() {
+      long minDuration = Long.MAX_VALUE;
+      long totalDuration;
       long maxDuration;
       int cycle;
       int hash;
@@ -29,10 +31,17 @@ public class GcLatencyTest {
 
           long duration = end - start;
 
+          totalDuration += duration;
+          minDuration = Math.min(duration, minDuration);
           maxDuration = Math.max(duration, maxDuration);
         }
 
-        System.out.println(String.format("No mutation  %d", (long) (maxDuration / 1000.0)));
+        long avgDuration = totalDuration / (cycles * 1000000);
+
+        System.out.println(String.format("No mutation  %d/%d/%d",
+            (long) (minDuration),
+            (long) (avgDuration),
+            (long) (maxDuration)));
       }
     });
 
@@ -42,6 +51,8 @@ public class GcLatencyTest {
       final int index = i;
 
       mutators[index] = new Thread(new Runnable() {
+        long minDuration = Long.MAX_VALUE;
+        long totalDuration;
         long maxDuration;
         int cycle;
         int hash;
@@ -62,10 +73,18 @@ public class GcLatencyTest {
 
             long duration = end - start;
 
+            totalDuration += duration;
+            minDuration = Math.min(duration, minDuration);
             maxDuration = Math.max(duration, maxDuration);
           }
 
-          System.out.println(String.format("Mutator %-4d %d", index, (long) (maxDuration / 1000.0)));
+          long avgDuration = totalDuration / (cycles * 1000000);
+
+          System.out.println(String.format("Mutator %-4d %d/%d/%d",
+              index,
+              (long) (minDuration),
+              (long) (avgDuration),
+              (long) (maxDuration)));
         }
       });
     }
