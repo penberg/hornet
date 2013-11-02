@@ -22,6 +22,11 @@ jint value_to_jint(value_t value)
     return static_cast<jint>(value);
 }
 
+jlong value_to_jlong(value_t value)
+{
+   return static_cast<jlong>(value);
+}
+
 value_t jint_to_value(jint n)
 {
     return static_cast<value_t>(n);
@@ -150,6 +155,10 @@ next_insn:
     }
     case JVM_OPC_iadd: {
         BINOP_INTERP(jint, +);
+        break;
+    }
+    case JVM_OPC_ladd: {
+        BINOP_INTERP(jlong, +);
         break;
     }
     case JVM_OPC_isub: {
