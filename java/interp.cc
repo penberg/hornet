@@ -63,12 +63,10 @@ value_t jlong_to_value(jlong n)
 
 void interp(method* method, frame& frame)
 {
-    uint16_t pc = 0;
-
 next_insn:
-    assert(pc < method->code_length);
+    assert(frame.pc < method->code_length);
 
-    uint8_t opc = method->code[pc];
+    uint8_t opc = method->code[frame.pc];
 
     switch (opc) {
     case JVM_OPC_iconst_m1:
@@ -113,12 +111,12 @@ next_insn:
         break;
     }
     case JVM_OPC_istore: {
-        auto idx = read_opc_u1(method->code + pc);
+        auto idx = read_opc_u1(method->code + frame.pc);
         STORE_INTERP(jint, idx);
         break;
     }
     case JVM_OPC_lstore: {
-        auto idx = read_opc_u1(method->code + pc);
+        auto idx = read_opc_u1(method->code + frame.pc);
         STORE_INTERP(jlong, idx);
         break;
     }
@@ -188,8 +186,8 @@ next_insn:
         break;
     }
     case JVM_OPC_goto: {
-        int16_t offset = read_opc_u2(method->code + pc);
-        pc += offset;
+        int16_t offset = read_opc_u2(method->code + frame.pc);
+        frame.pc += offset;
         goto next_insn;
     }
     case JVM_OPC_return: {
@@ -209,7 +207,7 @@ next_insn:
         abort();
     }
 
-    pc += opcode_length[opc];
+    frame.pc += opcode_length[opc];
 
     goto next_insn;
 }

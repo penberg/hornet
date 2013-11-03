@@ -171,10 +171,11 @@ typedef uint64_t value_t;
 
 struct frame {
     frame(uint16_t max_locals)
-       : locals(max_locals) {}
+       : locals(max_locals), pc(0) {}
 
     std::valarray<value_t> locals;
     std::stack<value_t>    ostack;
+    uint16_t               pc;
 };
 
 void interp(method* method, frame& frame);
