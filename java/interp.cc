@@ -232,6 +232,18 @@ next_insn:
         BINOP_INTERP(jlong, ^);
         break;
     }
+    case JVM_OPC_if_icmpeq: {
+        int16_t offset = read_opc_u2(method->code + frame.pc);
+        auto value2 = value_to_jint(frame.ostack.top());
+        frame.ostack.pop();
+        auto value1 = value_to_jint(frame.ostack.top());
+        frame.ostack.pop();
+        if (value1 == value2) {
+            frame.pc += offset;
+            goto next_insn;
+        }
+        break;
+    }
     case JVM_OPC_goto: {
         int16_t offset = read_opc_u2(method->code + frame.pc);
         frame.pc += offset;
