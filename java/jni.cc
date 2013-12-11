@@ -139,6 +139,10 @@ static void HORNET_JNI(CallStaticVoidMethodV)(JNIEnv *env, jclass clazz, jmethod
 
     hornet::frame frame(method->max_locals);
 
+    for (int i = 0; i < method->args_count; i++) {
+        frame.locals[i] = va_arg(args, uint64_t);
+    }
+
     interp(method, frame);
 }
 
