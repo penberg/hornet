@@ -25,6 +25,11 @@ jlong value_to_jlong(value_t value)
    return static_cast<jlong>(value);
 }
 
+array* value_to_array(value_t value)
+{
+   return reinterpret_cast<array*>(value);
+}
+
 value_t jint_to_value(jint n)
 {
     return static_cast<value_t>(n);
@@ -242,6 +247,13 @@ next_insn:
     case JVM_OPC_new: {
         auto obj = gc_new_object(nullptr);
         frame.ostack.push(object_to_value(obj));
+        break;
+    }
+    case JVM_OPC_arraylength: {
+        auto* arrayref = value_to_array(frame.ostack.top());
+        frame.ostack.pop();
+        assert(arrayref != nullptr);
+        frame.ostack.push(arrayref->length);
         break;
     }
     default:
