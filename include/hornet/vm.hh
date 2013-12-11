@@ -57,6 +57,7 @@ struct field {
 struct method {
     std::string name;
     std::string descriptor;
+    uint16_t    args_count;
     uint16_t    max_locals;
     char*       code;
     uint32_t    code_length;

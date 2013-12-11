@@ -253,6 +253,46 @@ std::shared_ptr<field> class_file::read_field_info(constant_pool &constant_pool)
     return f;
 }
 
+static void parse_type(std::string descriptor, int& pos)
+{
+    switch (descriptor[pos++]) {
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'F':
+    case 'I':
+    case 'J':
+    case 'S':
+    case 'Z':
+        break;
+    case 'L':
+        while (descriptor[pos++] != ';')
+            ;;
+        break;
+    case '[':
+        parse_type(descriptor, pos);
+        break;
+    default:
+        fprintf(stderr, "%s '%c'\n", descriptor.c_str(), descriptor[pos]);
+        assert(0);
+        break;
+    }
+}
+
+static uint16_t parse_method_descriptor(std::string descriptor)
+{
+    int count = 0;
+    int pos = 0;
+
+    assert(descriptor[pos++] == '(');
+
+    while (descriptor[pos] != ')') {
+        parse_type(descriptor, pos);
+        count++;
+    }
+    return count;
+}
+
 std::shared_ptr<method> class_file::read_method_info(constant_pool &constant_pool)
 {
     /*auto access_flags = */read_u2();
@@ -277,6 +317,7 @@ std::shared_ptr<method> class_file::read_method_info(constant_pool &constant_poo
     m->descriptor  = cp_descriptor->bytes;
     m->code        = nullptr;
     m->code_length = 0;
+    m->args_count  = parse_method_descriptor(m->descriptor);
 
     for (auto i = 0; i < attr_count; i++) {
         auto attr = read_attr_info(constant_pool);
