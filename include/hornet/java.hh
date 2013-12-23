@@ -1,6 +1,8 @@
 #ifndef HORNET_JAVA_HH
 #define HORNET_JAVA_HH
 
+#include "hornet/zip.hh"
+
 #include <valarray>
 #include <cassert>
 #include <cstddef>
@@ -117,22 +119,26 @@ void verifier_stats();
 class jar {
 public:
     jar(std::string filename);
+    ~jar();
+
+    jar(const jar&) = delete;
+    jar& operator=(const jar&) = delete;
 
     std::shared_ptr<klass> load_class(std::string class_name);
 
 private:
     std::string _filename;
+    hornet::zip* _zip;
 };
 
 class loader {
 public:
-    void register_jar(jar jar);
-
+    void register_jar(std::shared_ptr<jar> jar);
     std::shared_ptr<klass> load_class(const char *class_name);
 private:
     std::shared_ptr<klass> try_to_load_class(const char *class_name);
     std::shared_ptr<klass> load_file(const char *file_name);
-    std::vector<jar> _jars;
+    std::vector<std::shared_ptr<jar>> _jars;
 };
 
 class system_loader {
@@ -142,7 +148,7 @@ public:
         if (!java_home)
             java_home = "/usr/lib/jvm/java";
 
-        get()->register_jar(jar(std::string(java_home) + "/jre/lib/rt.jar"));
+        get()->register_jar(std::make_shared<jar>(std::string(java_home) + "/jre/lib/rt.jar"));
     }
     static loader *get() {
         static loader loader;

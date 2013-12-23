@@ -18,7 +18,7 @@ First, install dependencies:
 **Fedora**
 
 ```
-$ yum install clang java-1.7.0-openjdk-devel libzip-devel
+$ yum install clang java-1.7.0-openjdk-devel
 ```
 
 Then install Hornet:

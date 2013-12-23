@@ -14,7 +14,7 @@
 
 namespace hornet {
 
-void loader::register_jar(jar jar)
+void loader::register_jar(std::shared_ptr<jar> jar)
 {
     _jars.push_back(jar);
 }
@@ -49,7 +49,7 @@ std::shared_ptr<klass> loader::try_to_load_class(const char *class_name)
         return klass;
 
     for (auto jar : _jars) {
-        auto klass = jar.load_class(class_name);
+        auto klass = jar->load_class(class_name);
         if (klass) {
             return klass;
         }

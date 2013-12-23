@@ -13,8 +13,6 @@ ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
 endif
 
-LIBZIP_INCLUDES = $(shell pkg-config --cflags libzip)
-
 WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
 INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
@@ -39,6 +37,7 @@ OBJS += java/jar.o
 OBJS += java/jni.o
 OBJS += java/loader.o
 OBJS += java/verify.o
+OBJS += java/zip.o
 OBJS += vm/alloc.o
 OBJS += vm/gc.o
 OBJS += vm/jvm.o
@@ -63,7 +62,7 @@ all: $(PROGRAMS)
 
 hornet: $(OBJS) hornet.cc
 	$(E) "  LINK  " $@
-	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) -lzip hornet.cc -o hornet
+	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) -lz hornet.cc -o hornet
 
 define INSTALL_EXEC
 	install -v $1 $(DESTDIR)$2/$1 || exit 1;

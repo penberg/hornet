@@ -1,6 +1,5 @@
 #include "hornet/java.hh"
-
-#include <zip.h>
+#include "hornet/zip.hh"
 
 #include <cassert>
 #include <climits>
@@ -9,44 +8,27 @@ namespace hornet {
 
 jar::jar(std::string filename)
     : _filename(filename)
+    , _zip(zip_open(_filename.c_str()))
 {
+}
+
+jar::~jar()
+{
+    zip_close(_zip);
 }
 
 std::shared_ptr<klass> jar::load_class(std::string class_name)
 {
-    char pathname[PATH_MAX];
+    zip_entry *entry = zip_entry_find_class(_zip, class_name.c_str());
+    assert(entry != nullptr);
 
-    snprintf(pathname, sizeof(pathname), "%s.class", class_name.c_str());
+    char *data = (char*)zip_entry_data(_zip, entry);
 
-    int err;
-
-    zip* zip = zip_open(_filename.c_str(), 0, &err);
-    assert(zip != nullptr);
-
-    struct zip_stat st;
-    zip_stat_init(&st);
-    zip_stat(zip, pathname, 0, &st);
-
-    char *data = new char[st.size];
-
-    zip_file *f = zip_fopen(zip, pathname, 0);
-    if (!f) {
-        zip_close(zip);
-        return nullptr;
-    }
-
-    if (zip_fread(f, data, st.size) < 0)
-        assert(0);
-
-    zip_fclose(f);
-
-    zip_close(zip);
-
-    auto file = class_file{data, static_cast<size_t>(st.size)};
+    auto file = class_file{data, static_cast<size_t>(entry->uncomp_size)};
 
     auto klass = file.parse();
 
-    delete[] data;
+    free(data);
 
     return klass;
 }
