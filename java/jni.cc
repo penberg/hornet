@@ -150,7 +150,11 @@ static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodI
 {
     va_list args;
 
+    va_start(args, methodID);
+
     HORNET_JNI(CallStaticVoidMethodV)(env, clazz, methodID, args);
+
+    va_end(args);
 }
 
 static jobjectArray
