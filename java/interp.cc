@@ -86,6 +86,9 @@ next_insn:
     switch (opc) {
     case JVM_OPC_nop:
         break;
+    case JVM_OPC_aconst_null:
+        frame.ostack.push(object_to_value(nullptr));
+        break;
     case JVM_OPC_iconst_m1:
     case JVM_OPC_iconst_0:
     case JVM_OPC_iconst_1:
