@@ -76,6 +76,14 @@ value_t jdouble_to_value(jdouble n)
         frame.ostack.pop();                                     \
     } while (0)
 
+#define UNARY_OP_INTERP(type, op)                               \
+    do {                                                        \
+        auto value = value_to_##type(frame.ostack.top());       \
+        frame.ostack.pop();                                     \
+        type result = op value;                                 \
+        frame.ostack.push(type##_to_value(result));             \
+   } while (0)
+
 #define BINOP_INTERP(type, op)                                  \
     do {                                                        \
         auto value2 = value_to_##type(frame.ostack.top());      \
@@ -255,6 +263,22 @@ next_insn:
     }
     case JVM_OPC_lrem: {
         BINOP_INTERP(jlong, %);
+        break;
+    }
+    case JVM_OPC_ineg: {
+        UNARY_OP_INTERP(jint, -);
+        break;
+    }
+    case JVM_OPC_lneg: {
+        UNARY_OP_INTERP(jlong, -);
+        break;
+    }
+    case JVM_OPC_fneg: {
+        UNARY_OP_INTERP(jfloat, -);
+        break;
+    }
+    case JVM_OPC_dneg: {
+        UNARY_OP_INTERP(jdouble, -);
         break;
     }
     case JVM_OPC_ishl: {
