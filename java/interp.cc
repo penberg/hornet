@@ -25,6 +25,16 @@ jlong value_to_jlong(value_t value)
    return static_cast<jlong>(value);
 }
 
+jfloat value_to_jfloat(value_t value)
+{
+    return static_cast<jfloat>(value);
+}
+
+jdouble value_to_jdouble(value_t value)
+{
+    return static_cast<jdouble>(value);
+}
+
 array* value_to_array(value_t value)
 {
    return reinterpret_cast<array*>(value);
@@ -36,6 +46,16 @@ value_t jint_to_value(jint n)
 }
 
 value_t jlong_to_value(jlong n)
+{
+    return static_cast<value_t>(n);
+}
+
+value_t jfloat_to_value(jfloat n)
+{
+    return static_cast<value_t>(n);
+}
+
+value_t jdouble_to_value(jdouble n)
 {
     return static_cast<value_t>(n);
 }
@@ -173,12 +193,28 @@ next_insn:
         BINOP_INTERP(jlong, +);
         break;
     }
+    case JVM_OPC_fadd: {
+        BINOP_INTERP(jfloat, +);
+        break;
+    }
+    case JVM_OPC_dadd: {
+        BINOP_INTERP(jdouble, +);
+        break;
+    }
     case JVM_OPC_isub: {
         BINOP_INTERP(jint, -);
         break;
     }
     case JVM_OPC_lsub: {
         BINOP_INTERP(jlong, -);
+        break;
+    }
+    case JVM_OPC_fsub: {
+        BINOP_INTERP(jfloat, -);
+        break;
+    }
+    case JVM_OPC_dsub: {
+        BINOP_INTERP(jdouble, -);
         break;
     }
     case JVM_OPC_imul: {
@@ -189,12 +225,28 @@ next_insn:
         BINOP_INTERP(jlong, *);
         break;
     }
+    case JVM_OPC_fmul: {
+        BINOP_INTERP(jfloat, *);
+        break;
+    }
+    case JVM_OPC_dmul: {
+        BINOP_INTERP(jdouble, *);
+        break;
+    }
     case JVM_OPC_idiv: {
         BINOP_INTERP(jint, /);
         break;
     }
     case JVM_OPC_ldiv: {
         BINOP_INTERP(jlong, /);
+        break;
+    }
+    case JVM_OPC_fdiv: {
+        BINOP_INTERP(jfloat, /);
+        break;
+    }
+    case JVM_OPC_ddiv: {
+        BINOP_INTERP(jdouble, /);
         break;
     }
     case JVM_OPC_irem: {
