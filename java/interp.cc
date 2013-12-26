@@ -104,6 +104,19 @@ value_t jdouble_to_value(jdouble n)
         frame.ostack.push(type##_to_value(result));             \
     } while (0)
 
+#define IF_CMP_INTERP(type, cond)                               \
+    do {                                                        \
+        int16_t offset = read_opc_u2(method->code + frame.pc);  \
+        auto value2 = value_to_##type(frame.ostack.top());      \
+        frame.ostack.pop();                                     \
+        auto value1 = value_to_##type(frame.ostack.top());      \
+        frame.ostack.pop();                                     \
+        if (value1 cond value2) {                               \
+            frame.pc += offset;                                 \
+            goto next_insn;                                     \
+        }                                                       \
+    } while (0)
+
 void interp(method* method, frame& frame)
 {
 next_insn:
@@ -326,15 +339,7 @@ next_insn:
         break;
     }
     case JVM_OPC_if_icmpeq: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        auto value2 = value_to_jint(frame.ostack.top());
-        frame.ostack.pop();
-        auto value1 = value_to_jint(frame.ostack.top());
-        frame.ostack.pop();
-        if (value1 == value2) {
-            frame.pc += offset;
-            goto next_insn;
-        }
+        IF_CMP_INTERP(jint, ==);
         break;
     }
     case JVM_OPC_goto: {
