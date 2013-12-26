@@ -354,6 +354,10 @@ next_insn:
         IF_CMP_INTERP(jint, >=);
         break;
     }
+    case JVM_OPC_if_icmpgt: {
+        IF_CMP_INTERP(jint, >);
+        break;
+    }
     case JVM_OPC_goto: {
         int16_t offset = read_opc_u2(method->code + frame.pc);
         frame.pc += offset;
