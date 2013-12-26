@@ -134,6 +134,18 @@ next_insn:
         CONST_INTERP(jlong, value);
         break;
     }
+    case JVM_OPC_fconst_0:
+    case JVM_OPC_fconst_1: {
+        jfloat value = opc - JVM_OPC_fconst_0;
+        CONST_INTERP(jfloat, value);
+        break;
+    }
+    case JVM_OPC_dconst_0:
+    case JVM_OPC_dconst_1: {
+        jdouble value = opc - JVM_OPC_dconst_0;
+        CONST_INTERP(jdouble, value);
+        break;
+    }
     case JVM_OPC_iload_0:
     case JVM_OPC_iload_1:
     case JVM_OPC_iload_2:

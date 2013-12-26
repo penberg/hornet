@@ -36,6 +36,14 @@ bool verify_method(std::shared_ptr<method> method)
         case JVM_OPC_lconst_1: {
             break;
         }
+        case JVM_OPC_fconst_0:
+        case JVM_OPC_fconst_1: {
+            break;
+        }
+        case JVM_OPC_dconst_0:
+        case JVM_OPC_dconst_1: {
+            break;
+        }
         case JVM_OPC_iload_0:
         case JVM_OPC_iload_1:
         case JVM_OPC_iload_2:
