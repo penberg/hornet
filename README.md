@@ -2,12 +2,12 @@
 
 [![Build Status](https://secure.travis-ci.org/penberg/hornet.png?branch=master)](http://travis-ci.org/penberg/hornet)
 
-An implementation of the Java virtual machine.
+Hornet is an implementation of the Java virtual machine.
 
 ## Features
 
 * Interpreter
-* Uses OpenJDK for essential classes
+* Uses OpenJDK for standard class libraries
 * Written in C++11
 * Runs on Linux and Darwin
 
