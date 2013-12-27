@@ -169,6 +169,11 @@ next_insn:
         LOAD_INTERP(jlong, idx);
         break;
     }
+    case JVM_OPC_aload: {
+        auto idx = read_opc_u1(method->code + frame.pc);
+        LOAD_INTERP(jobject, idx);
+        break;
+    }
     case JVM_OPC_iload_0:
     case JVM_OPC_iload_1:
     case JVM_OPC_iload_2:
