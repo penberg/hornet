@@ -31,14 +31,11 @@ std::shared_ptr<klass> class_file::parse()
     if (magic != 0xcafebabe)
         assert(0);
 
-    auto minor_version = read_u2();
+    /*auto minor_version = */read_u2();
 
     auto major_version = read_u2();
 
-    if (major_version != JVM_CLASSFILE_MAJOR_VERSION)
-        assert(0);
-
-    if (minor_version != JVM_CLASSFILE_MINOR_VERSION)
+    if (major_version > JVM_CLASSFILE_MAJOR_VERSION)
         assert(0);
 
     auto const_pool = read_constant_pool();
