@@ -6,8 +6,9 @@
 
 namespace hornet {
 
-klass::klass(const method_list_type &methods)
+klass::klass(std::shared_ptr<constant_pool> const_pool, const method_list_type &methods)
     : object(nullptr)
+    , _const_pool(const_pool)
     , _methods(methods)
 {
 }

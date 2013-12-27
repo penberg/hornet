@@ -13,6 +13,7 @@
 
 namespace hornet {
 
+class constant_pool;
 struct method;
 struct klass;
 
@@ -40,7 +41,7 @@ struct klass {
     struct object object;
     std::string name;
 
-    klass(const method_list_type &methods);
+    klass(std::shared_ptr<constant_pool> const_pool, const method_list_type &methods);
     ~klass();
 
     bool verify();
@@ -48,6 +49,7 @@ struct klass {
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
 
 private:
+    std::shared_ptr<constant_pool> _const_pool;
     method_list_type _methods;
 };
 

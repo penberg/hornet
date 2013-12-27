@@ -81,7 +81,7 @@ public:
     std::shared_ptr<klass> parse();
 private:
 
-    constant_pool read_constant_pool();
+    std::shared_ptr<constant_pool> read_constant_pool();
     std::shared_ptr<const_class_info> read_const_class();
     void read_const_fieldref();
     void read_const_methodref();
