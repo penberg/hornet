@@ -159,6 +159,11 @@ next_insn:
         CONST_INTERP(jdouble, value);
         break;
     }
+    case JVM_OPC_bipush: {
+        int8_t value = read_opc_u1(method->code + frame.pc);
+        CONST_INTERP(jint, value);
+        break;
+    }
     case JVM_OPC_iload: {
         auto idx = read_opc_u1(method->code + frame.pc);
         LOAD_INTERP(jint, idx);
