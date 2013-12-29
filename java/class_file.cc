@@ -46,6 +46,8 @@ std::shared_ptr<klass> class_file::parse()
 
     /*auto super_class = */read_u2();
 
+    auto* klass = new hornet::klass(const_pool);
+
     auto interfaces_count = read_u2();
 
     for (auto i = 0; i < interfaces_count; i++)
@@ -58,10 +60,10 @@ std::shared_ptr<klass> class_file::parse()
 
     auto methods_count = read_u2();
 
-    auto methods = std::valarray<std::shared_ptr<method>>(methods_count);
-
     for (auto i = 0; i < methods_count; i++) {
-        methods[i] = read_method_info(*const_pool);
+        auto method = read_method_info(klass, *const_pool);
+
+        klass->add(method);
     }
 
     auto attr_count = read_u2();
@@ -70,7 +72,7 @@ std::shared_ptr<klass> class_file::parse()
         read_attr_info(*const_pool);
     }
 
-    return std::make_shared<klass>(const_pool, methods);
+    return std::shared_ptr<hornet::klass>(klass);
 }
 
 std::shared_ptr<constant_pool> class_file::read_constant_pool()
@@ -290,7 +292,7 @@ static uint16_t parse_method_descriptor(std::string descriptor)
     return count;
 }
 
-std::shared_ptr<method> class_file::read_method_info(constant_pool &constant_pool)
+std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool &constant_pool)
 {
     /*auto access_flags = */read_u2();
 
@@ -310,6 +312,7 @@ std::shared_ptr<method> class_file::read_method_info(constant_pool &constant_poo
 
     auto m = std::make_shared<method>();
 
+    m->klass       = klass;
     m->name        = cp_name->bytes;
     m->descriptor  = cp_descriptor->bytes;
     m->code        = nullptr;

@@ -3,7 +3,6 @@
 
 #include <hornet/gc.hh>
 
-#include <valarray>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -35,15 +34,16 @@ struct object {
     object(struct klass* _klass) : klass(_klass) {}
 };
 
-using method_list_type = std::valarray<std::shared_ptr<method>>;
+using method_list_type = std::vector<std::shared_ptr<method>>;
 
 struct klass {
     struct object object;
     std::string name;
 
-    klass(std::shared_ptr<constant_pool> const_pool, const method_list_type &methods);
+    klass(std::shared_ptr<constant_pool> const_pool);
     ~klass();
 
+    void add(std::shared_ptr<method> method);
     bool verify();
 
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
@@ -57,6 +57,10 @@ struct field {
 };
 
 struct method {
+    // Method lifecycle is tied to the class it belongs to. Use a pointer to
+    // klass instead of a smart pointer to break the cyclic dependency during
+    // destruction.
+    struct klass* klass;
     std::string name;
     std::string descriptor;
     uint16_t    args_count;

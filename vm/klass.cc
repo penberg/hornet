@@ -6,15 +6,19 @@
 
 namespace hornet {
 
-klass::klass(std::shared_ptr<constant_pool> const_pool, const method_list_type &methods)
+klass::klass(std::shared_ptr<constant_pool> const_pool)
     : object(nullptr)
     , _const_pool(const_pool)
-    , _methods(methods)
 {
 }
 
 klass::~klass()
 {
+}
+
+void klass::add(std::shared_ptr<method> method)
+{
+    _methods.push_back(method);
 }
 
 std::shared_ptr<method> klass::lookup_method(std::string name, std::string descriptor)
