@@ -2,7 +2,8 @@
 
 [![Build Status](https://secure.travis-ci.org/penberg/hornet.png?branch=master)](http://travis-ci.org/penberg/hornet)
 
-Hornet is an implementation of the Java virtual machine.
+Hornet is a Java virtual machine designed for low latency, high performance
+applications.
 
 ## Features
 
@@ -10,6 +11,12 @@ Hornet is an implementation of the Java virtual machine.
 * Uses OpenJDK for standard class libraries
 * Written in C++11
 * Runs on Linux and Darwin
+
+### Planned
+
+* Pauseless GC
+* LLVM ahead-of-compilation
+* RTJS class library support
 
 ## Installation
 
