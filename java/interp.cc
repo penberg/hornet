@@ -243,6 +243,17 @@ next_insn:
         frame.ostack.push(value);
         break;
     }
+    case JVM_OPC_dup_x1: {
+        auto value1 = frame.ostack.top();
+        frame.ostack.pop();
+        auto value2 = frame.ostack.top();
+        frame.ostack.pop();
+
+        frame.ostack.push(value1);
+        frame.ostack.push(value2);
+        frame.ostack.push(value1);
+        break;
+    }
     case JVM_OPC_iadd: {
         BINOP_INTERP(jint, +);
         break;
