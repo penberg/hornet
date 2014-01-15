@@ -46,6 +46,10 @@ struct klass {
     void add(std::shared_ptr<method> method);
     bool verify();
 
+    std::shared_ptr<constant_pool> const_pool() const {
+        return _const_pool;
+    }
+
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
 
 private:

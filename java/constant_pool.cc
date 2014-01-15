@@ -21,6 +21,26 @@ void constant_pool::set(uint16_t idx, std::shared_ptr<cp_info> entry)
     _entries[idx] = entry;
 }
 
+cp_info *constant_pool::get(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    return entry.get();
+}
+
+jint constant_pool::get_integer(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    auto integer = reinterpret_cast<const_integer_info*>(entry.get());
+
+    return integer->value;
+}
+
 const_utf8_info *constant_pool::get_utf8(uint16_t idx)
 {
     assert(idx < _entries.size());

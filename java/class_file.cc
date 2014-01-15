@@ -103,7 +103,7 @@ std::shared_ptr<constant_pool> class_file::read_constant_pool()
             read_const_string();
             break;
         case JVM_CONSTANT_Integer:
-            read_const_integer();
+            cp_info = read_const_integer();
             break;
         case JVM_CONSTANT_Float:
             read_const_float();
@@ -175,9 +175,13 @@ void class_file::read_const_string()
     /*auto string_index = */read_u2();
 }
 
-void class_file::read_const_integer()
+std::shared_ptr<const_integer_info> class_file::read_const_integer()
 {
-    /*auto bytes = */read_u4();
+    auto *ret = new const_integer_info;
+
+    ret->value = read_u4();
+    
+    return std::shared_ptr<const_integer_info>(ret);
 }
 
 void class_file::read_const_float()

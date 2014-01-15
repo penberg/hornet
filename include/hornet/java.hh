@@ -3,6 +3,8 @@
 
 #include "hornet/zip.hh"
 
+#include <jni.h>
+
 #include <valarray>
 #include <cassert>
 #include <cstddef>
@@ -38,9 +40,9 @@ enum class cp_tag {
 };
 
 struct cp_info {
-    cp_tag type;
+    cp_tag tag;
 
-    cp_info(cp_tag type) : type(type) { }
+    cp_info(cp_tag tag) : tag(tag) { }
     virtual ~cp_info() { }
 };
 
@@ -48,6 +50,12 @@ struct const_class_info : cp_info {
     const_class_info() : cp_info(cp_tag::const_class) { }
 
     uint16_t name_index;
+};
+
+struct const_integer_info : cp_info {
+    const_integer_info() : cp_info(cp_tag::const_integer) { }
+
+    jint value;
 };
 
 struct const_utf8_info : cp_info {
@@ -67,6 +75,8 @@ public:
 
     void set(uint16_t idx, std::shared_ptr<cp_info> entry);
 
+    cp_info *get(uint16_t idx);
+    jint get_integer(uint16_t idx);
     const_utf8_info *get_utf8(uint16_t idx);
 
 private:
@@ -110,7 +120,7 @@ private:
     void read_const_methodref();
     void read_const_interface_methodref();
     void read_const_string();
-    void read_const_integer();
+    std::shared_ptr<const_integer_info> read_const_integer();
     void read_const_float();
     void read_const_long();
     void read_const_double();

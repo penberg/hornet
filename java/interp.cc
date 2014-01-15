@@ -169,6 +169,22 @@ next_insn:
         CONST_INTERP(jint, value);
         break;
     }
+    case JVM_OPC_ldc: {
+        auto idx = read_opc_u1(method->code + frame.pc);
+        auto const_pool = method->klass->const_pool();
+        auto cp_info = const_pool->get(idx);
+        switch (cp_info->tag) {
+        case cp_tag::const_integer: {
+            auto value = const_pool->get_integer(idx);
+            frame.ostack.push(jint_to_value(value));
+            break;
+        }
+        default:
+            assert(0);
+            break;
+        }
+        break;
+    }
     case JVM_OPC_iload: {
         auto idx = read_opc_u1(method->code + frame.pc);
         LOAD_INTERP(jint, idx);
