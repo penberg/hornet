@@ -20,16 +20,39 @@ struct method;
 struct field;
 struct klass;
 
+enum class cp_tag {
+    const_class,
+    const_fieldref,
+    const_methodref,
+    const_interface_methodref,
+    const_string,
+    const_integer,
+    const_float,
+    const_long,
+    const_double,
+    const_name_and_type,
+    const_utf8,
+    const_method_handle,
+    const_method_type,
+    const_invoke_dynamic,
+};
+
 struct cp_info {
-    virtual ~cp_info() {
-    }
+    cp_tag type;
+
+    cp_info(cp_tag type) : type(type) { }
+    virtual ~cp_info() { }
 };
 
 struct const_class_info : cp_info {
+    const_class_info() : cp_info(cp_tag::const_class) { }
+
     uint16_t name_index;
 };
 
 struct const_utf8_info : cp_info {
+    const_utf8_info() : cp_info(cp_tag::const_utf8) { }
+
     ~const_utf8_info() {
         delete[] bytes;
     }
