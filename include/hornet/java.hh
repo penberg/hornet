@@ -40,22 +40,30 @@ enum class cp_tag {
 };
 
 struct cp_info {
+    cp_info(cp_tag tag) : tag(tag) { }
+
+    virtual ~cp_info() { }
+
     cp_tag tag;
 
-    cp_info(cp_tag tag) : tag(tag) { }
-    virtual ~cp_info() { }
-};
+    union {
+        uint16_t name_index;
+        jint     value;
+    };
 
-struct const_class_info : cp_info {
-    const_class_info() : cp_info(cp_tag::const_class) { }
+    static inline
+    std::shared_ptr<cp_info> const_class(int16_t name_index) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_class);
+        ret->name_index = name_index;
+        return ret;
+    }
 
-    uint16_t name_index;
-};
-
-struct const_integer_info : cp_info {
-    const_integer_info() : cp_info(cp_tag::const_integer) { }
-
-    jint value;
+    static inline
+    std::shared_ptr<cp_info> const_integer(jint value) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_integer);
+        ret->value = value;
+        return ret;
+    }
 };
 
 struct const_utf8_info : cp_info {
@@ -115,17 +123,17 @@ public:
 private:
 
     std::shared_ptr<constant_pool> read_constant_pool();
-    std::shared_ptr<const_class_info> read_const_class();
+    std::shared_ptr<cp_info> read_const_class();
     void read_const_fieldref();
     void read_const_methodref();
     void read_const_interface_methodref();
     void read_const_string();
-    std::shared_ptr<const_integer_info> read_const_integer();
+    std::shared_ptr<cp_info> read_const_integer();
     void read_const_float();
     void read_const_long();
     void read_const_double();
     void read_const_name_and_type();
-    std::shared_ptr<const_utf8_info> read_const_utf8();
+    std::shared_ptr<cp_info> read_const_utf8();
     void read_const_method_handle();
     void read_const_method_type();
     void read_const_invoke_dynamic();

@@ -143,13 +143,11 @@ std::shared_ptr<constant_pool> class_file::read_constant_pool()
     return const_pool;
 }
 
-std::shared_ptr<const_class_info> class_file::read_const_class()
+std::shared_ptr<cp_info> class_file::read_const_class()
 {
-    auto *ret = new const_class_info;
+    auto name_index = read_u2();
 
-    ret->name_index = read_u2();
-
-    return std::shared_ptr<const_class_info>(ret);
+    return cp_info::const_class(name_index);
 }
 
 void class_file::read_const_fieldref()
@@ -175,13 +173,11 @@ void class_file::read_const_string()
     /*auto string_index = */read_u2();
 }
 
-std::shared_ptr<const_integer_info> class_file::read_const_integer()
+std::shared_ptr<cp_info> class_file::read_const_integer()
 {
-    auto *ret = new const_integer_info;
-
-    ret->value = read_u4();
+    auto value = read_u4();
     
-    return std::shared_ptr<const_integer_info>(ret);
+    return cp_info::const_integer(value);
 }
 
 void class_file::read_const_float()
@@ -207,7 +203,7 @@ void class_file::read_const_name_and_type()
     /*auto descriptor_index = */read_u2();
 }
 
-std::shared_ptr<const_utf8_info> class_file::read_const_utf8()
+std::shared_ptr<cp_info> class_file::read_const_utf8()
 {
     auto length = read_u2();
 

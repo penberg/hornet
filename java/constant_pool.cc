@@ -36,7 +36,7 @@ jint constant_pool::get_integer(uint16_t idx)
 
     auto entry = _entries[idx - 1];
 
-    auto integer = reinterpret_cast<const_integer_info*>(entry.get());
+    auto integer = reinterpret_cast<cp_info*>(entry.get());
 
     return integer->value;
 }
