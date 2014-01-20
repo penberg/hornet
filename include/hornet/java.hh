@@ -5,7 +5,6 @@
 
 #include <jni.h>
 
-#include <valarray>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -88,7 +87,7 @@ public:
     const_utf8_info *get_utf8(uint16_t idx);
 
 private:
-    std::valarray<std::shared_ptr<cp_info>> _entries;
+    std::vector<std::shared_ptr<cp_info>> _entries;
 };
 
 enum class attr_type {
@@ -220,7 +219,7 @@ struct frame {
     frame(uint16_t max_locals)
        : locals(max_locals), pc(0) {}
 
-    std::valarray<value_t> locals;
+    std::vector<value_t> locals;
     std::stack<value_t>    ostack;
     uint16_t               pc;
 };
