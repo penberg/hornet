@@ -7,8 +7,7 @@
 namespace hornet {
 
 jar::jar(std::string filename)
-    : _filename(filename)
-    , _zip(zip_open(_filename.c_str()))
+    : _zip(zip_open(filename.c_str()))
 {
 }
 

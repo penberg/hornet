@@ -167,7 +167,6 @@ public:
     std::shared_ptr<klass> load_class(std::string class_name);
 
 private:
-    std::string _filename;
     hornet::zip* _zip;
 };
 
