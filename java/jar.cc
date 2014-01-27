@@ -18,6 +18,9 @@ jar::~jar()
 
 std::shared_ptr<klass> jar::load_class(std::string class_name)
 {
+    if (!_zip) {
+        return nullptr;
+    }
     zip_entry *entry = zip_entry_find_class(_zip, class_name.c_str());
     if (!entry) {
         return nullptr;
