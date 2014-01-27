@@ -46,14 +46,28 @@ struct cp_info {
     cp_tag tag;
 
     union {
-        uint16_t name_index;
+        struct {
+            uint16_t name_index;
+        };
+        struct {
+            uint16_t class_index;
+            uint16_t name_and_type_index;
+        };
         jint     value;
     };
 
     static inline
-    std::shared_ptr<cp_info> const_class(int16_t name_index) {
+    std::shared_ptr<cp_info> const_class(uint16_t name_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_class);
         ret->name_index = name_index;
+        return ret;
+    }
+
+    static inline
+    std::shared_ptr<cp_info> const_methodref(uint16_t class_index, uint16_t name_and_type_index) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_methodref);
+        ret->class_index = class_index;
+        ret->name_and_type_index = name_and_type_index;
         return ret;
     }
 
@@ -124,7 +138,7 @@ private:
     std::shared_ptr<constant_pool> read_constant_pool();
     std::shared_ptr<cp_info> read_const_class();
     void read_const_fieldref();
-    void read_const_methodref();
+    std::shared_ptr<cp_info> read_const_methodref();
     void read_const_interface_methodref();
     void read_const_string();
     std::shared_ptr<cp_info> read_const_integer();

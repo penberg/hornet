@@ -94,7 +94,7 @@ std::shared_ptr<constant_pool> class_file::read_constant_pool()
             read_const_fieldref();
             break;
         case JVM_CONSTANT_Methodref:
-            read_const_methodref();
+            cp_info = read_const_methodref();
             break;
         case JVM_CONSTANT_InterfaceMethodref:
             read_const_interface_methodref();
@@ -156,10 +156,12 @@ void class_file::read_const_fieldref()
     /*auto name_and_type_index = */read_u2();
 }
 
-void class_file::read_const_methodref()
+std::shared_ptr<cp_info> class_file::read_const_methodref()
 {
-    /*auto class_index = */read_u2();
-    /*auto name_and_type_index = */read_u2();
+    auto class_index = read_u2();
+    auto name_and_type_index = read_u2();
+
+    return cp_info::const_methodref(class_index, name_and_type_index);
 }
 
 void class_file::read_const_interface_methodref()
