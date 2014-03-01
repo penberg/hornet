@@ -9,6 +9,8 @@ BINDIR=$(PREFIX)/bin
 
 CXX ?= clang++
 
+LLVM_VERSION = $(shell llvm-config --version)
+
 ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
 endif
@@ -17,6 +19,19 @@ WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
 INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
 CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
+
+ifeq ($(LLVM_VERSION),3.3)
+	LLVM_LDFLAGS = $(shell llvm-config --ldflags)
+	LLVM_LIBS = $(shell llvm-config --libs)
+
+	OBJS += java/llvm.o
+
+	CONFIGURATIONS += -DCONFIG_HAVE_LLVM
+	LDFLAGS += $(LLVM_LDFLAGS)
+	LIBS += $(LLVM_LIBS)
+else
+$(warning LLVM not found, disables LLVM support. Please install llvm-devel or llvm-dev)
+endif
 
 ifeq ($(uname_S),Darwin)
 	INCLUDES += -I$(JAVA_HOME)/include/darwin
@@ -62,7 +77,7 @@ all: $(PROGRAMS)
 
 hornet: $(OBJS) hornet.cc
 	$(E) "  LINK  " $@
-	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) -lz hornet.cc -o hornet
+	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -lz hornet.cc -o hornet
 
 define INSTALL_EXEC
 	install -v $1 $(DESTDIR)$2/$1 || exit 1;

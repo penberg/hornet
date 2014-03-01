@@ -167,6 +167,8 @@ private:
 };
 
 extern bool verbose_verifier;
+extern bool llvm_enable;
+
 bool verify_method(std::shared_ptr<method> method);
 void verifier_stats();
 
@@ -238,6 +240,10 @@ struct frame {
 };
 
 void interp(method* method, frame& frame);
+
+void llvm_init();
+void llvm_exit();
+void llvm_interp(method* method, frame& frame);
 
 }
 

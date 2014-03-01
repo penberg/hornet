@@ -14,6 +14,11 @@
 
 static jint HORNET_JNI(DestroyJavaVM)(JavaVM *vm)
 {
+#ifdef CONFIG_HAVE_LLVM
+    if (hornet::llvm_enable) {
+        hornet::llvm_exit();
+    }
+#endif
     hornet::verifier_stats();
 
     delete hornet::_jvm;
@@ -89,6 +94,16 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
             hornet::verbose_verifier = true;
             continue;
         }
+        if (!strcmp(opt, "-XX:+LLVM")) {
+#ifdef CONFIG_HAVE_LLVM
+            hornet::llvm_enable = true;
+            hornet::llvm_init();
+#else
+            fprintf(stderr, "error: LLVM support is not compiled in.\n");
+            return JNI_ERR;
+#endif
+            continue;
+        }
 
         fprintf(stderr, "error: Unknown option: '%s'\n", opt);
         return JNI_ERR;
@@ -143,7 +158,15 @@ static void HORNET_JNI(CallStaticVoidMethodV)(JNIEnv *env, jclass clazz, jmethod
         frame.locals[i] = va_arg(args, uint64_t);
     }
 
+#ifdef CONFIG_HAVE_LLVM
+    if (hornet::llvm_enable) {
+        llvm_interp(method, frame);
+    } else {
+        interp(method, frame);
+    }
+#else
     interp(method, frame);
+#endif
 }
 
 static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodID methodID, ...)
