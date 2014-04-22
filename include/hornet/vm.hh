@@ -65,6 +65,7 @@ struct method {
     // klass instead of a smart pointer to break the cyclic dependency during
     // destruction.
     struct klass* klass;
+    uint16_t    access_flags;
     std::string name;
     std::string descriptor;
     uint16_t    args_count;

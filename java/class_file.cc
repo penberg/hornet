@@ -298,7 +298,7 @@ static uint16_t parse_method_descriptor(std::string descriptor)
 
 std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool &constant_pool)
 {
-    /*auto access_flags = */read_u2();
+    auto access_flags = read_u2();
 
     auto name_index = read_u2();
 
@@ -316,12 +316,13 @@ std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool
 
     auto m = std::make_shared<method>();
 
-    m->klass       = klass;
-    m->name        = cp_name->bytes;
-    m->descriptor  = cp_descriptor->bytes;
-    m->code        = nullptr;
-    m->code_length = 0;
-    m->args_count  = parse_method_descriptor(m->descriptor);
+    m->klass        = klass;
+    m->access_flags = access_flags;
+    m->name         = cp_name->bytes;
+    m->descriptor   = cp_descriptor->bytes;
+    m->code         = nullptr;
+    m->code_length  = 0;
+    m->args_count   = parse_method_descriptor(m->descriptor);
 
     for (auto i = 0; i < attr_count; i++) {
         auto attr = read_attr_info(constant_pool);
