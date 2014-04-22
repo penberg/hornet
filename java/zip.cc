@@ -162,12 +162,12 @@ static int zip_eocdr_traverse(struct zip *zip, struct zip_eocdr *eocdr)
         entry->lh_offset	= le32_to_cpu(cdfh->lh_offset);
         entry->compression	= le16_to_cpu(cdfh->compression);
 
-        zip->entry_cache.insert(std::pair<std::string, zip_entry*>(s, entry));
+        zip->entry_cache.insert(std::make_pair(s, entry));
 
         if (!strncmp(s + filename_len - strlen(".class"), ".class", strlen(".class"))) {
             std::string class_name {s, strlen(s) - strlen(".class")};
 
-            zip->class_cache.insert(std::pair<std::string, zip_entry*>(class_name, entry));
+            zip->class_cache.insert(std::make_pair(class_name, entry));
         }
 next:
         p += zip_cdfh_size(cdfh);
