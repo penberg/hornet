@@ -48,6 +48,7 @@ struct cp_info {
     union {
         struct {
             uint16_t name_index;
+            uint16_t descriptor_index;
         };
         struct {
             uint16_t class_index;
@@ -75,6 +76,14 @@ struct cp_info {
     std::shared_ptr<cp_info> const_integer(jint value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_integer);
         ret->value = value;
+        return ret;
+    }
+
+    static inline
+    std::shared_ptr<cp_info> const_name_and_type(uint16_t name_index, uint16_t descriptor_index) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_name_and_type);
+        ret->name_index = name_index;
+        ret->descriptor_index = descriptor_index;
         return ret;
     }
 };
@@ -145,7 +154,7 @@ private:
     void read_const_float();
     void read_const_long();
     void read_const_double();
-    void read_const_name_and_type();
+    std::shared_ptr<cp_info> read_const_name_and_type();
     std::shared_ptr<cp_info> read_const_utf8();
     void read_const_method_handle();
     void read_const_method_type();

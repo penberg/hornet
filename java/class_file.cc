@@ -115,7 +115,7 @@ std::shared_ptr<constant_pool> class_file::read_constant_pool()
             read_const_double();
             break;
         case JVM_CONSTANT_NameAndType:
-            read_const_name_and_type();
+            cp_info = read_const_name_and_type();
             break;
         case JVM_CONSTANT_Utf8:
             cp_info = read_const_utf8();
@@ -199,10 +199,12 @@ void class_file::read_const_double()
     /*auto low_bytes = */read_u4();
 }
 
-void class_file::read_const_name_and_type()
+std::shared_ptr<cp_info> class_file::read_const_name_and_type()
 {
-    /*auto name_index = */read_u2();
-    /*auto descriptor_index = */read_u2();
+    auto name_index = read_u2();
+    auto descriptor_index = read_u2();
+
+    return cp_info::const_name_and_type(name_index, descriptor_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_utf8()
