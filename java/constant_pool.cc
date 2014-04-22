@@ -36,6 +36,8 @@ jint constant_pool::get_integer(uint16_t idx)
 
     auto entry = _entries[idx - 1];
 
+    assert(entry->tag == cp_tag::const_integer);
+
     auto integer = reinterpret_cast<cp_info*>(entry.get());
 
     return integer->value;
@@ -46,6 +48,8 @@ const_utf8_info *constant_pool::get_utf8(uint16_t idx)
     assert(idx < _entries.size());
 
     auto entry = _entries[idx - 1];
+
+    assert(entry->tag == cp_tag::const_utf8);
 
     return reinterpret_cast<const_utf8_info*>(entry.get());
 }
