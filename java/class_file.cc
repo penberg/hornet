@@ -256,9 +256,12 @@ std::shared_ptr<field> class_file::read_field_info(constant_pool &constant_pool)
     return f;
 }
 
-static void parse_type(std::string descriptor, int& pos)
+klass jvm_void_klass(nullptr);
+
+static klass* parse_type(std::string descriptor, int& pos)
 {
-    switch (descriptor[pos++]) {
+    auto ch = descriptor[pos++];
+    switch (ch) {
     case 'B':
     case 'C':
     case 'D':
@@ -275,25 +278,29 @@ static void parse_type(std::string descriptor, int& pos)
     case '[':
         parse_type(descriptor, pos);
         break;
+    case 'V':
+        return &jvm_void_klass;
     default:
-        fprintf(stderr, "%s '%c'\n", descriptor.c_str(), descriptor[pos]);
+        fprintf(stderr, "%s '%c'\n", descriptor.c_str(), ch);
         assert(0);
         break;
     }
+    return nullptr;
 }
 
-static uint16_t parse_method_descriptor(std::string descriptor)
+static void parse_method_descriptor(std::shared_ptr<method> m)
 {
-    int count = 0;
     int pos = 0;
 
-    assert(descriptor[pos++] == '(');
+    m->args_count = 0;
 
-    while (descriptor[pos] != ')') {
-        parse_type(descriptor, pos);
-        count++;
+    assert(m->descriptor[pos++] == '(');
+
+    while (m->descriptor[pos] != ')') {
+        parse_type(m->descriptor, pos);
+        m->args_count++;
     }
-    return count;
+    m->return_type = parse_type(m->descriptor, ++pos);
 }
 
 std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool &constant_pool)
@@ -322,7 +329,8 @@ std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool
     m->descriptor   = cp_descriptor->bytes;
     m->code         = nullptr;
     m->code_length  = 0;
-    m->args_count   = parse_method_descriptor(m->descriptor);
+
+    parse_method_descriptor(m);
 
     for (auto i = 0; i < attr_count; i++) {
         auto attr = read_attr_info(constant_pool);

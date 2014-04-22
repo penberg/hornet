@@ -106,6 +106,9 @@ public:
     void set(uint16_t idx, std::shared_ptr<cp_info> entry);
 
     cp_info *get(uint16_t idx);
+    cp_info *get_class(uint16_t idx);
+    cp_info *get_methodref(uint16_t idx);
+    cp_info *get_name_and_type(uint16_t idx);
     jint get_integer(uint16_t idx);
     const_utf8_info *get_utf8(uint16_t idx);
 
@@ -174,6 +177,8 @@ private:
     size_t _size;
     char *_data;
 };
+
+extern klass jvm_void_klass;
 
 extern bool verbose_verifier;
 extern bool llvm_enable;
@@ -248,7 +253,7 @@ struct frame {
     uint16_t               pc;
 };
 
-void interp(method* method, frame& frame);
+value_t interp(method* method, frame& frame);
 
 void llvm_init();
 void llvm_exit();

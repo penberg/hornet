@@ -117,7 +117,36 @@ value_t jdouble_to_value(jdouble n)
         }                                                       \
     } while (0)
 
-void interp(method* method, frame& frame)
+std::shared_ptr<method> resolve_name_and_type(klass* klass, uint16_t idx)
+{
+    auto const_pool = klass->const_pool();
+    auto method_name_and_type = const_pool->get_name_and_type(idx);
+    auto method_name = const_pool->get_utf8(method_name_and_type->name_index);
+    auto method_type = const_pool->get_utf8(method_name_and_type->descriptor_index);
+    return klass->lookup_method(method_name->bytes, method_type->bytes);
+}
+
+std::shared_ptr<klass> resolve_klass(klass* klass, uint16_t idx)
+{
+    auto const_pool = klass->const_pool();
+    auto klassref = const_pool->get_class(idx);
+    auto klass_name = const_pool->get_utf8(klassref->name_index);
+    auto loader = hornet::system_loader();
+    return loader->load_class(klass_name->bytes);
+}
+
+std::shared_ptr<method> resolve_methodref(klass* klass, uint16_t idx)
+{
+    auto const_pool = klass->const_pool();
+    auto methodref = const_pool->get_methodref(idx);
+    auto target_klass = resolve_klass(klass, methodref->class_index);
+    if (!target_klass) {
+        return nullptr;
+    }
+    return resolve_name_and_type(target_klass.get(), methodref->name_and_type_index);
+}
+
+value_t interp(method* method, frame& frame)
 {
 next_insn:
     assert(frame.pc < method->code_length);
@@ -429,11 +458,37 @@ next_insn:
         frame.pc += offset;
         goto next_insn;
     }
+    case JVM_OPC_ireturn:
+    case JVM_OPC_lreturn:
+    case JVM_OPC_freturn:
+    case JVM_OPC_dreturn:
+    case JVM_OPC_areturn: {
+        auto value = frame.ostack.top();
+        frame.ostack.empty();
+        return value;
+    }
     case JVM_OPC_return: {
         frame.ostack.empty();
-        return;
+        return object_to_value(nullptr);
     }
     case JVM_OPC_invokespecial: {
+        break;
+    }
+    case JVM_OPC_invokestatic: {
+        uint16_t idx = read_opc_u2(method->code + frame.pc);
+        auto target = resolve_methodref(method->klass, idx);
+        assert(target != nullptr);
+        assert(target->access_flags & JVM_ACC_STATIC);
+        hornet::frame new_frame(target->max_locals);
+        for (int i = 0; i < target->args_count; i++) {
+            auto arg_idx = target->args_count - i - 1;
+            new_frame.locals[arg_idx] = frame.ostack.top();
+            frame.ostack.pop();
+        }
+        auto result = interp(target.get(), new_frame);
+        if (target->return_type != &jvm_void_klass) {
+            frame.ostack.push(result);
+        }
         break;
     }
     case JVM_OPC_new: {

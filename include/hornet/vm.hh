@@ -68,6 +68,7 @@ struct method {
     uint16_t    access_flags;
     std::string name;
     std::string descriptor;
+    struct klass* return_type;
     uint16_t    args_count;
     uint16_t    max_locals;
     char*       code;
