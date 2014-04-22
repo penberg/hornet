@@ -1,10 +1,10 @@
 #ifndef HORNET_ZIP_HH
 #define HORNET_ZIP_HH
 
+#include <unordered_map>
 #include <cstdint>
 #include <cstddef>
 #include <string>
-#include <map>
 
 namespace hornet {
 
@@ -31,8 +31,8 @@ struct zip {
     char* mmap;
     unsigned long nr_entries;
     struct zip_entry* entries;
-    std::map<std::string, zip_entry*> entry_cache;
-    std::map<std::string, zip_entry*> class_cache;
+    std::unordered_map<std::string, zip_entry*> entry_cache;
+    std::unordered_map<std::string, zip_entry*> class_cache;
 };
 
 struct zip *zip_open(const char *pathname);
