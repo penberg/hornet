@@ -47,17 +47,16 @@ std::mutex block_mutex;
 
 memory_block *memory_block::get()
 {
-    std::lock_guard<std::mutex> lock{block_mutex};
+    {
+        std::lock_guard<std::mutex> lock{block_mutex};
 
-    if (!blocks.empty()) {
-        auto block = blocks.back().release();
-        blocks.pop_back();
-        block->reset();
-        return block;
+        if (!blocks.empty()) {
+            auto block = blocks.back().release();
+            blocks.pop_back();
+            block->reset();
+            return block;
+        }
     }
-
-    block_mutex.unlock();
-
     return new memory_block(hugepage_size);
 }
 
