@@ -78,6 +78,8 @@ std::shared_ptr<klass> class_file::parse()
         auto loader = hornet::system_loader();
         auto super = loader->load_class(klass_name->bytes);
         klass->super = super.get();
+    } else {
+        klass->super = nullptr;
     }
 
     return std::shared_ptr<hornet::klass>(klass);
