@@ -54,6 +54,9 @@ struct cp_info {
             uint16_t class_index;
             uint16_t name_and_type_index;
         };
+        struct {
+            uint16_t string_index;
+        };
         jint     value;
     };
 
@@ -69,6 +72,13 @@ struct cp_info {
         auto ret = std::make_shared<cp_info>(cp_tag::const_methodref);
         ret->class_index = class_index;
         ret->name_and_type_index = name_and_type_index;
+        return ret;
+    }
+
+    static inline
+    std::shared_ptr<cp_info> const_string(uint16_t string_index) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_string);
+        ret->string_index = string_index;
         return ret;
     }
 
@@ -152,7 +162,7 @@ private:
     void read_const_fieldref();
     std::shared_ptr<cp_info> read_const_methodref();
     void read_const_interface_methodref();
-    void read_const_string();
+    std::shared_ptr<cp_info> read_const_string();
     std::shared_ptr<cp_info> read_const_integer();
     void read_const_float();
     void read_const_long();
