@@ -55,8 +55,11 @@ std::shared_ptr<klass> class_file::parse()
 
     auto fields_count = read_u2();
 
-    for (auto i = 0; i < fields_count; i++)
-        read_field_info(*const_pool);
+    for (auto i = 0; i < fields_count; i++) {
+        auto field = read_field_info(*const_pool);
+
+        klass->add(field);
+    }
 
     auto methods_count = read_u2();
 
@@ -101,7 +104,7 @@ std::shared_ptr<constant_pool> class_file::read_constant_pool()
             cp_info = read_const_class();
             break;
         case JVM_CONSTANT_Fieldref:
-            read_const_fieldref();
+            cp_info = read_const_fieldref();
             break;
         case JVM_CONSTANT_Methodref:
             cp_info = read_const_methodref();
@@ -160,10 +163,12 @@ std::shared_ptr<cp_info> class_file::read_const_class()
     return cp_info::const_class(name_index);
 }
 
-void class_file::read_const_fieldref()
+std::shared_ptr<cp_info> class_file::read_const_fieldref()
 {
-    /*auto class_index = */read_u2();
-    /*auto name_and_type_index = */read_u2();
+    auto class_index = read_u2();
+    auto name_and_type_index = read_u2();
+
+    return cp_info::const_fieldref(class_index, name_and_type_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_methodref()
@@ -259,11 +264,20 @@ void class_file::read_const_invoke_dynamic()
 std::shared_ptr<field> class_file::read_field_info(constant_pool &constant_pool)
 {
     /*auto access_flags = */read_u2();
-    /*auto name_index = */read_u2();
-    /*auto descriptor_index = */read_u2();
-    auto attr_count = read_u2();
+    auto name_index = read_u2();
+
+    auto *cp_name = constant_pool.get_utf8(name_index);
+
+    auto descriptor_index = read_u2();
+
+    auto *cp_descriptor = constant_pool.get_utf8(descriptor_index);
 
     auto f = std::make_shared<field>();
+
+    f->name         = cp_name->bytes;
+    f->descriptor   = cp_descriptor->bytes;
+
+    auto attr_count = read_u2();
 
     for (auto i = 0; i < attr_count; i++) {
         auto attr = read_attr_info(constant_pool);

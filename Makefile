@@ -54,6 +54,7 @@ OBJS += java/loader.o
 OBJS += java/verify.o
 OBJS += java/zip.o
 OBJS += vm/alloc.o
+OBJS += vm/field.o
 OBJS += vm/gc.o
 OBJS += vm/jvm.o
 OBJS += vm/klass.o

@@ -136,6 +136,20 @@ std::shared_ptr<klass> resolve_klass(klass* klass, uint16_t idx)
     return loader->load_class(klass_name->bytes);
 }
 
+std::shared_ptr<field> resolve_fieldref(klass* klass, uint16_t idx)
+{
+    auto const_pool = klass->const_pool();
+    auto fieldref = const_pool->get_fieldref(idx);
+    auto target_klass = resolve_klass(klass, fieldref->class_index);
+    if (!target_klass) {
+        return nullptr;
+    }
+    auto field_name_and_type = const_pool->get_name_and_type(fieldref->name_and_type_index);
+    auto field_name = const_pool->get_utf8(field_name_and_type->name_index);
+    auto field_type = const_pool->get_utf8(field_name_and_type->descriptor_index);
+    return target_klass->lookup_field(field_name->bytes, field_type->bytes);
+}
+
 std::shared_ptr<method> resolve_methodref(klass* klass, uint16_t idx)
 {
     auto const_pool = klass->const_pool();
@@ -482,6 +496,12 @@ next_insn:
     case JVM_OPC_return: {
         frame.ostack.empty();
         return object_to_value(nullptr);
+    }
+    case JVM_OPC_getstatic: {
+        uint16_t idx = read_opc_u2(method->code + frame.pc);
+        auto field = resolve_fieldref(method->klass, idx);
+        assert(field != nullptr);
+        frame.ostack.push(field->value);
     }
     case JVM_OPC_invokespecial: {
         break;

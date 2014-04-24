@@ -2,6 +2,7 @@
 #define HORNET_JAVA_HH
 
 #include "hornet/zip.hh"
+#include "hornet/vm.hh"
 
 #include <jni.h>
 
@@ -64,6 +65,14 @@ struct cp_info {
     std::shared_ptr<cp_info> const_class(uint16_t name_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_class);
         ret->name_index = name_index;
+        return ret;
+    }
+
+    static inline
+    std::shared_ptr<cp_info> const_fieldref(uint16_t class_index, uint16_t name_and_type_index) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_fieldref);
+        ret->class_index = class_index;
+        ret->name_and_type_index = name_and_type_index;
         return ret;
     }
 
@@ -132,6 +141,7 @@ public:
 
     cp_info *get(uint16_t idx);
     cp_info *get_class(uint16_t idx);
+    cp_info *get_fieldref(uint16_t idx);
     cp_info *get_methodref(uint16_t idx);
     cp_info *get_name_and_type(uint16_t idx);
     jint get_integer(uint16_t idx);
@@ -174,7 +184,7 @@ private:
 
     std::shared_ptr<constant_pool> read_constant_pool();
     std::shared_ptr<cp_info> read_const_class();
-    void read_const_fieldref();
+    std::shared_ptr<cp_info> read_const_fieldref();
     std::shared_ptr<cp_info> read_const_methodref();
     std::shared_ptr<cp_info> read_const_interface_methodref();
     std::shared_ptr<cp_info> read_const_string();
@@ -292,8 +302,6 @@ static inline uint16_t read_opc_u2(char *p)
 {
     return p[1] << 8 | p[2];
 }
-
-typedef uint64_t value_t;
 
 struct frame {
     frame(uint16_t max_locals)

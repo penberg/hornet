@@ -14,6 +14,7 @@ namespace hornet {
 
 class constant_pool;
 struct method;
+struct field;
 struct klass;
 
 class jvm {
@@ -28,6 +29,8 @@ private:
 
 extern jvm *_jvm;
 
+typedef uint64_t value_t;
+
 struct object {
     struct klass *klass;
 
@@ -35,6 +38,7 @@ struct object {
 };
 
 using method_list_type = std::vector<std::shared_ptr<method>>;
+using field_list_type = std::vector<std::shared_ptr<field>>;
 
 struct klass {
     struct object object;
@@ -45,6 +49,7 @@ struct klass {
     ~klass();
 
     void add(std::shared_ptr<method> method);
+    void add(std::shared_ptr<field> field);
     bool verify();
 
     std::shared_ptr<constant_pool> const_pool() const {
@@ -52,13 +57,23 @@ struct klass {
     }
 
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
+    std::shared_ptr<field> lookup_field(std::string name, std::string desciptor);
 
 private:
     std::shared_ptr<constant_pool> _const_pool;
     method_list_type _methods;
+    field_list_type _fields;
 };
 
 struct field {
+    value_t     value;
+    std::string name;
+    std::string descriptor;
+
+    field();
+    ~field();
+
+    bool matches(std::string name, std::string descriptor);
 };
 
 struct method {

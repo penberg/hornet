@@ -41,6 +41,17 @@ cp_info *constant_pool::get_class(uint16_t idx)
     return reinterpret_cast<cp_info*>(entry.get());
 }
 
+cp_info *constant_pool::get_fieldref(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    assert(entry->tag == cp_tag::const_fieldref);
+
+    return reinterpret_cast<cp_info*>(entry.get());
+}
+
 cp_info *constant_pool::get_methodref(uint16_t idx)
 {
     assert(idx < _entries.size());

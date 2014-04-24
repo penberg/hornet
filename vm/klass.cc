@@ -16,9 +16,27 @@ klass::~klass()
 {
 }
 
+void klass::add(std::shared_ptr<field> field)
+{
+    _fields.push_back(field);
+}
+
 void klass::add(std::shared_ptr<method> method)
 {
     _methods.push_back(method);
+}
+
+std::shared_ptr<field> klass::lookup_field(std::string name, std::string descriptor)
+{
+    klass* klass = this;
+    while (klass) {
+        for (auto field : klass->_fields) {
+            if (field->matches(name, descriptor))
+                return field;
+        }
+        klass = klass->super;
+    }
+    return nullptr;
 }
 
 std::shared_ptr<method> klass::lookup_method(std::string name, std::string descriptor)
