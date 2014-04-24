@@ -14,9 +14,18 @@
 
 namespace hornet {
 
-void loader::register_jar(std::shared_ptr<jar> jar)
+void loader::register_entry(std::string path)
 {
-    _jars.push_back(jar);
+    struct stat st;
+
+    if (stat(path.c_str(), &st) < 0) {
+        return;
+    }
+    if (S_ISDIR(st.st_mode)) {
+        _entries.push_back(std::make_shared<classpath_dir>(path));
+    } else {
+        _entries.push_back(std::make_shared<jar>(path));
+    }
 }
 
 std::shared_ptr<klass> loader::load_class(const char *class_name)
@@ -40,25 +49,34 @@ std::shared_ptr<klass> loader::load_class(const char *class_name)
 
 std::shared_ptr<klass> loader::try_to_load_class(const char *class_name)
 {
-    char pathname[PATH_MAX];
-
-    snprintf(pathname, sizeof(pathname), "%s.class", class_name);
-
-    auto klass = load_file(pathname);
-    if (klass)
-        return klass;
-
-    for (auto jar : _jars) {
-        auto klass = jar->load_class(class_name);
+    for (auto entry : _entries) {
+        auto klass = entry->load_class(class_name);
         if (klass) {
             return klass;
         }
     }
-
     return nullptr;
 }
 
-std::shared_ptr<klass> loader::load_file(const char *pathname)
+classpath_dir::classpath_dir(std::string path)
+    : _path(path)
+{
+}
+
+classpath_dir::~classpath_dir()
+{
+}
+
+std::shared_ptr<klass> classpath_dir::load_class(std::string class_name)
+{
+    char pathname[PATH_MAX];
+
+    snprintf(pathname, sizeof(pathname), "%s/%s.class", _path.c_str(), class_name.c_str());
+
+    return load_file(pathname);
+}
+
+std::shared_ptr<klass> classpath_dir::load_file(const char *pathname)
 {
     auto fd = open(pathname, O_RDONLY);
     if (fd < 0) {

@@ -82,9 +82,6 @@ int main(int argc, char *argv[])
 
     program = basename(argv[0]);
 
-    if (argc == 1)
-        usage();
-
     vm_args.version = JNI_VERSION_1_6;
 
     if (JNI_GetDefaultJavaVMInitArgs(&vm_args) != JNI_OK) {
@@ -99,11 +96,24 @@ int main(int argc, char *argv[])
         if (*argv[idx] != '-')
             break;
 
+        if (!strcmp(argv[idx], "-classpath") || !strcmp(argv[idx], "-cp")) {
+            options[idx-1].optionString = argv[idx];
+            idx++;
+            if (idx >= argc) {
+                break;
+            }
+            options[idx-1].optionString = argv[idx];
+            continue;
+        }
+
         options[idx-1].optionString = argv[idx];
     }
 
     vm_args.nOptions = idx - 1;
     vm_args.options  = options;
+
+    if (idx == argc)
+        usage();
 
     auto initial_class_name = argv[idx];
 

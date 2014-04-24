@@ -186,7 +186,34 @@ extern bool llvm_enable;
 bool verify_method(std::shared_ptr<method> method);
 void verifier_stats();
 
-class jar {
+class classpath_entry {
+public:
+    classpath_entry() { }
+    virtual ~classpath_entry() { }
+
+    classpath_entry(const classpath_entry&) = delete;
+    classpath_entry& operator=(const classpath_entry&) = delete;
+
+    virtual std::shared_ptr<klass> load_class(std::string class_name) = 0;
+};
+
+class classpath_dir : public classpath_entry {
+public:
+    classpath_dir(std::string filename);
+    ~classpath_dir();
+
+    classpath_dir(const classpath_dir&) = delete;
+    classpath_dir& operator=(const classpath_dir&) = delete;
+
+    std::shared_ptr<klass> load_class(std::string class_name) override;
+
+private:
+    std::shared_ptr<klass> load_file(const char *file_name);
+
+    std::string _path;
+};
+
+class jar : public classpath_entry {
 public:
     jar(std::string filename);
     ~jar();
@@ -194,7 +221,7 @@ public:
     jar(const jar&) = delete;
     jar& operator=(const jar&) = delete;
 
-    std::shared_ptr<klass> load_class(std::string class_name);
+    std::shared_ptr<klass> load_class(std::string class_name) override;
 
 private:
     hornet::zip* _zip;
@@ -202,12 +229,11 @@ private:
 
 class loader {
 public:
-    void register_jar(std::shared_ptr<jar> jar);
+    void register_entry(std::string path);
     std::shared_ptr<klass> load_class(const char *class_name);
 private:
     std::shared_ptr<klass> try_to_load_class(const char *class_name);
-    std::shared_ptr<klass> load_file(const char *file_name);
-    std::vector<std::shared_ptr<jar>> _jars;
+    std::vector<std::shared_ptr<classpath_entry>> _entries;
 };
 
 class system_loader {
@@ -217,7 +243,7 @@ public:
         if (!java_home)
             java_home = "/usr/lib/jvm/java";
 
-        get()->register_jar(std::make_shared<jar>(std::string(java_home) + "/jre/lib/rt.jar"));
+        get()->register_entry(std::string(java_home) + "/jre/lib/rt.jar");
     }
     static loader *get() {
         static loader loader;

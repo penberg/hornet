@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <sstream>
 #include <jni.h>
 
 #define STUB \
@@ -90,6 +91,14 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
     for (auto i = 0; i < vm_args->nOptions; i++) {
         const char *opt = vm_args->options[i].optionString;
 
+        if (!strcmp(opt, "-cp") || !strcmp(opt, "-classpath")) {
+            auto classpath = std::string{vm_args->options[++i].optionString};
+            std::istringstream buf(classpath);
+            for (std::string entry; getline(buf, entry, ':'); ) {
+                hornet::system_loader::get()->register_entry(entry);
+            }
+            continue;
+        }
         if (!strcmp(opt, "-verbose:verifier")) {
             hornet::verbose_verifier = true;
             continue;
