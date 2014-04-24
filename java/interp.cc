@@ -104,6 +104,16 @@ value_t jdouble_to_value(jdouble n)
         frame.ostack.push(type##_to_value(result));             \
     } while (0)
 
+#define SHR_INTERP(type, mask)                                  \
+    do {                                                        \
+        auto value2 = value_to_jint(frame.ostack.top());        \
+        frame.ostack.pop();                                     \
+        auto value1 = value_to_##type(frame.ostack.top());      \
+        frame.ostack.pop();                                     \
+        type result = value1 >> (value2 & mask);                \
+        frame.ostack.push(type##_to_value(result));             \
+    } while (0)
+
 #define IF_CMP_INTERP(type, cond)                               \
     do {                                                        \
         int16_t offset = read_opc_u2(method->code + frame.pc);  \
@@ -397,6 +407,14 @@ next_insn:
     }
     case JVM_OPC_lshl: {
         SHL_INTERP(jlong, 0x3f);
+        break;
+    }
+    case JVM_OPC_ishr: {
+        SHR_INTERP(jint, 0x1f);
+        break;
+    }
+    case JVM_OPC_lshr: {
+        SHR_INTERP(jlong, 0x3f);
         break;
     }
     case JVM_OPC_iand: {
