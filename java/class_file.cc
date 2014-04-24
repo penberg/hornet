@@ -119,7 +119,7 @@ std::shared_ptr<constant_pool> class_file::read_constant_pool()
             read_const_float();
             break;
         case JVM_CONSTANT_Long:
-            read_const_long();
+            cp_info = read_const_long();
             break;
         case JVM_CONSTANT_Double:
             read_const_double();
@@ -199,10 +199,12 @@ void class_file::read_const_float()
     /*auto bytes = */read_u4();
 }
 
-void class_file::read_const_long()
+std::shared_ptr<cp_info> class_file::read_const_long()
 {
-    /*auto high_bytes = */read_u4();
-    /*auto low_bytes = */read_u4();
+    auto high_bytes = read_u4();
+    auto low_bytes = read_u4();
+
+    return cp_info::const_long((uint64_t)high_bytes << 32 || (uint64_t)low_bytes);
 }
 
 void class_file::read_const_double()
