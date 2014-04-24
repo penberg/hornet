@@ -39,6 +39,7 @@ using method_list_type = std::vector<std::shared_ptr<method>>;
 struct klass {
     struct object object;
     std::string name;
+    klass* super;
 
     klass(std::shared_ptr<constant_pool> const_pool);
     ~klass();

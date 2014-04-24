@@ -44,7 +44,7 @@ std::shared_ptr<klass> class_file::parse()
 
     /*auto this_class = */read_u2();
 
-    /*auto super_class = */read_u2();
+    auto super_class = read_u2();
 
     auto* klass = new hornet::klass(const_pool);
 
@@ -70,6 +70,14 @@ std::shared_ptr<klass> class_file::parse()
 
     for (auto i = 0; i < attr_count; i++) {
         read_attr_info(*const_pool);
+    }
+
+    if (super_class) {
+        auto klassref = const_pool->get_class(super_class);
+        auto klass_name = const_pool->get_utf8(klassref->name_index);
+        auto loader = hornet::system_loader();
+        auto super = loader->load_class(klass_name->bytes);
+        klass->super = super.get();
     }
 
     return std::shared_ptr<hornet::klass>(klass);

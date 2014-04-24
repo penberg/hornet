@@ -23,11 +23,14 @@ void klass::add(std::shared_ptr<method> method)
 
 std::shared_ptr<method> klass::lookup_method(std::string name, std::string descriptor)
 {
-    for (auto method : _methods) {
-        if (method->matches(name, descriptor))
-            return method;
+    klass* klass = this;
+    while (klass) {
+        for (auto method : klass->_methods) {
+            if (method->matches(name, descriptor))
+                return method;
+        }
+        klass = klass->super;
     }
-
     return nullptr;
 }
 
