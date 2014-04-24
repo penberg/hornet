@@ -117,15 +117,6 @@ value_t jdouble_to_value(jdouble n)
         }                                                       \
     } while (0)
 
-std::shared_ptr<method> resolve_name_and_type(klass* klass, uint16_t idx)
-{
-    auto const_pool = klass->const_pool();
-    auto method_name_and_type = const_pool->get_name_and_type(idx);
-    auto method_name = const_pool->get_utf8(method_name_and_type->name_index);
-    auto method_type = const_pool->get_utf8(method_name_and_type->descriptor_index);
-    return klass->lookup_method(method_name->bytes, method_type->bytes);
-}
-
 std::shared_ptr<klass> resolve_klass(klass* klass, uint16_t idx)
 {
     auto const_pool = klass->const_pool();
@@ -143,7 +134,10 @@ std::shared_ptr<method> resolve_methodref(klass* klass, uint16_t idx)
     if (!target_klass) {
         return nullptr;
     }
-    return resolve_name_and_type(target_klass.get(), methodref->name_and_type_index);
+    auto method_name_and_type = const_pool->get_name_and_type(methodref->name_and_type_index);
+    auto method_name = const_pool->get_utf8(method_name_and_type->name_index);
+    auto method_type = const_pool->get_utf8(method_name_and_type->descriptor_index);
+    return target_klass->lookup_method(method_name->bytes, method_type->bytes);
 }
 
 value_t interp(method* method, frame& frame)
