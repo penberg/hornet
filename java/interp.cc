@@ -455,6 +455,12 @@ next_insn:
         BINOP_INTERP(jlong, ^);
         break;
     }
+    case JVM_OPC_iinc: {
+        auto idx = read_opc_u1(method->code + frame.pc);
+        auto c   = read_opc_u1(method->code + frame.pc + 1);
+        frame.locals[idx] += c;
+        break;
+    }
     case JVM_OPC_if_icmpeq: {
         IF_CMP_INTERP(jint, ==);
         break;
