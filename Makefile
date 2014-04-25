@@ -20,7 +20,7 @@ INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
 CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
 
-ifeq ($(LLVM_VERSION),3.3)
+ifeq ($(LLVM_VERSION),3.4)
 	LLVM_LDFLAGS = $(shell llvm-config --ldflags)
 	LLVM_LIBS = $(shell llvm-config --libs)
 
