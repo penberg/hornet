@@ -66,6 +66,8 @@ void llvm_interp(method* method, frame& frame)
 {
     IRBuilder<> builder(module->getContext());
 
+    std::stack<llvm::Value*> mimic_stack;
+
     auto func = function(builder, method);
 
 next_insn:
@@ -74,6 +76,18 @@ next_insn:
     uint8_t opc = method->code[frame.pc];
 
     switch (opc) {
+    case JVM_OPC_iconst_m1:
+    case JVM_OPC_iconst_0:
+    case JVM_OPC_iconst_1:
+    case JVM_OPC_iconst_2:
+    case JVM_OPC_iconst_3:
+    case JVM_OPC_iconst_4:
+    case JVM_OPC_iconst_5: {
+        jint value = opc - JVM_OPC_iconst_0;
+        auto c = ConstantInt::get(Type::getInt32Ty(getGlobalContext()), value, 0);
+        mimic_stack.push(c);
+        break;
+    }
     case JVM_OPC_return:
         builder.CreateRetVoid();
         goto exit;
