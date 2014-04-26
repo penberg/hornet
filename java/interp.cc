@@ -127,20 +127,11 @@ value_t jdouble_to_value(jdouble n)
         }                                                       \
     } while (0)
 
-std::shared_ptr<klass> resolve_klass(klass* klass, uint16_t idx)
-{
-    auto const_pool = klass->const_pool();
-    auto klassref = const_pool->get_class(idx);
-    auto klass_name = const_pool->get_utf8(klassref->name_index);
-    auto loader = hornet::system_loader();
-    return loader->load_class(klass_name->bytes);
-}
-
 std::shared_ptr<field> resolve_fieldref(klass* klass, uint16_t idx)
 {
     auto const_pool = klass->const_pool();
     auto fieldref = const_pool->get_fieldref(idx);
-    auto target_klass = resolve_klass(klass, fieldref->class_index);
+    auto target_klass = klass->load_class(fieldref->class_index);
     if (!target_klass) {
         return nullptr;
     }
@@ -154,7 +145,7 @@ std::shared_ptr<method> resolve_methodref(klass* klass, uint16_t idx)
 {
     auto const_pool = klass->const_pool();
     auto methodref = const_pool->get_methodref(idx);
-    auto target_klass = resolve_klass(klass, methodref->class_index);
+    auto target_klass = klass->load_class(methodref->class_index);
     if (!target_klass) {
         return nullptr;
     }

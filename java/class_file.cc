@@ -76,10 +76,7 @@ std::shared_ptr<klass> class_file::parse()
     }
 
     if (super_class) {
-        auto klassref = const_pool->get_class(super_class);
-        auto klass_name = const_pool->get_utf8(klassref->name_index);
-        auto loader = hornet::system_loader();
-        auto super = loader->load_class(klass_name->bytes);
+        auto super = klass->load_class(super_class);
         klass->super = super.get();
     } else {
         klass->super = nullptr;
