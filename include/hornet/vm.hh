@@ -16,6 +16,7 @@ class constant_pool;
 struct method;
 struct field;
 struct klass;
+class loader;
 
 class jvm {
 public:
@@ -45,7 +46,7 @@ struct klass {
     std::string name;
     klass* super;
 
-    klass(std::shared_ptr<constant_pool> const_pool);
+    klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     ~klass();
 
     void add(std::shared_ptr<method> method);
@@ -63,6 +64,7 @@ private:
     std::shared_ptr<constant_pool> _const_pool;
     method_list_type _methods;
     field_list_type _fields;
+    loader* _loader;
 };
 
 struct field {

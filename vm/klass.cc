@@ -6,9 +6,10 @@
 
 namespace hornet {
 
-klass::klass(std::shared_ptr<constant_pool> const_pool)
+klass::klass(loader *loader, std::shared_ptr<constant_pool> const_pool)
     : object(nullptr)
     , _const_pool(const_pool)
+    , _loader(loader)
 {
 }
 
@@ -56,8 +57,7 @@ std::shared_ptr<klass> klass::load_class(uint16_t idx)
 {
     auto klassref = _const_pool->get_class(idx);
     auto klass_name = _const_pool->get_utf8(klassref->name_index);
-    auto loader = hornet::system_loader();
-    return loader->load_class(klass_name->bytes);
+    return _loader->load_class(klass_name->bytes);
 }
 
 bool klass::verify()

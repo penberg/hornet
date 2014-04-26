@@ -46,7 +46,7 @@ std::shared_ptr<klass> class_file::parse()
 
     auto super_class = read_u2();
 
-    auto* klass = new hornet::klass(const_pool);
+    auto* klass = new hornet::klass(hornet::system_loader(), const_pool);
 
     auto interfaces_count = read_u2();
 
@@ -283,7 +283,7 @@ std::shared_ptr<field> class_file::read_field_info(constant_pool &constant_pool)
     return f;
 }
 
-klass jvm_void_klass(nullptr);
+klass jvm_void_klass(nullptr, nullptr);
 
 static klass* parse_type(std::string descriptor, int& pos)
 {
