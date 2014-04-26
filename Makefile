@@ -11,7 +11,7 @@ CXX ?= clang++
 
 LLVM_CONFIG ?= llvm-config
 
-LLVM_VERSION := $(shell sh -c '$(LLVM_CONFIG) --version 2>/dev/null')
+LLVM_VERSION = $(shell $(LLVM_CONFIG) --version)
 
 ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
@@ -22,7 +22,7 @@ INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
 CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
 
-ifneq ($(LLVM_VERSION),)
+ifeq ($(LLVM_VERSION),3.4)
 	LLVM_LDFLAGS = $(shell $(LLVM_CONFIG) --ldflags)
 	LLVM_LIBS = $(shell $(LLVM_CONFIG) --libs)
 
