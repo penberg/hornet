@@ -12,4 +12,4 @@ before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
   - export "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/"
 script:
-  - make check
+  - make check LLVM_CONFIG=llvm-config-3.4
