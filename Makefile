@@ -9,7 +9,9 @@ BINDIR=$(PREFIX)/bin
 
 CXX ?= clang++
 
-LLVM_VERSION = $(shell llvm-config --version)
+LLVM_CONFIG ?= llvm-config
+
+LLVM_VERSION = $(shell $(LLVM_CONFIG) --version)
 
 ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
@@ -21,8 +23,8 @@ OPTIMIZATIONS = -O3
 CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
 
 ifeq ($(LLVM_VERSION),3.4)
-	LLVM_LDFLAGS = $(shell llvm-config --ldflags)
-	LLVM_LIBS = $(shell llvm-config --libs)
+	LLVM_LDFLAGS = $(shell $(LLVM_CONFIG) --ldflags)
+	LLVM_LIBS = $(shell $(LLVM_CONFIG) --libs)
 
 	OBJS += java/llvm.o
 
