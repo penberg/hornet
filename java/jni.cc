@@ -88,15 +88,14 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
 {
     auto vm_args = reinterpret_cast<JavaVMInitArgs*>(args);
 
+    // Use current working directory as default classpath.
+    std::string classpath(".");
+
     for (auto i = 0; i < vm_args->nOptions; i++) {
         const char *opt = vm_args->options[i].optionString;
 
         if (!strcmp(opt, "-cp") || !strcmp(opt, "-classpath")) {
-            auto classpath = std::string{vm_args->options[++i].optionString};
-            std::istringstream buf(classpath);
-            for (std::string entry; getline(buf, entry, ':'); ) {
-                hornet::system_loader::get()->register_entry(entry);
-            }
+            classpath = std::string{vm_args->options[++i].optionString};
             continue;
         }
         if (!strcmp(opt, "-verbose:verifier")) {
@@ -116,6 +115,11 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
 
         fprintf(stderr, "error: Unknown option: '%s'\n", opt);
         return JNI_ERR;
+    }
+
+    std::istringstream buf(classpath);
+    for (std::string entry; getline(buf, entry, ':'); ) {
+        hornet::system_loader::get()->register_entry(entry);
     }
 
     hornet::_jvm = new hornet::jvm();
