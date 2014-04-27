@@ -15,11 +15,8 @@
 
 static jint HORNET_JNI(DestroyJavaVM)(JavaVM *vm)
 {
-#ifdef CONFIG_HAVE_LLVM
-    if (hornet::llvm_enable) {
-        hornet::llvm_exit();
-    }
-#endif
+    delete hornet::_backend;
+
     hornet::verifier_stats();
 
     delete hornet::_jvm;
@@ -91,6 +88,8 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
     // Use current working directory as default classpath.
     std::string classpath(".");
 
+    auto backend = hornet::backend_type::interp;
+
     for (auto i = 0; i < vm_args->nOptions; i++) {
         const char *opt = vm_args->options[i].optionString;
 
@@ -104,8 +103,7 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
         }
         if (!strcmp(opt, "-XX:+LLVM")) {
 #ifdef CONFIG_HAVE_LLVM
-            hornet::llvm_enable = true;
-            hornet::llvm_init();
+            backend = hornet::backend_type::llvm;
 #else
             fprintf(stderr, "error: LLVM support is not compiled in.\n");
             return JNI_ERR;
@@ -117,6 +115,18 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
         return JNI_ERR;
     }
 
+    switch (backend) {
+    case hornet::backend_type::interp:
+        hornet::_backend = new hornet::interp_backend();
+        break;
+#ifdef CONFIG_HAVE_LLVM
+    case hornet::backend_type::llvm:
+        hornet::_backend = new hornet::llvm_backend();
+        break;
+#endif
+    default:
+        assert(0);
+    }
     std::istringstream buf(classpath);
     for (std::string entry; getline(buf, entry, ':'); ) {
         hornet::system_loader::get()->register_entry(entry);
@@ -171,15 +181,7 @@ static void HORNET_JNI(CallStaticVoidMethodV)(JNIEnv *env, jclass clazz, jmethod
         frame.locals[i] = va_arg(args, uint64_t);
     }
 
-#ifdef CONFIG_HAVE_LLVM
-    if (hornet::llvm_enable) {
-        llvm_interp(method, frame);
-    } else {
-        interp(method, frame);
-    }
-#else
-    interp(method, frame);
-#endif
+    hornet::_backend->execute(method, frame);
 }
 
 static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodID methodID, ...)

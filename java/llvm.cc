@@ -20,12 +20,10 @@ namespace hornet {
 
 using namespace llvm;
 
-bool llvm_enable;
-
 Module* module;
 ExecutionEngine* engine;
 
-void llvm_init()
+llvm_backend::llvm_backend()
 {
     InitializeNativeTarget();
     module = new Module("JIT", getGlobalContext());
@@ -38,7 +36,7 @@ void llvm_init()
     }
 }
 
-void llvm_exit()
+llvm_backend::~llvm_backend()
 {
     delete engine;
 }
@@ -62,7 +60,7 @@ template<typename T> T trampoline(Function* func)
     return reinterpret_cast<T>(engine->getPointerToFunction(func));
 }
 
-void llvm_interp(method* method, frame& frame)
+value_t llvm_backend::execute(method* method, frame& frame)
 {
     IRBuilder<> builder(module->getContext());
 
@@ -102,8 +100,8 @@ next_insn:
 exit:
     verifyFunction(*func, PrintMessageAction);
 
-    auto fp = trampoline<void (*)()>(func);
-    fp();
+    auto fp = trampoline<value_t (*)()>(func);
+    return fp();
 }
 
 }

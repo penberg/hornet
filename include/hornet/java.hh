@@ -216,7 +216,6 @@ private:
 extern klass jvm_void_klass;
 
 extern bool verbose_verifier;
-extern bool llvm_enable;
 
 bool verify_method(std::shared_ptr<method> method);
 void verifier_stats();
@@ -312,11 +311,30 @@ struct frame {
     uint16_t               pc;
 };
 
-value_t interp(method* method, frame& frame);
+enum class backend_type {
+    interp,
+    llvm,
+};
 
-void llvm_init();
-void llvm_exit();
-void llvm_interp(method* method, frame& frame);
+class backend {
+public:
+    virtual ~backend() { };
+    virtual value_t execute(method* method, frame& frame) = 0;
+};
+
+class interp_backend : public backend {
+public:
+    virtual value_t execute(method* method, frame& frame) override;
+};
+
+class llvm_backend : public backend {
+public:
+    llvm_backend();
+    ~llvm_backend();
+    virtual value_t execute(method* method, frame& frame) override;
+};
+
+extern backend* _backend;
 
 }
 

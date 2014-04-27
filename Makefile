@@ -48,6 +48,7 @@ PROGRAMS = hornet
 
 INST_PROGRAMS += hornet
 
+OBJS += java/backend.o
 OBJS += java/class_file.o
 OBJS += java/constant_pool.o
 OBJS += java/interp.o

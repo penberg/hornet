@@ -228,7 +228,7 @@ bool op_cmple(T a, T b)
     return a <= b;
 }
 
-value_t interp(method* method, frame& frame)
+value_t interp_backend::execute(method* method, frame& frame)
 {
 next_insn:
     assert(frame.pc < method->code_length);
@@ -587,7 +587,7 @@ next_insn:
             new_frame.locals[arg_idx] = frame.ostack.top();
             frame.ostack.pop();
         }
-        auto result = interp(target.get(), new_frame);
+        auto result = execute(target.get(), new_frame);
         if (target->return_type != &jvm_void_klass) {
             frame.ostack.push(result);
         }
