@@ -34,72 +34,69 @@ array* from_value<array*>(value_t value)
     return reinterpret_cast<array*>(value);
 }
 
-#define CONST_INTERP(type, value)                               \
-    do {                                                        \
-        frame.ostack.push(to_value<type>(value));               \
-    } while (0)
+template<typename T>
+void const_interp(frame& frame, T value)
+{
+    frame.ostack.push(to_value(value));
+}
 
-#define LOAD_INTERP(type, idx)                                  \
-    do {                                                        \
-        frame.ostack.push(frame.locals[idx]);                   \
-    } while (0)
+void load_interp(frame& frame, uint16_t idx)
+{
+    frame.ostack.push(frame.locals[idx]);
+}
 
-#define STORE_INTERP(type, idx)                                 \
-    do {                                                        \
-        frame.locals[idx] = frame.ostack.top();                 \
-        frame.ostack.pop();                                     \
-    } while (0)
+void store_interp(frame& frame, uint16_t idx)
+{
+    frame.locals[idx] = frame.ostack.top();
+    frame.ostack.pop();
+}
 
-#define UNARY_OP_INTERP(type, op)                               \
-    do {                                                        \
-        auto value = from_value<type>(frame.ostack.top());      \
-        frame.ostack.pop();                                     \
-        type result = op value;                                 \
-        frame.ostack.push(to_value<type>(result));              \
-   } while (0)
+template<typename T>
+void unop_interp(frame& frame, std::function<T (T)> op)
+{
+    auto value = from_value<T>(frame.ostack.top());
+    frame.ostack.pop();
+    auto result = op(value);
+    frame.ostack.push(to_value<T>(result));
+}
 
-#define BINOP_INTERP(type, op)                                  \
-    do {                                                        \
-        auto value2 = from_value<type>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        auto value1 = from_value<type>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        type result = value1 op value2;                         \
-        frame.ostack.push(to_value<type>(result));              \
-   } while (0)
+template<typename T>
+void binop_interp(frame& frame, std::function<T (T, T)> op)
+{
+    auto value2 = from_value<T>(frame.ostack.top());
+    frame.ostack.pop();
+    auto value1 = from_value<T>(frame.ostack.top());
+    frame.ostack.pop();
+    auto result = op(value1, value2);
+    frame.ostack.push(to_value<T>(result));
+}
 
-#define SHL_INTERP(type, mask)                                  \
-    do {                                                        \
-        auto value2 = from_value<jint>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        auto value1 = from_value<type>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        type result = value1 << (value2 & mask);                \
-        frame.ostack.push(to_value<type>(result));              \
-    } while (0)
+template<typename T>
+void shift_interp(frame& frame, std::function<T (T, jint)> op, jint mask)
+{
+    auto value2 = from_value<jint>(frame.ostack.top());
+    frame.ostack.pop();
+    auto value1 = from_value<T>(frame.ostack.top());
+    frame.ostack.pop();
+    auto result = op(value1, value2 & mask);
+    frame.ostack.push(to_value<T>(result));
+}
 
-#define SHR_INTERP(type, mask)                                  \
-    do {                                                        \
-        auto value2 = from_value<jint>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        auto value1 = from_value<type>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        type result = value1 >> (value2 & mask);                \
-        frame.ostack.push(to_value<type>(result));              \
-    } while (0)
-
-#define IF_CMP_INTERP(type, cond)                               \
-    do {                                                        \
-        int16_t offset = read_opc_u2(method->code + frame.pc);  \
-        auto value2 = from_value<type>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        auto value1 = from_value<type>(frame.ostack.top());     \
-        frame.ostack.pop();                                     \
-        if (value1 cond value2) {                               \
-            frame.pc += offset;                                 \
-            goto next_insn;                                     \
-        }                                                       \
-    } while (0)
+template<typename T>
+void if_cmp_interp(method* method, frame& frame, std::function<bool (T, T)> op)
+{
+    uint8_t opc = method->code[frame.pc];
+    int16_t offset = read_opc_u2(method->code + frame.pc);
+    auto value2 = from_value<T>(frame.ostack.top());
+    frame.ostack.pop();
+    auto value1 = from_value<T>(frame.ostack.top());
+    frame.ostack.pop();
+    if (op(value1, value2)) {
+        frame.pc += offset;
+    } else {
+        frame.pc += opcode_length[opc];
+    }
+}
 
 std::shared_ptr<field> resolve_fieldref(klass* klass, uint16_t idx)
 {
@@ -129,6 +126,108 @@ std::shared_ptr<method> resolve_methodref(klass* klass, uint16_t idx)
     return target_klass->lookup_method(method_name->bytes, method_type->bytes);
 }
 
+template<typename T>
+T op_add(T a, T b)
+{
+    return a + b;
+}
+
+template<typename T>
+T op_sub(T a, T b)
+{
+    return a - b;
+}
+
+template<typename T>
+T op_mul(T a, T b)
+{
+    return a * b;
+}
+
+template<typename T>
+T op_div(T a, T b)
+{
+    return a / b;
+}
+
+template<typename T>
+T op_rem(T a, T b)
+{
+    return a % b;
+}
+
+template<typename T>
+T op_and(T a, T b)
+{
+    return a & b;
+}
+
+template<typename T>
+T op_or(T a, T b)
+{
+    return a | b;
+}
+
+template<typename T>
+T op_xor(T a, T b)
+{
+    return a ^ b;
+}
+
+template<typename T>
+T op_neg(T a)
+{
+    return -a;
+}
+
+template<typename T>
+T op_shl(T a, T b)
+{
+    return a << b;
+}
+
+template<typename T>
+T op_shr(T a, T b)
+{
+    return a >> b;
+}
+
+template<typename T>
+bool op_cmpeq(T a, T b)
+{
+    return a == b;
+}
+
+template<typename T>
+bool op_cmpne(T a, T b)
+{
+    return a != b;
+}
+
+template<typename T>
+bool op_cmplt(T a, T b)
+{
+    return a < b;
+}
+
+template<typename T>
+bool op_cmpge(T a, T b)
+{
+    return a >= b;
+}
+
+template<typename T>
+bool op_cmpgt(T a, T b)
+{
+    return a > b;
+}
+
+template<typename T>
+bool op_cmple(T a, T b)
+{
+    return a <= b;
+}
+
 value_t interp(method* method, frame& frame)
 {
 next_insn:
@@ -150,35 +249,35 @@ next_insn:
     case JVM_OPC_iconst_4:
     case JVM_OPC_iconst_5: {
         jint value = opc - JVM_OPC_iconst_0;
-        CONST_INTERP(jint, value);
+        const_interp(frame, value);
         break;
     }
     case JVM_OPC_lconst_0:
     case JVM_OPC_lconst_1: {
         jlong value = opc - JVM_OPC_lconst_0;
-        CONST_INTERP(jlong, value);
+        const_interp(frame, value);
         break;
     }
     case JVM_OPC_fconst_0:
     case JVM_OPC_fconst_1: {
         jfloat value = opc - JVM_OPC_fconst_0;
-        CONST_INTERP(jfloat, value);
+        const_interp(frame, value);
         break;
     }
     case JVM_OPC_dconst_0:
     case JVM_OPC_dconst_1: {
         jdouble value = opc - JVM_OPC_dconst_0;
-        CONST_INTERP(jdouble, value);
+        const_interp(frame, value);
         break;
     }
     case JVM_OPC_bipush: {
         int8_t value = read_opc_u1(method->code + frame.pc);
-        CONST_INTERP(jint, value);
+        const_interp<jint>(frame, value);
         break;
     }
     case JVM_OPC_sipush: {
         int16_t value = read_opc_u2(method->code + frame.pc);
-        CONST_INTERP(jint, value);
+        const_interp<jint>(frame, value);
         break;
     }
     case JVM_OPC_ldc: {
@@ -199,17 +298,17 @@ next_insn:
     }
     case JVM_OPC_iload: {
         auto idx = read_opc_u1(method->code + frame.pc);
-        LOAD_INTERP(jint, idx);
+        load_interp(frame, idx);
         break;
     }
     case JVM_OPC_lload: {
         auto idx = read_opc_u1(method->code + frame.pc);
-        LOAD_INTERP(jlong, idx);
+        load_interp(frame, idx);
         break;
     }
     case JVM_OPC_aload: {
         auto idx = read_opc_u1(method->code + frame.pc);
-        LOAD_INTERP(jobject, idx);
+        load_interp(frame, idx);
         break;
     }
     case JVM_OPC_iload_0:
@@ -217,7 +316,7 @@ next_insn:
     case JVM_OPC_iload_2:
     case JVM_OPC_iload_3: {
         uint16_t idx = opc - JVM_OPC_iload_0;
-        LOAD_INTERP(jint, idx);
+        load_interp(frame, idx);
         break;
     }
     case JVM_OPC_lload_0:
@@ -225,7 +324,7 @@ next_insn:
     case JVM_OPC_lload_2:
     case JVM_OPC_lload_3: {
         uint16_t idx = opc - JVM_OPC_lload_0;
-        LOAD_INTERP(jlong, idx);
+        load_interp(frame, idx);
         break;
     }
     case JVM_OPC_aload_0:
@@ -233,17 +332,17 @@ next_insn:
     case JVM_OPC_aload_2:
     case JVM_OPC_aload_3: {
         uint16_t idx = opc - JVM_OPC_aload_0;
-        LOAD_INTERP(jobject, idx);
+        load_interp(frame, idx);
         break;
     }
     case JVM_OPC_istore: {
         auto idx = read_opc_u1(method->code + frame.pc);
-        STORE_INTERP(jint, idx);
+        store_interp(frame, idx);
         break;
     }
     case JVM_OPC_lstore: {
         auto idx = read_opc_u1(method->code + frame.pc);
-        STORE_INTERP(jlong, idx);
+        store_interp(frame, idx);
         break;
     }
     case JVM_OPC_istore_0:
@@ -251,7 +350,7 @@ next_insn:
     case JVM_OPC_istore_2:
     case JVM_OPC_istore_3: {
         uint16_t idx = opc - JVM_OPC_istore_0;
-        STORE_INTERP(jint, idx);
+        store_interp(frame, idx);
         break;
     }
     case JVM_OPC_lstore_0:
@@ -259,7 +358,7 @@ next_insn:
     case JVM_OPC_lstore_2:
     case JVM_OPC_lstore_3: {
         uint16_t idx = opc - JVM_OPC_lstore_0;
-        STORE_INTERP(jlong, idx);
+        store_interp(frame, idx);
         break;
     }
     case JVM_OPC_pop: {
@@ -293,131 +392,131 @@ next_insn:
         break;
     }
     case JVM_OPC_iadd: {
-        BINOP_INTERP(jint, +);
+        binop_interp<jint>(frame, op_add<jint>);
         break;
     }
     case JVM_OPC_ladd: {
-        BINOP_INTERP(jlong, +);
+        binop_interp<jlong>(frame, op_add<jlong>);
         break;
     }
     case JVM_OPC_fadd: {
-        BINOP_INTERP(jfloat, +);
+        binop_interp<jfloat>(frame, op_add<jfloat>);
         break;
     }
     case JVM_OPC_dadd: {
-        BINOP_INTERP(jdouble, +);
+        binop_interp<jdouble>(frame, op_add<jdouble>);
         break;
     }
     case JVM_OPC_isub: {
-        BINOP_INTERP(jint, -);
+        binop_interp<jint>(frame, op_sub<jint>);
         break;
     }
     case JVM_OPC_lsub: {
-        BINOP_INTERP(jlong, -);
+        binop_interp<jlong>(frame, op_sub<jlong>);
         break;
     }
     case JVM_OPC_fsub: {
-        BINOP_INTERP(jfloat, -);
+        binop_interp<jfloat>(frame, op_sub<jfloat>);
         break;
     }
     case JVM_OPC_dsub: {
-        BINOP_INTERP(jdouble, -);
+        binop_interp<jdouble>(frame, op_sub<jdouble>);
         break;
     }
     case JVM_OPC_imul: {
-        BINOP_INTERP(jint, *);
+        binop_interp<jint>(frame, op_mul<jint>);
         break;
     }
     case JVM_OPC_lmul: {
-        BINOP_INTERP(jlong, *);
+        binop_interp<jlong>(frame, op_mul<jlong>);
         break;
     }
     case JVM_OPC_fmul: {
-        BINOP_INTERP(jfloat, *);
+        binop_interp<jfloat>(frame, op_mul<jfloat>);
         break;
     }
     case JVM_OPC_dmul: {
-        BINOP_INTERP(jdouble, *);
+        binop_interp<jdouble>(frame, op_mul<jdouble>);
         break;
     }
     case JVM_OPC_idiv: {
-        BINOP_INTERP(jint, /);
+        binop_interp<jint>(frame, op_div<jint>);
         break;
     }
     case JVM_OPC_ldiv: {
-        BINOP_INTERP(jlong, /);
+        binop_interp<jlong>(frame, op_div<jlong>);
         break;
     }
     case JVM_OPC_fdiv: {
-        BINOP_INTERP(jfloat, /);
+        binop_interp<jfloat>(frame, op_div<jfloat>);
         break;
     }
     case JVM_OPC_ddiv: {
-        BINOP_INTERP(jdouble, /);
+        binop_interp<jdouble>(frame, op_div<jdouble>);
         break;
     }
     case JVM_OPC_irem: {
-        BINOP_INTERP(jint, %);
+        binop_interp<jint>(frame, op_rem<jint>);
         break;
     }
     case JVM_OPC_lrem: {
-        BINOP_INTERP(jlong, %);
+        binop_interp<jlong>(frame, op_rem<jlong>);
         break;
     }
     case JVM_OPC_ineg: {
-        UNARY_OP_INTERP(jint, -);
+        unop_interp<jint>(frame, op_neg<jint>);
         break;
     }
     case JVM_OPC_lneg: {
-        UNARY_OP_INTERP(jlong, -);
+        unop_interp<jlong>(frame, op_neg<jlong>);
         break;
     }
     case JVM_OPC_fneg: {
-        UNARY_OP_INTERP(jfloat, -);
+        unop_interp<jfloat>(frame, op_neg<jfloat>);
         break;
     }
     case JVM_OPC_dneg: {
-        UNARY_OP_INTERP(jdouble, -);
+        unop_interp<jdouble>(frame, op_neg<jdouble>);
         break;
     }
     case JVM_OPC_ishl: {
-        SHL_INTERP(jint, 0x1f);
+        shift_interp<jint>(frame, op_shl<jint>, 0x1f);
         break;
     }
     case JVM_OPC_lshl: {
-        SHL_INTERP(jlong, 0x3f);
+        shift_interp<jlong>(frame, op_shl<jlong>, 0x3f);
         break;
     }
     case JVM_OPC_ishr: {
-        SHR_INTERP(jint, 0x1f);
+        shift_interp<jint>(frame, op_shr<jint>, 0x1f);
         break;
     }
     case JVM_OPC_lshr: {
-        SHR_INTERP(jlong, 0x3f);
+        shift_interp<jlong>(frame, op_shr<jlong>, 0x3f);
         break;
     }
     case JVM_OPC_iand: {
-        BINOP_INTERP(jint, &);
+        binop_interp<jint>(frame, op_and<jint>);
         break;
     }
     case JVM_OPC_land: {
-        BINOP_INTERP(jlong, &);
+        binop_interp<jlong>(frame, op_and<jlong>);
         break;
     }
     case JVM_OPC_ior: {
-        BINOP_INTERP(jint, |);
+        binop_interp<jint>(frame, op_or<jint>);
         break;
     }
     case JVM_OPC_lor: {
-        BINOP_INTERP(jlong, |);
+        binop_interp<jlong>(frame, op_or<jlong>);
         break;
     }
     case JVM_OPC_ixor: {
-        BINOP_INTERP(jint, ^);
+        binop_interp<jint>(frame, op_xor<jint>);
         break;
     }
     case JVM_OPC_lxor: {
-        BINOP_INTERP(jlong, ^);
+        binop_interp<jlong>(frame, op_xor<jlong>);
         break;
     }
     case JVM_OPC_iinc: {
@@ -427,28 +526,28 @@ next_insn:
         break;
     }
     case JVM_OPC_if_icmpeq: {
-        IF_CMP_INTERP(jint, ==);
-        break;
+        if_cmp_interp<jint>(method, frame, op_cmpeq<jint>);
+        goto next_insn;
     }
     case JVM_OPC_if_icmpne: {
-        IF_CMP_INTERP(jint, !=);
-        break;
+        if_cmp_interp<jint>(method, frame, op_cmpne<jint>);
+        goto next_insn;
     }
     case JVM_OPC_if_icmplt: {
-        IF_CMP_INTERP(jint, <);
-        break;
+        if_cmp_interp<jint>(method, frame, op_cmplt<jint>);
+        goto next_insn;
     }
     case JVM_OPC_if_icmpge: {
-        IF_CMP_INTERP(jint, >=);
-        break;
+        if_cmp_interp<jint>(method, frame, op_cmpge<jint>);
+        goto next_insn;
     }
     case JVM_OPC_if_icmpgt: {
-        IF_CMP_INTERP(jint, >);
-        break;
+        if_cmp_interp<jint>(method, frame, op_cmpgt<jint>);
+        goto next_insn;
     }
     case JVM_OPC_if_icmple: {
-        IF_CMP_INTERP(jint, <=);
-        break;
+        if_cmp_interp<jint>(method, frame, op_cmple<jint>);
+        goto next_insn;
     }
     case JVM_OPC_goto: {
         int16_t offset = read_opc_u2(method->code + frame.pc);
