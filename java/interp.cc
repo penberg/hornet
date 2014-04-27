@@ -22,29 +22,16 @@ value_t to_value(object* obj)
     return reinterpret_cast<value_t>(obj);
 }
 
-jint value_to_jint(value_t value)
+template<typename T>
+T from_value(value_t value)
 {
-    return static_cast<jint>(value);
+    return static_cast<T>(value);
 }
 
-jlong value_to_jlong(value_t value)
+template<>
+array* from_value<array*>(value_t value)
 {
-   return static_cast<jlong>(value);
-}
-
-jfloat value_to_jfloat(value_t value)
-{
-    return static_cast<jfloat>(value);
-}
-
-jdouble value_to_jdouble(value_t value)
-{
-    return static_cast<jdouble>(value);
-}
-
-array* value_to_array(value_t value)
-{
-   return reinterpret_cast<array*>(value);
+    return reinterpret_cast<array*>(value);
 }
 
 #define CONST_INTERP(type, value)                               \
@@ -65,7 +52,7 @@ array* value_to_array(value_t value)
 
 #define UNARY_OP_INTERP(type, op)                               \
     do {                                                        \
-        auto value = value_to_##type(frame.ostack.top());       \
+        auto value = from_value<type>(frame.ostack.top());      \
         frame.ostack.pop();                                     \
         type result = op value;                                 \
         frame.ostack.push(to_value<type>(result));              \
@@ -73,9 +60,9 @@ array* value_to_array(value_t value)
 
 #define BINOP_INTERP(type, op)                                  \
     do {                                                        \
-        auto value2 = value_to_##type(frame.ostack.top());      \
+        auto value2 = from_value<type>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
-        auto value1 = value_to_##type(frame.ostack.top());      \
+        auto value1 = from_value<type>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
         type result = value1 op value2;                         \
         frame.ostack.push(to_value<type>(result));              \
@@ -83,9 +70,9 @@ array* value_to_array(value_t value)
 
 #define SHL_INTERP(type, mask)                                  \
     do {                                                        \
-        auto value2 = value_to_jint(frame.ostack.top());        \
+        auto value2 = from_value<jint>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
-        auto value1 = value_to_##type(frame.ostack.top());      \
+        auto value1 = from_value<type>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
         type result = value1 << (value2 & mask);                \
         frame.ostack.push(to_value<type>(result));              \
@@ -93,9 +80,9 @@ array* value_to_array(value_t value)
 
 #define SHR_INTERP(type, mask)                                  \
     do {                                                        \
-        auto value2 = value_to_jint(frame.ostack.top());        \
+        auto value2 = from_value<jint>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
-        auto value1 = value_to_##type(frame.ostack.top());      \
+        auto value1 = from_value<type>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
         type result = value1 >> (value2 & mask);                \
         frame.ostack.push(to_value<type>(result));              \
@@ -104,9 +91,9 @@ array* value_to_array(value_t value)
 #define IF_CMP_INTERP(type, cond)                               \
     do {                                                        \
         int16_t offset = read_opc_u2(method->code + frame.pc);  \
-        auto value2 = value_to_##type(frame.ostack.top());      \
+        auto value2 = from_value<type>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
-        auto value1 = value_to_##type(frame.ostack.top());      \
+        auto value1 = from_value<type>(frame.ostack.top());     \
         frame.ostack.pop();                                     \
         if (value1 cond value2) {                               \
             frame.pc += offset;                                 \
@@ -513,7 +500,7 @@ next_insn:
         break;
     }
     case JVM_OPC_arraylength: {
-        auto* arrayref = value_to_array(frame.ostack.top());
+        auto* arrayref = from_value<array*>(frame.ostack.top());
         frame.ostack.pop();
         assert(arrayref != nullptr);
         frame.ostack.push(arrayref->length);
