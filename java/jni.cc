@@ -196,9 +196,11 @@ static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodI
 static jobjectArray
 HORNET_JNI(NewObjectArray)(JNIEnv* env, jsize len, jclass clazz, jobject init)
 {
+    auto klass = hornet::from_jclass(clazz);
+
     assert(init == nullptr);
 
-    auto array = hornet::gc_new_object_array(nullptr, len);
+    auto array = hornet::gc_new_object_array(klass, len);
 
     return hornet::to_jobjectArray(array);
 }
