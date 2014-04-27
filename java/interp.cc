@@ -10,7 +10,14 @@
 
 namespace hornet {
 
-value_t object_to_value(object* obj)
+template<typename T>
+value_t to_value(T x)
+{
+    return static_cast<value_t>(x);
+}
+
+template<typename T>
+value_t to_value(object* obj)
 {
     return reinterpret_cast<value_t>(obj);
 }
@@ -40,29 +47,9 @@ array* value_to_array(value_t value)
    return reinterpret_cast<array*>(value);
 }
 
-value_t jint_to_value(jint n)
-{
-    return static_cast<value_t>(n);
-}
-
-value_t jlong_to_value(jlong n)
-{
-    return static_cast<value_t>(n);
-}
-
-value_t jfloat_to_value(jfloat n)
-{
-    return static_cast<value_t>(n);
-}
-
-value_t jdouble_to_value(jdouble n)
-{
-    return static_cast<value_t>(n);
-}
-
 #define CONST_INTERP(type, value)                               \
     do {                                                        \
-        frame.ostack.push(type##_to_value(value));              \
+        frame.ostack.push(to_value<type>(value));               \
     } while (0)
 
 #define LOAD_INTERP(type, idx)                                  \
@@ -81,7 +68,7 @@ value_t jdouble_to_value(jdouble n)
         auto value = value_to_##type(frame.ostack.top());       \
         frame.ostack.pop();                                     \
         type result = op value;                                 \
-        frame.ostack.push(type##_to_value(result));             \
+        frame.ostack.push(to_value<type>(result));              \
    } while (0)
 
 #define BINOP_INTERP(type, op)                                  \
@@ -91,7 +78,7 @@ value_t jdouble_to_value(jdouble n)
         auto value1 = value_to_##type(frame.ostack.top());      \
         frame.ostack.pop();                                     \
         type result = value1 op value2;                         \
-        frame.ostack.push(type##_to_value(result));             \
+        frame.ostack.push(to_value<type>(result));              \
    } while (0)
 
 #define SHL_INTERP(type, mask)                                  \
@@ -101,7 +88,7 @@ value_t jdouble_to_value(jdouble n)
         auto value1 = value_to_##type(frame.ostack.top());      \
         frame.ostack.pop();                                     \
         type result = value1 << (value2 & mask);                \
-        frame.ostack.push(type##_to_value(result));             \
+        frame.ostack.push(to_value<type>(result));              \
     } while (0)
 
 #define SHR_INTERP(type, mask)                                  \
@@ -111,7 +98,7 @@ value_t jdouble_to_value(jdouble n)
         auto value1 = value_to_##type(frame.ostack.top());      \
         frame.ostack.pop();                                     \
         type result = value1 >> (value2 & mask);                \
-        frame.ostack.push(type##_to_value(result));             \
+        frame.ostack.push(to_value<type>(result));              \
     } while (0)
 
 #define IF_CMP_INTERP(type, cond)                               \
@@ -166,7 +153,7 @@ next_insn:
     case JVM_OPC_nop:
         break;
     case JVM_OPC_aconst_null:
-        frame.ostack.push(object_to_value(nullptr));
+        frame.ostack.push(to_value<jobject>(nullptr));
         break;
     case JVM_OPC_iconst_m1:
     case JVM_OPC_iconst_0:
@@ -214,7 +201,7 @@ next_insn:
         switch (cp_info->tag) {
         case cp_tag::const_integer: {
             auto value = const_pool->get_integer(idx);
-            frame.ostack.push(jint_to_value(value));
+            frame.ostack.push(to_value<jint>(value));
             break;
         }
         default:
@@ -492,7 +479,7 @@ next_insn:
     }
     case JVM_OPC_return: {
         frame.ostack.empty();
-        return object_to_value(nullptr);
+        return to_value<jobject>(nullptr);
     }
     case JVM_OPC_getstatic: {
         uint16_t idx = read_opc_u2(method->code + frame.pc);
@@ -522,7 +509,7 @@ next_insn:
     }
     case JVM_OPC_new: {
         auto obj = gc_new_object(nullptr);
-        frame.ostack.push(object_to_value(obj));
+        frame.ostack.push(to_value<object*>(obj));
         break;
     }
     case JVM_OPC_arraylength: {
