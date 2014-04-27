@@ -53,6 +53,17 @@ next_insn:
     uint8_t opc = method->code[frame.pc];
 
     switch (opc) {
+    case JVM_OPC_iconst_m1:
+    case JVM_OPC_iconst_0:
+    case JVM_OPC_iconst_1:
+    case JVM_OPC_iconst_2:
+    case JVM_OPC_iconst_3:
+    case JVM_OPC_iconst_4:
+    case JVM_OPC_iconst_5: {
+        jint value = opc - JVM_OPC_iconst_0;
+        op_iconst(this, value);
+        break;
+    }
     case JVM_OPC_return:
         op_ret(this);
         goto exit;

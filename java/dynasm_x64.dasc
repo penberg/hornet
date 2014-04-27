@@ -2,6 +2,11 @@
 |.section code
 |.actionlist actions
 
+void op_iconst(Dst_DECL, jint value)
+{
+  | push value
+}
+
 void op_ret(Dst_DECL)
 {
   | ret
