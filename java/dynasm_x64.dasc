@@ -1,0 +1,8 @@
+|.arch x64
+|.section code
+|.actionlist actions
+
+void op_ret(Dst_DECL)
+{
+  | ret
+}

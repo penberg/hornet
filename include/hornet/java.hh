@@ -313,6 +313,7 @@ struct frame {
 
 enum class backend_type {
     interp,
+    dynasm,
     llvm,
 };
 
@@ -325,6 +326,20 @@ public:
 class interp_backend : public backend {
 public:
     virtual value_t execute(method* method, frame& frame) override;
+};
+
+struct dasm_State;
+
+class dynasm_backend : public backend {
+public:
+    dynasm_backend();
+    ~dynasm_backend();
+    virtual value_t execute(method* method, frame& frame) override;
+
+    dasm_State* D;
+private:
+    size_t _offset;
+    void* _code;
 };
 
 class llvm_backend : public backend {

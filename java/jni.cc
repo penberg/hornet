@@ -101,6 +101,15 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
             hornet::verbose_verifier = true;
             continue;
         }
+        if (!strcmp(opt, "-XX:+DynASM")) {
+#ifdef CONFIG_HAVE_DYNASM
+            backend = hornet::backend_type::dynasm;
+            continue;
+#else
+            fprintf(stderr, "error: DynASM support is not compiled in.\n");
+            return JNI_ERR;
+#endif
+        }
         if (!strcmp(opt, "-XX:+LLVM")) {
 #ifdef CONFIG_HAVE_LLVM
             backend = hornet::backend_type::llvm;
@@ -119,6 +128,11 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
     case hornet::backend_type::interp:
         hornet::_backend = new hornet::interp_backend();
         break;
+#ifdef CONFIG_HAVE_DYNASM
+    case hornet::backend_type::dynasm:
+        hornet::_backend = new hornet::dynasm_backend();
+        break;
+#endif
 #ifdef CONFIG_HAVE_LLVM
     case hornet::backend_type::llvm:
         hornet::_backend = new hornet::llvm_backend();

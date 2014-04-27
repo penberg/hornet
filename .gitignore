@@ -4,3 +4,4 @@
 /tests/*.class
 /TAGS
 /tags
+/java/dynasm_x64.h

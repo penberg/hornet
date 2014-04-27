@@ -7,7 +7,10 @@ applications.
 
 ## Features
 
-* Interpreter
+* Multiple backends:
+    * Interpreter
+    * DynASM (x86-64)
+    * LLVM
 * Uses OpenJDK for standard class libraries
 * Written in C++11
 * Runs on Linux and Darwin
@@ -28,7 +31,21 @@ First, install dependencies:
 $ yum install clang java-1.7.0-openjdk-devel
 ```
 
-Then install Hornet:
+If you want to enable the [DynASM](http://luajit.org/dynasm.html) backend,
+install LuaJIT:
+
+```
+$ yum install luajit
+```
+
+If you want to enable the [LLVM](http://llvm.org/) backend, install the
+library:
+
+```
+$ yum install llvm-dev
+```
+
+Finally, install Hornet:
 
 ```
 $ make install

@@ -1,3 +1,4 @@
+uname_M := $(shell sh -c 'uname -m 2> /dev/null || echo not')
 uname_S := $(shell sh -c 'uname -s 2> /dev/null || echo not')
 
 JAVA_HOME ?= /usr/lib/jvm/java
@@ -13,6 +14,10 @@ LLVM_CONFIG ?= llvm-config
 
 LLVM_VERSION = $(shell $(LLVM_CONFIG) --version)
 
+LUAJIT ?= luajit
+
+LUAJIT_VERSION = $(shell $(LUAJIT) -v 2>/dev/null)
+
 ifneq ($(WERROR),0)
 	CXXFLAGS_WERROR = -Werror
 endif
@@ -21,6 +26,10 @@ WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
 INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
 OPTIMIZATIONS = -O3
 CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
+
+#
+# LLVM
+#
 
 ifeq ($(LLVM_VERSION),3.4)
 	LLVM_LDFLAGS = $(shell $(LLVM_CONFIG) --ldflags)
@@ -34,6 +43,22 @@ ifeq ($(LLVM_VERSION),3.4)
 	LIBS += $(LLVM_LIBS)
 else
 $(warning LLVM not found, disables LLVM support. Please install llvm-devel or llvm-dev)
+endif
+
+#
+# DynASM
+#
+
+ifneq ($(LUAJIT_VERSION),)
+ifeq ($(uname_M),x86_64)
+	INCLUDES += -Idynasm
+	CONFIGURATIONS += -DCONFIG_HAVE_DYNASM
+	OBJS += java/dynasm.o
+else
+$(warning DynaASM is only supported on x86-64, disabling it.)
+endif
+else
+$(warning LuaJIT not found, disables DynaASM support. Please install luajit)
 endif
 
 ifeq ($(uname_S),Darwin)
@@ -88,6 +113,12 @@ define INSTALL_EXEC
 	install -v $1 $(DESTDIR)$2/$1 || exit 1;
 endef
 
+java/dynasm.cc: java/dynasm_x64.h
+
+%.h: %.dasc
+	$(E) "  DASM  " $@
+	$(Q) luajit dynasm/dynasm.lua $< > $@ 
+
 %.o: %.cc
 	$(E) "  CXX   " $@
 	$(Q) $(CXX) -c $(CXXFLAGS) $< -o $@
@@ -106,7 +137,7 @@ check: $(PROGRAMS)
 
 clean:
 	$(E) "  CLEAN"
-	$(Q) rm -f $(PROGRAMS) $(OBJS) $(DEPS) hornet.d
+	$(Q) rm -f $(PROGRAMS) $(OBJS) $(DEPS) hornet.d java/dynasm_x64.h
 
 tags TAGS:
 	rm -f -- "$@"
