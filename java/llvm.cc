@@ -21,10 +21,6 @@ namespace hornet {
 
 using namespace llvm;
 
-enum class type {
-    t_int,
-};
-
 Module*          module;
 ExecutionEngine* engine;
 
@@ -44,20 +40,19 @@ Instruction::BinaryOps to_binary_op(binop op)
     }
 }
 
-class llvm_translator {
+class llvm_translator : public translator {
 public:
     llvm_translator(method* method);
     ~llvm_translator();
 
-    void translate();
     template<typename T>
     T trampoline();
-    template<typename T>
-    void op_const     (type t, T value);
-    void op_load      (type t, uint16_t idx);
-    void op_store     (type t, uint16_t idx);
-    void op_binary    (type t, binop op);
-    void op_returnvoid();
+
+    virtual void op_const (type t, int64_t value) override;
+    virtual void op_load  (type t, uint16_t idx) override;
+    virtual void op_store (type t, uint16_t idx) override;
+    virtual void op_binary(type t, binop op) override;
+    virtual void op_returnvoid() override;
 
 private:
     AllocaInst* lookup_local(unsigned int idx, Type* type);
@@ -84,7 +79,8 @@ Function* function(IRBuilder<>& builder, method* method)
 }
 
 llvm_translator::llvm_translator(method* method)
-    : _locals(method->max_locals)
+    : translator(method)
+    , _locals(method->max_locals)
     , _builder(module->getContext())
     , _method(method)
 {
@@ -93,60 +89,6 @@ llvm_translator::llvm_translator(method* method)
 
 llvm_translator::~llvm_translator()
 {
-}
-
-void llvm_translator::translate()
-{
-    uint16_t pc = 0;
-
-next_insn:
-    assert(pc < _method->code_length);
-
-    uint8_t opc = _method->code[pc];
-
-    switch (opc) {
-    case JVM_OPC_iconst_m1:
-    case JVM_OPC_iconst_0:
-    case JVM_OPC_iconst_1:
-    case JVM_OPC_iconst_2:
-    case JVM_OPC_iconst_3:
-    case JVM_OPC_iconst_4:
-    case JVM_OPC_iconst_5: {
-        jint value = opc - JVM_OPC_iconst_0;
-        op_const<jint>(type::t_int, value);
-        break;
-    }
-    case JVM_OPC_iload_0:
-    case JVM_OPC_iload_1:
-    case JVM_OPC_iload_2:
-    case JVM_OPC_iload_3: {
-        uint16_t idx = opc - JVM_OPC_iload_0;
-        op_load(type::t_int, idx);
-        break;
-    }
-    case JVM_OPC_istore_0:
-    case JVM_OPC_istore_1:
-    case JVM_OPC_istore_2:
-    case JVM_OPC_istore_3: {
-        uint16_t idx = opc - JVM_OPC_istore_0;
-        op_store(type::t_int, idx);
-        break;
-    }
-    case JVM_OPC_iadd: {
-        op_binary(type::t_int, binop::op_add);
-        break;
-    }
-    case JVM_OPC_return:
-        op_returnvoid();
-        return;
-    default:
-        fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
-        abort();
-    }
-
-    pc += opcode_length[opc];
-
-    goto next_insn;
 }
 
 template<typename T> T llvm_translator::trampoline()
@@ -166,8 +108,7 @@ AllocaInst* llvm_translator::lookup_local(unsigned int idx, Type* type)
     return ret;
 }
 
-template<typename T>
-void llvm_translator::op_const(type t, T value)
+void llvm_translator::op_const(type t, int64_t value)
 {
     auto c = ConstantInt::get(typeof(t), value, 0);
 
