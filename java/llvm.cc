@@ -23,6 +23,16 @@ using namespace llvm;
 Module* module;
 ExecutionEngine* engine;
 
+struct llvm_context {
+    llvm_context(Function* func_, unsigned int max_locals)
+        : func(func_)
+        , locals(max_locals)
+    { }
+
+    Function*                func;
+    std::vector<AllocaInst*> locals;
+};
+
 llvm_backend::llvm_backend()
 {
     InitializeNativeTarget();
@@ -60,6 +70,17 @@ template<typename T> T trampoline(Function* func)
     return reinterpret_cast<T>(engine->getPointerToFunction(func));
 }
 
+static AllocaInst* lookup_local(llvm_context& ctx, unsigned int idx, Type* type)
+{
+    if (ctx.locals[idx]) {
+        return ctx.locals[idx];
+    }
+    IRBuilder<> builder(&ctx.func->getEntryBlock(), ctx.func->getEntryBlock().begin());
+    auto ret = builder.CreateAlloca(type, nullptr, "");
+    ctx.locals[idx] = ret;
+    return ret;
+}
+
 value_t llvm_backend::execute(method* method, frame& frame)
 {
     IRBuilder<> builder(module->getContext());
@@ -67,6 +88,8 @@ value_t llvm_backend::execute(method* method, frame& frame)
     std::stack<llvm::Value*> mimic_stack;
 
     auto func = function(builder, method);
+
+    llvm_context ctx(func, method->max_locals);
 
 next_insn:
     assert(frame.pc < method->code_length);
@@ -84,6 +107,35 @@ next_insn:
         jint value = opc - JVM_OPC_iconst_0;
         auto c = ConstantInt::get(Type::getInt32Ty(getGlobalContext()), value, 0);
         mimic_stack.push(c);
+        break;
+    }
+    case JVM_OPC_iload_0:
+    case JVM_OPC_iload_1:
+    case JVM_OPC_iload_2:
+    case JVM_OPC_iload_3: {
+        uint16_t idx = opc - JVM_OPC_iload_0;
+        auto value = builder.CreateLoad(ctx.locals[idx]);
+        mimic_stack.push(value);
+        break;
+    }
+    case JVM_OPC_istore_0:
+    case JVM_OPC_istore_1:
+    case JVM_OPC_istore_2:
+    case JVM_OPC_istore_3: {
+        uint16_t idx = opc - JVM_OPC_istore_0;
+        auto value = mimic_stack.top();
+        mimic_stack.pop();
+        auto local = lookup_local(ctx, idx, Type::getInt32Ty(getGlobalContext()));
+        builder.CreateStore(value, local);
+        break;
+    }
+    case JVM_OPC_iadd: {
+        auto value2 = mimic_stack.top();
+        mimic_stack.pop();
+        auto value1 = mimic_stack.top();
+        mimic_stack.pop();
+        auto result = builder.CreateBinOp(Instruction::BinaryOps::Add, value1, value2);
+        mimic_stack.push(result);
         break;
     }
     case JVM_OPC_return:
