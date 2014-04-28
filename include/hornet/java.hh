@@ -329,6 +329,7 @@ public:
 };
 
 struct dasm_State;
+class dynasm_translator;
 
 class dynasm_backend : public backend {
 public:
@@ -340,6 +341,8 @@ public:
 private:
     size_t _offset;
     void* _code;
+
+    friend dynasm_translator;
 };
 
 class llvm_backend : public backend {

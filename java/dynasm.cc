@@ -1,5 +1,6 @@
 #include "hornet/java.hh"
 
+#include "hornet/translator.hh"
 #include "hornet/vm.hh"
 
 #include <sys/mman.h>
@@ -12,6 +13,26 @@ using namespace std;
 
 namespace hornet {
 
+static const int mmap_size = 4096;
+
+class dynasm_translator : public translator {
+public:
+    dynasm_translator(method* method, dynasm_backend* backend);
+    ~dynasm_translator();
+
+    template<typename T>
+    T trampoline();
+
+    virtual void op_const (type t, int64_t value) override;
+    virtual void op_load  (type t, uint16_t idx) override;
+    virtual void op_store (type t, uint16_t idx) override;
+    virtual void op_binary(type t, binop op) override;
+    virtual void op_returnvoid() override;
+
+private:
+    dynasm_backend* ctx;
+};
+
 #define Dst             ctx
 #define Dst_DECL        dynasm_backend *Dst
 #define Dst_REF         (ctx->D)
@@ -21,7 +42,38 @@ namespace hornet {
 
 #include "dynasm_x64.h"
 
-static const int mmap_size = 4096;
+dynasm_translator::dynasm_translator(method* method, dynasm_backend* backend)
+    : translator(method)
+    , ctx(backend)
+{
+}
+
+dynasm_translator::~dynasm_translator()
+{
+}
+
+template<typename T> T dynasm_translator::trampoline()
+{
+    size_t size;
+
+    if (dasm_link(ctx, &size) != DASM_S_OK) {
+        assert(0);
+    }
+
+    if (ctx->_offset + size >= mmap_size) {
+        assert(0);
+    }
+
+    //
+    // XXX: not thread safe
+    //
+    unsigned char* code = static_cast<unsigned char*>(ctx->_code) + ctx->_offset;
+    ctx->_offset += size;
+
+    dasm_encode(ctx, code);
+
+    return reinterpret_cast<T>(code);
+}
 
 dynasm_backend::dynasm_backend()
     : _offset(0)
@@ -47,54 +99,11 @@ dynasm_backend::~dynasm_backend()
 
 value_t dynasm_backend::execute(method* method, frame& frame)
 {
-next_insn:
-    assert(frame.pc < method->code_length);
+    dynasm_translator translator(method, this);
 
-    uint8_t opc = method->code[frame.pc];
+    translator.translate();
 
-    switch (opc) {
-    case JVM_OPC_iconst_m1:
-    case JVM_OPC_iconst_0:
-    case JVM_OPC_iconst_1:
-    case JVM_OPC_iconst_2:
-    case JVM_OPC_iconst_3:
-    case JVM_OPC_iconst_4:
-    case JVM_OPC_iconst_5: {
-        jint value = opc - JVM_OPC_iconst_0;
-        op_iconst(this, value);
-        break;
-    }
-    case JVM_OPC_return:
-        op_ret(this);
-        goto exit;
-    default:
-        fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
-        abort();
-    }
-
-    frame.pc += opcode_length[opc];
-
-    goto next_insn;
-exit:
-    size_t size;
-
-    if (dasm_link(this, &size) != DASM_S_OK) {
-        assert(0);
-    }
-
-    if (_offset + size >= mmap_size) {
-        assert(0);
-    }
-
-    //
-    // XXX: not thread safe
-    //
-    unsigned char* code = static_cast<unsigned char*>(_code) + _offset;
-    _offset += size;
-
-    dasm_encode(this, code);
-
-    auto fp = reinterpret_cast<value_t (*)()>(code);
+    auto fp = translator.trampoline<value_t (*)()>();
 
     return fp();
 }
