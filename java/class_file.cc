@@ -76,7 +76,7 @@ std::shared_ptr<klass> class_file::parse()
     }
 
     if (super_class) {
-        auto super = klass->load_class(super_class);
+        auto super = klass->resolve_class(super_class);
         klass->super = super.get();
     } else {
         klass->super = nullptr;

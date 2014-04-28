@@ -98,34 +98,6 @@ void if_cmp_interp(method* method, frame& frame, std::function<bool (T, T)> op)
     }
 }
 
-std::shared_ptr<field> resolve_fieldref(klass* klass, uint16_t idx)
-{
-    auto const_pool = klass->const_pool();
-    auto fieldref = const_pool->get_fieldref(idx);
-    auto target_klass = klass->load_class(fieldref->class_index);
-    if (!target_klass) {
-        return nullptr;
-    }
-    auto field_name_and_type = const_pool->get_name_and_type(fieldref->name_and_type_index);
-    auto field_name = const_pool->get_utf8(field_name_and_type->name_index);
-    auto field_type = const_pool->get_utf8(field_name_and_type->descriptor_index);
-    return target_klass->lookup_field(field_name->bytes, field_type->bytes);
-}
-
-std::shared_ptr<method> resolve_methodref(klass* klass, uint16_t idx)
-{
-    auto const_pool = klass->const_pool();
-    auto methodref = const_pool->get_methodref(idx);
-    auto target_klass = klass->load_class(methodref->class_index);
-    if (!target_klass) {
-        return nullptr;
-    }
-    auto method_name_and_type = const_pool->get_name_and_type(methodref->name_and_type_index);
-    auto method_name = const_pool->get_utf8(method_name_and_type->name_index);
-    auto method_type = const_pool->get_utf8(method_name_and_type->descriptor_index);
-    return target_klass->lookup_method(method_name->bytes, method_type->bytes);
-}
-
 template<typename T>
 T op_add(T a, T b)
 {
@@ -569,7 +541,7 @@ next_insn:
     }
     case JVM_OPC_getstatic: {
         uint16_t idx = read_opc_u2(method->code + frame.pc);
-        auto field = resolve_fieldref(method->klass, idx);
+        auto field = method->klass->resolve_field(idx);
         assert(field != nullptr);
         frame.ostack.push(field->value);
     }
@@ -578,7 +550,7 @@ next_insn:
     }
     case JVM_OPC_invokestatic: {
         uint16_t idx = read_opc_u2(method->code + frame.pc);
-        auto target = resolve_methodref(method->klass, idx);
+        auto target = method->klass->resolve_method(idx);
         assert(target != nullptr);
         assert(target->access_flags & JVM_ACC_STATIC);
         hornet::frame new_frame(target->max_locals);

@@ -59,7 +59,11 @@ struct klass {
 
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
     std::shared_ptr<field> lookup_field(std::string name, std::string desciptor);
-    std::shared_ptr<klass> load_class(uint16_t idx);
+
+    std::shared_ptr<klass>  resolve_class (uint16_t idx);
+    std::shared_ptr<field>  resolve_field (uint16_t idx);
+    std::shared_ptr<method> resolve_method(uint16_t idx);
+
 private:
     std::shared_ptr<constant_pool> _const_pool;
     method_list_type _methods;
