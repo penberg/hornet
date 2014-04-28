@@ -1,5 +1,6 @@
 #include "hornet/java.hh"
 
+#include "hornet/translator.hh"
 #include "hornet/vm.hh"
 
 #include <cassert>
@@ -24,12 +25,17 @@ Module* module;
 ExecutionEngine* engine;
 
 struct llvm_context {
-    llvm_context(Function* func_, unsigned int max_locals)
+    llvm_context(Function* func_, IRBuilder<>& builder_,
+                 std::stack<Value*>& mimic_stack_, unsigned int max_locals)
         : func(func_)
+        , builder(builder_)
+        , mimic_stack(mimic_stack_)
         , locals(max_locals)
     { }
 
     Function*                func;
+    IRBuilder<>&             builder;
+    std::stack<Value*>&      mimic_stack;
     std::vector<AllocaInst*> locals;
 };
 
@@ -81,6 +87,59 @@ static AllocaInst* lookup_local(llvm_context& ctx, unsigned int idx, Type* type)
     return ret;
 }
 
+enum class type {
+    t_int,
+};
+
+Type* typeof(type t)
+{
+    switch (t) {
+    case type::t_int: return Type::getInt32Ty(getGlobalContext());
+    default:          assert(0);
+    }
+}
+
+template<typename T>
+void op_const(llvm_context& ctx, type t, T value)
+{
+    auto c = ConstantInt::get(typeof(t), value, 0);
+
+    ctx.mimic_stack.push(c);
+}
+
+void op_load(llvm_context& ctx, type t, uint16_t idx)
+{
+    auto value = ctx.builder.CreateLoad(ctx.locals[idx]);
+
+    ctx.mimic_stack.push(value);
+}
+
+void op_store(llvm_context& ctx, type t, uint16_t idx)
+{
+    auto value = ctx.mimic_stack.top();
+    ctx.mimic_stack.pop();
+    auto local = lookup_local(ctx, idx, typeof(t));
+    ctx.builder.CreateStore(value, local);
+}
+
+Instruction::BinaryOps to_binary_op(binop op)
+{
+    switch (op) {
+    case binop::op_add: return Instruction::BinaryOps::Add;
+    default:            assert(0);
+    }
+}
+
+void op_binary(llvm_context& ctx, type t, binop op)
+{
+    auto value2 = ctx.mimic_stack.top();
+    ctx.mimic_stack.pop();
+    auto value1 = ctx.mimic_stack.top();
+    ctx.mimic_stack.pop();
+    auto result = ctx.builder.CreateBinOp(to_binary_op(op), value1, value2);
+    ctx.mimic_stack.push(result);
+}
+
 value_t llvm_backend::execute(method* method, frame& frame)
 {
     IRBuilder<> builder(module->getContext());
@@ -89,7 +148,7 @@ value_t llvm_backend::execute(method* method, frame& frame)
 
     auto func = function(builder, method);
 
-    llvm_context ctx(func, method->max_locals);
+    llvm_context ctx(func, builder, mimic_stack, method->max_locals);
 
 next_insn:
     assert(frame.pc < method->code_length);
@@ -105,8 +164,7 @@ next_insn:
     case JVM_OPC_iconst_4:
     case JVM_OPC_iconst_5: {
         jint value = opc - JVM_OPC_iconst_0;
-        auto c = ConstantInt::get(Type::getInt32Ty(getGlobalContext()), value, 0);
-        mimic_stack.push(c);
+        op_const<jint>(ctx, type::t_int, value);
         break;
     }
     case JVM_OPC_iload_0:
@@ -114,8 +172,7 @@ next_insn:
     case JVM_OPC_iload_2:
     case JVM_OPC_iload_3: {
         uint16_t idx = opc - JVM_OPC_iload_0;
-        auto value = builder.CreateLoad(ctx.locals[idx]);
-        mimic_stack.push(value);
+        op_load(ctx, type::t_int, idx);
         break;
     }
     case JVM_OPC_istore_0:
@@ -123,19 +180,11 @@ next_insn:
     case JVM_OPC_istore_2:
     case JVM_OPC_istore_3: {
         uint16_t idx = opc - JVM_OPC_istore_0;
-        auto value = mimic_stack.top();
-        mimic_stack.pop();
-        auto local = lookup_local(ctx, idx, Type::getInt32Ty(getGlobalContext()));
-        builder.CreateStore(value, local);
+        op_store(ctx, type::t_int, idx);
         break;
     }
     case JVM_OPC_iadd: {
-        auto value2 = mimic_stack.top();
-        mimic_stack.pop();
-        auto value1 = mimic_stack.top();
-        mimic_stack.pop();
-        auto result = builder.CreateBinOp(Instruction::BinaryOps::Add, value1, value2);
-        mimic_stack.push(result);
+        op_binary(ctx, type::t_int, binop::op_add);
         break;
     }
     case JVM_OPC_return:

@@ -1,5 +1,6 @@
 #include "hornet/java.hh"
 
+#include "hornet/translator.hh"
 #include "hornet/vm.hh"
 
 #include <cassert>
@@ -105,17 +106,6 @@ void op_unary(frame& frame, unop op)
     auto result = eval(op, value);
     frame.ostack.push(to_value<T>(result));
 }
-
-enum class binop {
-    op_add,
-    op_sub,
-    op_mul,
-    op_div,
-    op_rem,
-    op_and,
-    op_or,
-    op_xor,
-};
 
 template<typename T>
 T eval(binop op, T a, T b)
