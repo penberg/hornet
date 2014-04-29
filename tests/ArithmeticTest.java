@@ -11,5 +11,17 @@ public class ArithmeticTest {
     k = i & j;
     k = i | j;
     k = i ^ j;
+
+    long l = 1L;
+    long m = 1L;
+    long n;
+    n = l + m;
+    n = l - m;
+    n = l * m;
+    n = l / m;
+    n = l % m;
+    n = l & m;
+    n = l | m;
+    n = l ^ m;
   }
 }
