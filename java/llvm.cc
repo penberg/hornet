@@ -62,6 +62,7 @@ public:
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
     virtual void op_binary(type t, binop op) override;
+    virtual void op_arraylength() override;
     virtual void op_returnvoid() override;
 
 private:
@@ -159,6 +160,17 @@ void llvm_translator::op_binary(type t, binop op)
 void llvm_translator::op_returnvoid()
 {
     _builder.CreateRetVoid();
+}
+
+void llvm_translator::op_arraylength()
+{
+    auto arrayref = _mimic_stack.top();
+    _mimic_stack.pop();
+    auto idx = ConstantInt::get(Type::getInt32Ty(getGlobalContext()), offsetof(array, length), 0);
+    auto gep = _builder.CreateGEP(arrayref, idx);
+    auto addr = _builder.CreateBitCast(gep, PointerType::get(Type::getInt32Ty(getGlobalContext()), 0));
+    auto len = _builder.CreateLoad(addr);
+    _mimic_stack.push(len);
 }
 
 llvm_backend::llvm_backend()

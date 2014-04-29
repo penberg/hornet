@@ -28,6 +28,7 @@ public:
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
     virtual void op_binary(type t, binop op) override;
+    virtual void op_arraylength() override;
     virtual void op_returnvoid() override;
 
 private:

@@ -116,3 +116,10 @@ void dynasm_translator::op_returnvoid()
     |  leave
     |  ret
 }
+
+void dynasm_translator::op_arraylength()
+{
+    |  pop  rax
+    |  mov  eax, [rax+offsetof(array, length)]
+    |  push rax
+}

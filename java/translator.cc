@@ -217,6 +217,10 @@ next_insn:
     case JVM_OPC_return:
         op_returnvoid();
         return;
+    case JVM_OPC_arraylength: {
+        op_arraylength();
+        break;
+    }
     default:
         fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
         abort();

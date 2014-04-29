@@ -39,6 +39,7 @@ public:
     virtual void op_load  (type t, uint16_t idx) = 0;
     virtual void op_store (type t, uint16_t idx) = 0;
     virtual void op_binary(type t, binop op) = 0;
+    virtual void op_arraylength() = 0;
     virtual void op_returnvoid() = 0;
 
 protected:
