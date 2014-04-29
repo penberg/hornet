@@ -26,6 +26,9 @@ next_insn:
     switch (opc) {
     case JVM_OPC_nop:
         break;
+    case JVM_OPC_aconst_null:
+        op_const(type::t_ref, 0);
+        break;
     case JVM_OPC_iconst_m1:
     case JVM_OPC_iconst_0:
     case JVM_OPC_iconst_1:
@@ -79,6 +82,11 @@ next_insn:
         op_load(type::t_long, idx);
         break;
     }
+    case JVM_OPC_aload: {
+        auto idx = read_opc_u1(_method->code + pc);
+        op_load(type::t_ref, idx);
+        break;
+    }
     case JVM_OPC_iload_0:
     case JVM_OPC_iload_1:
     case JVM_OPC_iload_2:
@@ -95,6 +103,14 @@ next_insn:
         op_load(type::t_long, idx);
         break;
     }
+    case JVM_OPC_aload_0:
+    case JVM_OPC_aload_1:
+    case JVM_OPC_aload_2:
+    case JVM_OPC_aload_3: {
+        uint16_t idx = opc - JVM_OPC_aload_0;
+        op_load(type::t_ref, idx);
+        break;
+    }
     case JVM_OPC_istore: {
         auto idx = read_opc_u1(_method->code + pc);
         op_store(type::t_int, idx);
@@ -105,12 +121,33 @@ next_insn:
         op_store(type::t_long, idx);
         break;
     }
+    case JVM_OPC_astore: {
+        auto idx = read_opc_u1(_method->code + pc);
+        op_store(type::t_ref, idx);
+        break;
+    }
     case JVM_OPC_istore_0:
     case JVM_OPC_istore_1:
     case JVM_OPC_istore_2:
     case JVM_OPC_istore_3: {
         uint16_t idx = opc - JVM_OPC_istore_0;
         op_store(type::t_int, idx);
+        break;
+    }
+    case JVM_OPC_lstore_0:
+    case JVM_OPC_lstore_1:
+    case JVM_OPC_lstore_2:
+    case JVM_OPC_lstore_3: {
+        uint16_t idx = opc - JVM_OPC_lstore_0;
+        op_store(type::t_long, idx);
+        break;
+    }
+    case JVM_OPC_astore_0:
+    case JVM_OPC_astore_1:
+    case JVM_OPC_astore_2:
+    case JVM_OPC_astore_3: {
+        uint16_t idx = opc - JVM_OPC_astore_0;
+        op_store(type::t_ref, idx);
         break;
     }
     case JVM_OPC_iadd: {
