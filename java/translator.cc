@@ -24,6 +24,8 @@ next_insn:
     uint8_t opc = _method->code[pc];
 
     switch (opc) {
+    case JVM_OPC_nop:
+        break;
     case JVM_OPC_iconst_m1:
     case JVM_OPC_iconst_0:
     case JVM_OPC_iconst_1:
