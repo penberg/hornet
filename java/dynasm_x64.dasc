@@ -2,27 +2,48 @@
 |.section code
 |.actionlist actions
 
+void dynasm_translator::prologue()
+{
+    |  push rbp
+    |  mov rbp, rsp
+    |  sub rbp, _method->max_locals*8
+}
+
 void dynasm_translator::op_const(type t, int64_t value)
 {
-  | push value
+    |  push value
 }
 
 void dynasm_translator::op_load(type t, uint16_t idx)
 {
-    assert(0);
+    |  mov rax, [rbp-8*idx]
+    |  push rax
 }
 
 void dynasm_translator::op_store(type t, uint16_t idx)
 {
-    assert(0);
+    |  pop rax
+    |  mov [rbp-8*idx], rax
 }
 
 void dynasm_translator::op_binary(type t, binop op)
 {
-    assert(0);
+    |  pop rdx
+    |  pop rax
+
+    switch (op) {
+    case binop::op_add:
+        |  add rax, rdx
+        break;
+    default: assert(0);
+    }
+
+    |  push rax
 }
 
 void dynasm_translator::op_returnvoid()
 {
-  | ret
+    |  add rbp, _method->max_locals*8
+    |  leave
+    |  ret
 }

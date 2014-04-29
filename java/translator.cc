@@ -14,6 +14,8 @@ namespace hornet {
 
 void translator::translate()
 {
+    prologue();
+
     uint16_t pc = 0;
 
 next_insn:

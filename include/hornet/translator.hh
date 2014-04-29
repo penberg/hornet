@@ -32,6 +32,7 @@ public:
 
     void translate();
 
+    virtual void prologue () = 0;
     virtual void op_const (type t, int64_t value) = 0;
     virtual void op_load  (type t, uint16_t idx) = 0;
     virtual void op_store (type t, uint16_t idx) = 0;
