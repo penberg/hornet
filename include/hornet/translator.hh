@@ -9,6 +9,7 @@ struct method;
 
 enum class type {
     t_int,
+    t_long,
 };
 
 enum class binop {
