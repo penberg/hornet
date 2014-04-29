@@ -43,7 +43,6 @@ void dynasm_translator::op_binary(type t, binop op)
         break;
     case binop::op_div:
         |  mov  rcx, rdx
-        |  mov  rdx, 0
         |  cdq
         |  idiv rcx
         break;
