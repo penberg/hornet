@@ -27,8 +27,9 @@ ExecutionEngine* engine;
 Type* typeof(type t)
 {
     switch (t) {
-    case type::t_int: return Type::getInt32Ty(getGlobalContext());
-    default:          assert(0);
+    case type::t_int:  return Type::getInt32Ty(getGlobalContext());
+    case type::t_long: return Type::getInt64Ty(getGlobalContext());
+    default:           assert(0);
     }
 }
 
