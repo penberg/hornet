@@ -29,6 +29,7 @@ Type* typeof(type t)
     switch (t) {
     case type::t_int:  return Type::getInt32Ty(getGlobalContext());
     case type::t_long: return Type::getInt64Ty(getGlobalContext());
+    case type::t_ref:  return PointerType::get(Type::getInt8Ty(getGlobalContext()), 0);
     default:           assert(0);
     }
 }
