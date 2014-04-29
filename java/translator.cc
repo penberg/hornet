@@ -43,6 +43,32 @@ next_insn:
         op_const(type::t_long, value);
         break;
     }
+    case JVM_OPC_bipush: {
+        int8_t value = read_opc_u1(_method->code + pc);
+        op_const(type::t_int, value);
+        break;
+    }
+    case JVM_OPC_sipush: {
+        int16_t value = read_opc_u2(_method->code + pc);
+        op_const(type::t_int, value);
+        break;
+    }
+    case JVM_OPC_ldc: {
+        auto idx = read_opc_u1(_method->code + pc);
+        auto const_pool = _method->klass->const_pool();
+        auto cp_info = const_pool->get(idx);
+        switch (cp_info->tag) {
+        case cp_tag::const_integer: {
+            auto value = const_pool->get_integer(idx);
+            op_const(type::t_int, value);
+            break;
+        }
+        default:
+            assert(0);
+            break;
+        }
+        break;
+    }
     case JVM_OPC_iload: {
         auto idx = read_opc_u1(_method->code + pc);
         op_load(type::t_int, idx);
