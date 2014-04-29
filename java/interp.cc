@@ -189,15 +189,6 @@ void op_shift(frame& frame, shiftop op, jint mask)
     frame.ostack.push(to_value<T>(result));
 }
 
-enum class cmpop {
-    op_cmpeq,
-    op_cmpne,
-    op_cmplt,
-    op_cmpge,
-    op_cmpgt,
-    op_cmple,
-};
-
 template<typename T>
 bool eval(cmpop op, T a, T b)
 {
@@ -239,6 +230,20 @@ void op_getstatic(method* method, frame& frame, uint16_t idx)
     frame.ostack.push(field->value);
 }
 
+void op_invokestatic(method* target, frame& frame)
+{
+    hornet::frame new_frame(target->max_locals);
+    for (int i = 0; i < target->args_count; i++) {
+        auto arg_idx = target->args_count - i - 1;
+        new_frame.locals[arg_idx] = frame.ostack.top();
+        frame.ostack.pop();
+    }
+    auto result = hornet::_backend->execute(target, new_frame);
+    if (target->return_type != &jvm_void_klass) {
+        frame.ostack.push(result);
+    }
+}
+
 void op_new(frame& frame)
 {
     auto obj = gc_new_object(nullptr);
@@ -253,377 +258,513 @@ void op_arraylength(frame& frame)
     frame.ostack.push(arrayref->length);
 }
 
+//
+// Instruction opcodes of the interpreter.
+//
+// This enumeration needs to be in the same order as labels in dispatch_table.
+//
+enum class opc : uint8_t {
+    iconst,
+    lconst,
+
+    load,
+    store,
+
+    pop,
+    dup,
+    dup_x1,
+    swap,
+
+    iadd,
+    isub,
+    imul,
+    idiv,
+    irem,
+    iand,
+    ior,
+    ixor,
+
+    ladd,
+    lsub,
+    lmul,
+    ldiv,
+    lrem,
+    land,
+    lor,
+    lxor,
+
+    fadd,
+    fsub,
+    fmul,
+    fdiv,
+
+    dadd,
+    dsub,
+    dmul,
+    ddiv,
+
+    ineg,
+
+    ishl,
+    ishr,
+    lshl,
+    lshr,
+
+    iinc,
+
+    if_icmpeq,
+    if_icmpne,
+    if_icmplt,
+    if_icmpge,
+    if_icmpgt,
+    if_icmple,
+
+    goto_,
+
+    ret,
+    ret_void,
+
+    getstatic,
+
+    invokespecial,
+    invokestatic,
+
+    new_,
+
+    arraylength,
+};
+
+template<typename T>
+T read_const(const char* code, uint16_t& pc)
+{
+    auto* src = reinterpret_cast<const T*>(code + pc);
+    pc += sizeof(T);
+    return *src;
+}
+
+value_t interp(frame& frame, const char *code)
+{
+    static void* dispatch_table[] = {
+        &&op_iconst,
+        &&op_lconst,
+
+        &&op_load,
+        &&op_store,
+
+        &&op_pop,
+        &&op_dup,
+        &&op_dup_x1,
+        &&op_swap,
+
+        &&op_iadd,
+        &&op_isub,
+        &&op_imul,
+        &&op_idiv,
+        &&op_irem,
+        &&op_iand,
+        &&op_ior,
+        &&op_ixor,
+
+        &&op_ladd,
+        &&op_lsub,
+        &&op_lmul,
+        &&op_ldiv,
+        &&op_lrem,
+        &&op_land,
+        &&op_lor,
+        &&op_lxor,
+
+        &&op_fadd,
+        &&op_fsub,
+        &&op_fmul,
+        &&op_fdiv,
+
+        &&op_dadd,
+        &&op_dsub,
+        &&op_dmul,
+        &&op_ddiv,
+
+        &&op_ineg,
+
+        &&op_ishl,
+        &&op_ishr,
+        &&op_lshl,
+        &&op_lshr,
+
+        &&op_iinc,
+
+        &&op_if_icmpeq,
+        &&op_if_icmpne,
+        &&op_if_icmplt,
+        &&op_if_icmpge,
+        &&op_if_icmpgt,
+        &&op_if_icmple,
+
+        &&op_goto,
+
+        &&op_ret,
+        &&op_ret_void,
+
+        &&op_getstatic,
+
+        &&op_invokespecial,
+        &&op_invokestatic,
+
+        &&op_new,
+
+        &&op_arraylength,
+    };
+
+    #define dispatch() goto *dispatch_table[(int)code[frame.pc++]]
+
+    frame.pc = 0;
+
+    dispatch();
+
+    while (1) {
+        op_iconst: {
+            auto value = read_const<jint>(code, frame.pc);
+            op_const(frame, value);
+            dispatch();
+        }
+        op_lconst: {
+            auto value = read_const<jlong>(code, frame.pc);
+            op_const(frame, value);
+            dispatch();
+        }
+        op_load: {
+            auto value = read_const<uint16_t>(code, frame.pc);
+            op_load(frame, value);
+            dispatch();
+        }
+        op_store: {
+            auto value = read_const<uint16_t>(code, frame.pc);
+            op_store(frame, value);
+            dispatch();
+        }
+
+        op_pop: {
+            op_pop(frame);
+            dispatch();
+        }
+        op_dup: {
+            op_dup(frame);
+            dispatch();
+        }
+        op_dup_x1: {
+            op_dup_x1(frame);
+            dispatch();
+        }
+        op_swap: {
+            op_swap(frame);
+            dispatch();
+        }
+
+        op_iadd: op_binary<jint>   (frame, binop::op_add); dispatch();
+        op_isub: op_binary<jint>   (frame, binop::op_sub); dispatch();
+        op_imul: op_binary<jint>   (frame, binop::op_mul); dispatch();
+        op_idiv: op_binary<jint>   (frame, binop::op_div); dispatch();
+        op_irem: op_binary<jint>   (frame, binop::op_rem); dispatch();
+        op_iand: op_binary<jint>   (frame, binop::op_and); dispatch();
+        op_ior:  op_binary<jint>   (frame, binop::op_or);  dispatch();
+        op_ixor: op_binary<jint>   (frame, binop::op_xor); dispatch();
+
+        op_ladd: op_binary<jlong>  (frame, binop::op_add); dispatch();
+        op_lsub: op_binary<jlong>  (frame, binop::op_sub); dispatch();
+        op_lmul: op_binary<jlong>  (frame, binop::op_mul); dispatch();
+        op_ldiv: op_binary<jlong>  (frame, binop::op_div); dispatch();
+        op_lrem: op_binary<jlong>  (frame, binop::op_rem); dispatch();
+        op_land: op_binary<jlong>  (frame, binop::op_and); dispatch();
+        op_lor:  op_binary<jlong>  (frame, binop::op_or);  dispatch();
+        op_lxor: op_binary<jlong>  (frame, binop::op_xor); dispatch();
+
+        op_fadd: op_binary<jfloat> (frame, binop::op_add); dispatch();
+        op_fsub: op_binary<jfloat> (frame, binop::op_sub); dispatch();
+        op_fmul: op_binary<jfloat> (frame, binop::op_mul); dispatch();
+        op_fdiv: op_binary<jfloat> (frame, binop::op_div); dispatch();
+
+        op_dadd: op_binary<jdouble>(frame, binop::op_add); dispatch();
+        op_dsub: op_binary<jdouble>(frame, binop::op_sub); dispatch();
+        op_dmul: op_binary<jdouble>(frame, binop::op_mul); dispatch();
+        op_ddiv: op_binary<jdouble>(frame, binop::op_div); dispatch();
+
+        op_ishl: op_shift<jint> (frame, shiftop::op_shl, 0x1f); dispatch();
+        op_lshl: op_shift<jlong>(frame, shiftop::op_shl, 0x3f); dispatch();
+
+        op_ishr: op_shift<jint> (frame, shiftop::op_shr, 0x1f); dispatch();
+        op_lshr: op_shift<jlong>(frame, shiftop::op_shr, 0x3f); dispatch();
+
+        op_ineg: op_unary<jint>(frame, unop::op_neg); dispatch();
+
+        op_ret_void:
+            return to_value<jobject>(nullptr);
+
+        op_iinc: {
+            auto idx = read_const<uint8_t>(code, frame.pc);
+            auto value = read_const<jint>(code, frame.pc);
+            op_iinc(frame, idx, value);
+            dispatch();
+        }
+
+        op_if_icmpeq:
+            assert(0);
+
+        op_if_icmpne:
+            assert(0);
+
+        op_if_icmplt:
+            assert(0);
+
+        op_if_icmpge:
+            assert(0);
+
+        op_if_icmpgt:
+            assert(0);
+
+        op_if_icmple:
+            assert(0);
+
+        op_goto:
+            assert(0);
+
+        op_ret:
+            auto value = frame.ostack.top();
+            frame.ostack.pop();
+            return value;
+
+        op_getstatic:
+            assert(0);
+
+        op_invokespecial:
+            assert(0);
+
+        op_invokestatic:
+            auto* target = read_const<method*>(code, frame.pc);
+            op_invokestatic(target, frame);
+            dispatch();
+
+        op_new:
+            op_arraylength(frame);
+            dispatch();
+
+        op_arraylength:
+            op_arraylength(frame);
+            dispatch();
+    }
+}
+
+class interp_translator : public translator {
+public:
+    interp_translator(method* method);
+    ~interp_translator();
+
+    template<typename T>
+    T trampoline();
+
+    virtual void prologue () override;
+    virtual void op_const (type t, int64_t value) override;
+    virtual void op_load  (type t, uint16_t idx) override;
+    virtual void op_store (type t, uint16_t idx) override;
+    virtual void op_pop() override;
+    virtual void op_dup() override;
+    virtual void op_dup_x1() override;
+    virtual void op_swap() override;
+    virtual void op_binary(type t, binop op) override;
+    virtual void op_iinc(uint8_t idx, jint value) override;
+    virtual void op_if_cmp(type t, cmpop op, int16_t offset) override;
+    virtual void op_goto(int16_t offset) override;
+    virtual void op_ret() override;
+    virtual void op_ret_void() override;
+    virtual void op_invokestatic(method* target) override;
+    virtual void op_new() override;
+    virtual void op_arraylength() override;
+
+private:
+    void put_opc(opc x) {
+      _code.resize(_code.size() + sizeof(opc));
+      auto* code = _code.data();
+      code[_pc++] = static_cast<uint8_t>(x);
+    }
+    template<typename T>
+    void put_const(T x) {
+      _code.resize(_code.size() + sizeof(T));
+      auto* code = _code.data() + _pc;
+      auto* dst = reinterpret_cast<T*>(code);
+      *dst = x;
+      _pc += sizeof(T);
+    }
+    std::vector<uint8_t> _code;
+    uint16_t _pc;
+};
+
+interp_translator::interp_translator(method* method)
+    : translator(method)
+    , _pc(0)
+{
+}
+
+interp_translator::~interp_translator()
+{
+}
+
+template<typename T> T interp_translator::trampoline()
+{
+    return reinterpret_cast<T>(_code.data());
+}
+
+void interp_translator::prologue()
+{
+}
+
+void interp_translator::op_const(type t, int64_t value)
+{
+    switch (t) {
+    case type::t_int:
+        put_opc(opc::iconst);
+        put_const<jint>(value);
+        break;
+    case type::t_long:
+        put_opc(opc::lconst);
+        put_const<jlong>(value);
+        break;
+    default: assert(0);
+    }
+}
+
+void interp_translator::op_load(type t, uint16_t idx)
+{
+    put_opc(opc::load);
+    put_const(idx);
+}
+
+void interp_translator::op_store(type t, uint16_t idx)
+{
+    put_opc(opc::store);
+    put_const(idx);
+}
+
+void interp_translator::op_pop()
+{
+    put_opc(opc::pop);
+}
+
+void interp_translator::op_dup()
+{
+    put_opc(opc::dup);
+}
+
+void interp_translator::op_dup_x1()
+{
+    put_opc(opc::dup_x1);
+}
+
+void interp_translator::op_swap()
+{
+    put_opc(opc::swap);
+}
+
+void interp_translator::op_binary(type t, binop op)
+{
+    switch (t) {
+    case type::t_int: {
+        switch (op) {
+        case binop::op_add: put_opc(opc::iadd); break;
+        case binop::op_sub: put_opc(opc::isub); break;
+        case binop::op_mul: put_opc(opc::imul); break;
+        case binop::op_div: put_opc(opc::idiv); break;
+        case binop::op_rem: put_opc(opc::irem); break;
+        case binop::op_and: put_opc(opc::iand); break;
+        case binop::op_or:  put_opc(opc::ior);  break;
+        case binop::op_xor: put_opc(opc::ixor); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_long: {
+        switch (op) {
+        case binop::op_add: put_opc(opc::ladd); break;
+        case binop::op_sub: put_opc(opc::lsub); break;
+        case binop::op_mul: put_opc(opc::lmul); break;
+        case binop::op_div: put_opc(opc::ldiv); break;
+        case binop::op_rem: put_opc(opc::lrem); break;
+        case binop::op_and: put_opc(opc::land); break;
+        case binop::op_or:  put_opc(opc::lor);  break;
+        case binop::op_xor: put_opc(opc::lxor); break;
+        default: assert(0);
+        }
+        break;
+    }
+    default: assert(0);
+    }
+}
+
+void interp_translator::op_iinc(uint8_t idx, jint value)
+{
+    put_opc(opc::iinc);
+    put_const(idx);
+    put_const(value);
+}
+
+void interp_translator::op_if_cmp(type t, cmpop op, int16_t offset)
+{
+    switch (t) {
+    case type::t_int: {
+        switch (op) {
+        case cmpop::op_cmpeq: put_opc(opc::if_icmpeq); break;
+        case cmpop::op_cmpne: put_opc(opc::if_icmpne); break;
+        case cmpop::op_cmplt: put_opc(opc::if_icmplt); break;
+        case cmpop::op_cmpge: put_opc(opc::if_icmpge); break;
+        case cmpop::op_cmpgt: put_opc(opc::if_icmpgt); break;
+        case cmpop::op_cmple: put_opc(opc::if_icmple); break;
+        default:              assert(0);
+        }
+        break;
+    }
+    default: assert(0);
+    }
+}
+
+void interp_translator::op_goto(int16_t offset)
+{
+    put_opc(opc::goto_);
+    put_const(offset);
+}
+
+void interp_translator::op_ret()
+{
+    put_opc(opc::ret);
+}
+
+void interp_translator::op_ret_void()
+{
+    put_opc(opc::ret_void);
+}
+
+void interp_translator::op_invokestatic(method* target)
+{
+    put_opc(opc::invokestatic);
+    put_const(target);
+}
+
+void interp_translator::op_new()
+{
+    put_opc(opc::new_);
+}
+
+void interp_translator::op_arraylength()
+{
+    put_opc(opc::arraylength);
+}
+
 value_t interp_backend::execute(method* method, frame& frame)
 {
-next_insn:
-    assert(frame.pc < method->code_length);
+    interp_translator translator(method);
 
-    uint8_t opc = method->code[frame.pc];
+    translator.translate();
 
-    switch (opc) {
-    case JVM_OPC_nop:
-        break;
-    case JVM_OPC_aconst_null:
-        op_const<object*>(frame, nullptr);
-        break;
-    case JVM_OPC_iconst_m1:
-    case JVM_OPC_iconst_0:
-    case JVM_OPC_iconst_1:
-    case JVM_OPC_iconst_2:
-    case JVM_OPC_iconst_3:
-    case JVM_OPC_iconst_4:
-    case JVM_OPC_iconst_5: {
-        jint value = opc - JVM_OPC_iconst_0;
-        op_const(frame, value);
-        break;
-    }
-    case JVM_OPC_lconst_0:
-    case JVM_OPC_lconst_1: {
-        jlong value = opc - JVM_OPC_lconst_0;
-        op_const(frame, value);
-        break;
-    }
-    case JVM_OPC_fconst_0:
-    case JVM_OPC_fconst_1: {
-        jfloat value = opc - JVM_OPC_fconst_0;
-        op_const(frame, value);
-        break;
-    }
-    case JVM_OPC_dconst_0:
-    case JVM_OPC_dconst_1: {
-        jdouble value = opc - JVM_OPC_dconst_0;
-        op_const(frame, value);
-        break;
-    }
-    case JVM_OPC_bipush: {
-        int8_t value = read_opc_u1(method->code + frame.pc);
-        op_const<jint>(frame, value);
-        break;
-    }
-    case JVM_OPC_sipush: {
-        int16_t value = read_opc_u2(method->code + frame.pc);
-        op_const<jint>(frame, value);
-        break;
-    }
-    case JVM_OPC_ldc: {
-        auto idx = read_opc_u1(method->code + frame.pc);
-        auto const_pool = method->klass->const_pool();
-        auto cp_info = const_pool->get(idx);
-        switch (cp_info->tag) {
-        case cp_tag::const_integer: {
-            auto value = const_pool->get_integer(idx);
-            op_const<jint>(frame, value);
-            break;
-        }
-        default:
-            assert(0);
-            break;
-        }
-        break;
-    }
-    case JVM_OPC_iload: {
-        auto idx = read_opc_u1(method->code + frame.pc);
-        op_load(frame, idx);
-        break;
-    }
-    case JVM_OPC_lload: {
-        auto idx = read_opc_u1(method->code + frame.pc);
-        op_load(frame, idx);
-        break;
-    }
-    case JVM_OPC_aload: {
-        auto idx = read_opc_u1(method->code + frame.pc);
-        op_load(frame, idx);
-        break;
-    }
-    case JVM_OPC_iload_0:
-    case JVM_OPC_iload_1:
-    case JVM_OPC_iload_2:
-    case JVM_OPC_iload_3: {
-        uint16_t idx = opc - JVM_OPC_iload_0;
-        op_load(frame, idx);
-        break;
-    }
-    case JVM_OPC_lload_0:
-    case JVM_OPC_lload_1:
-    case JVM_OPC_lload_2:
-    case JVM_OPC_lload_3: {
-        uint16_t idx = opc - JVM_OPC_lload_0;
-        op_load(frame, idx);
-        break;
-    }
-    case JVM_OPC_aload_0:
-    case JVM_OPC_aload_1:
-    case JVM_OPC_aload_2:
-    case JVM_OPC_aload_3: {
-        uint16_t idx = opc - JVM_OPC_aload_0;
-        op_load(frame, idx);
-        break;
-    }
-    case JVM_OPC_istore: {
-        auto idx = read_opc_u1(method->code + frame.pc);
-        op_store(frame, idx);
-        break;
-    }
-    case JVM_OPC_lstore: {
-        auto idx = read_opc_u1(method->code + frame.pc);
-        op_store(frame, idx);
-        break;
-    }
-    case JVM_OPC_istore_0:
-    case JVM_OPC_istore_1:
-    case JVM_OPC_istore_2:
-    case JVM_OPC_istore_3: {
-        uint16_t idx = opc - JVM_OPC_istore_0;
-        op_store(frame, idx);
-        break;
-    }
-    case JVM_OPC_lstore_0:
-    case JVM_OPC_lstore_1:
-    case JVM_OPC_lstore_2:
-    case JVM_OPC_lstore_3: {
-        uint16_t idx = opc - JVM_OPC_lstore_0;
-        op_store(frame, idx);
-        break;
-    }
-    case JVM_OPC_pop: {
-        op_pop(frame);
-        break;
-    }
-    case JVM_OPC_dup: {
-        op_dup(frame);
-        break;
-    }
-    case JVM_OPC_dup_x1: {
-        op_dup_x1(frame);
-        break;
-    }
-    case JVM_OPC_swap: {
-        op_swap(frame);
-        break;
-    }
-    case JVM_OPC_iadd: {
-        op_binary<jint>(frame, binop::op_add);
-        break;
-    }
-    case JVM_OPC_ladd: {
-        op_binary<jlong>(frame, binop::op_add);
-        break;
-    }
-    case JVM_OPC_fadd: {
-        op_binary<jfloat>(frame, binop::op_add);
-        break;
-    }
-    case JVM_OPC_dadd: {
-        op_binary<jdouble>(frame, binop::op_add);
-        break;
-    }
-    case JVM_OPC_isub: {
-        op_binary<jint>(frame, binop::op_sub);
-        break;
-    }
-    case JVM_OPC_lsub: {
-        op_binary<jlong>(frame, binop::op_sub);
-        break;
-    }
-    case JVM_OPC_fsub: {
-        op_binary<jfloat>(frame, binop::op_sub);
-        break;
-    }
-    case JVM_OPC_dsub: {
-        op_binary<jdouble>(frame, binop::op_sub);
-        break;
-    }
-    case JVM_OPC_imul: {
-        op_binary<jint>(frame, binop::op_mul);
-        break;
-    }
-    case JVM_OPC_lmul: {
-        op_binary<jlong>(frame, binop::op_mul);
-        break;
-    }
-    case JVM_OPC_fmul: {
-        op_binary<jfloat>(frame, binop::op_mul);
-        break;
-    }
-    case JVM_OPC_dmul: {
-        op_binary<jdouble>(frame, binop::op_mul);
-        break;
-    }
-    case JVM_OPC_idiv: {
-        op_binary<jint>(frame, binop::op_div);
-        break;
-    }
-    case JVM_OPC_ldiv: {
-        op_binary<jlong>(frame, binop::op_div);
-        break;
-    }
-    case JVM_OPC_fdiv: {
-        op_binary<jfloat>(frame, binop::op_div);
-        break;
-    }
-    case JVM_OPC_ddiv: {
-        op_binary<jdouble>(frame, binop::op_div);
-        break;
-    }
-    case JVM_OPC_irem: {
-        op_binary<jint>(frame, binop::op_rem);
-        break;
-    }
-    case JVM_OPC_lrem: {
-        op_binary<jlong>(frame, binop::op_rem);
-        break;
-    }
-    case JVM_OPC_ineg: {
-        op_unary<jint>(frame, unop::op_neg);
-        break;
-    }
-    case JVM_OPC_lneg: {
-        op_unary<jlong>(frame, unop::op_neg);
-        break;
-    }
-    case JVM_OPC_fneg: {
-        op_unary<jfloat>(frame, unop::op_neg);
-        break;
-    }
-    case JVM_OPC_dneg: {
-        op_unary<jdouble>(frame, unop::op_neg);
-        break;
-    }
-    case JVM_OPC_ishl: {
-        op_shift<jint>(frame, shiftop::op_shl, 0x1f);
-        break;
-    }
-    case JVM_OPC_lshl: {
-        op_shift<jlong>(frame, shiftop::op_shl, 0x3f);
-        break;
-    }
-    case JVM_OPC_ishr: {
-        op_shift<jint>(frame, shiftop::op_shr, 0x1f);
-        break;
-    }
-    case JVM_OPC_lshr: {
-        op_shift<jlong>(frame, shiftop::op_shr, 0x3f);
-        break;
-    }
-    case JVM_OPC_iand: {
-        op_binary<jint>(frame, binop::op_and);
-        break;
-    }
-    case JVM_OPC_land: {
-        op_binary<jlong>(frame, binop::op_and);
-        break;
-    }
-    case JVM_OPC_ior: {
-        op_binary<jint>(frame, binop::op_or);
-        break;
-    }
-    case JVM_OPC_lor: {
-        op_binary<jlong>(frame, binop::op_or);
-        break;
-    }
-    case JVM_OPC_ixor: {
-        op_binary<jint>(frame, binop::op_xor);
-        break;
-    }
-    case JVM_OPC_lxor: {
-        op_binary<jlong>(frame, binop::op_xor);
-        break;
-    }
-    case JVM_OPC_iinc: {
-        auto idx   = read_opc_u1(method->code + frame.pc);
-        auto value = read_opc_u1(method->code + frame.pc + 1);
-        op_iinc(frame, idx, value);
-        break;
-    }
-    case JVM_OPC_if_icmpeq: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        op_if_cmp<jint>(method, frame, cmpop::op_cmpeq, offset);
-        goto next_insn;
-    }
-    case JVM_OPC_if_icmpne: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        op_if_cmp<jint>(method, frame, cmpop::op_cmpne, offset);
-        goto next_insn;
-    }
-    case JVM_OPC_if_icmplt: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        op_if_cmp<jint>(method, frame, cmpop::op_cmplt, offset);
-        goto next_insn;
-    }
-    case JVM_OPC_if_icmpge: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        op_if_cmp<jint>(method, frame, cmpop::op_cmpge, offset);
-        goto next_insn;
-    }
-    case JVM_OPC_if_icmpgt: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        op_if_cmp<jint>(method, frame, cmpop::op_cmpgt, offset);
-        goto next_insn;
-    }
-    case JVM_OPC_if_icmple: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        op_if_cmp<jint>(method, frame, cmpop::op_cmple, offset);
-        goto next_insn;
-    }
-    case JVM_OPC_goto: {
-        int16_t offset = read_opc_u2(method->code + frame.pc);
-        op_goto(frame, offset);
-        goto next_insn;
-    }
-    case JVM_OPC_ireturn:
-    case JVM_OPC_lreturn:
-    case JVM_OPC_freturn:
-    case JVM_OPC_dreturn:
-    case JVM_OPC_areturn: {
-        auto value = frame.ostack.top();
-        frame.ostack.empty();
-        return value;
-    }
-    case JVM_OPC_return: {
-        frame.ostack.empty();
-        return to_value<jobject>(nullptr);
-    }
-    case JVM_OPC_getstatic: {
-        uint16_t idx = read_opc_u2(method->code + frame.pc);
-        op_getstatic(method, frame, idx);
-    }
-    case JVM_OPC_invokespecial: {
-        break;
-    }
-    case JVM_OPC_invokestatic: {
-        uint16_t idx = read_opc_u2(method->code + frame.pc);
-        auto target = method->klass->resolve_method(idx);
-        assert(target != nullptr);
-        assert(target->access_flags & JVM_ACC_STATIC);
-        hornet::frame new_frame(target->max_locals);
-        for (int i = 0; i < target->args_count; i++) {
-            auto arg_idx = target->args_count - i - 1;
-            new_frame.locals[arg_idx] = frame.ostack.top();
-            frame.ostack.pop();
-        }
-        auto result = execute(target.get(), new_frame);
-        if (target->return_type != &jvm_void_klass) {
-            frame.ostack.push(result);
-        }
-        break;
-    }
-    case JVM_OPC_new: {
-        op_new(frame);
-        break;
-    }
-    case JVM_OPC_arraylength: {
-        op_arraylength(frame);
-        break;
-    }
-    default:
-        fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
-        abort();
-    }
+    const char* code = translator.trampoline<const char*>();
 
-    frame.pc += opcode_length[opc];
-
-    goto next_insn;
+    return interp(frame, code);
 }
 
 }

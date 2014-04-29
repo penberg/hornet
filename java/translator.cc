@@ -19,7 +19,9 @@ void translator::translate()
     uint16_t pc = 0;
 
 next_insn:
-    assert(pc < _method->code_length);
+    if (pc >= _method->code_length) {
+        return;
+    }
 
     uint8_t opc = _method->code[pc];
 
@@ -150,6 +152,22 @@ next_insn:
         op_store(type::t_ref, idx);
         break;
     }
+    case JVM_OPC_pop: {
+        op_pop();
+        break;
+    }
+    case JVM_OPC_dup: {
+        op_dup();
+        break;
+    }
+    case JVM_OPC_dup_x1: {
+        op_dup_x1();
+        break;
+    }
+    case JVM_OPC_swap: {
+        op_swap();
+        break;
+    }
     case JVM_OPC_iadd: {
         op_binary(type::t_int, binop::op_add);
         break;
@@ -214,9 +232,71 @@ next_insn:
         op_binary(type::t_long, binop::op_xor);
         break;
     }
-    case JVM_OPC_return:
-        op_returnvoid();
-        return;
+    case JVM_OPC_iinc: {
+        auto idx   = read_opc_u1(_method->code + pc);
+        auto value = read_opc_u1(_method->code + pc + 1);
+        op_iinc(idx, value);
+        break;
+    }
+    case JVM_OPC_if_icmpeq: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        op_if_cmp(type::t_int, cmpop::op_cmpeq, offset);
+        break;
+    }
+    case JVM_OPC_if_icmpne: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        op_if_cmp(type::t_int, cmpop::op_cmpne, offset);
+        break;
+    }
+    case JVM_OPC_if_icmplt: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        op_if_cmp(type::t_int, cmpop::op_cmplt, offset);
+        break;
+    }
+    case JVM_OPC_if_icmpge: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        op_if_cmp(type::t_int, cmpop::op_cmpge, offset);
+        break;
+    }
+    case JVM_OPC_if_icmpgt: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        op_if_cmp(type::t_int, cmpop::op_cmpgt, offset);
+        break;
+    }
+    case JVM_OPC_if_icmple: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        op_if_cmp(type::t_int, cmpop::op_cmple, offset);
+        break;
+    }
+    case JVM_OPC_goto: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        op_goto(offset);
+        break;
+    }
+    case JVM_OPC_ireturn:
+    case JVM_OPC_lreturn:
+    case JVM_OPC_freturn:
+    case JVM_OPC_dreturn:
+    case JVM_OPC_areturn: {
+        op_ret();
+        break;
+    }
+    case JVM_OPC_invokestatic: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto target = _method->klass->resolve_method(idx);
+        assert(target != nullptr);
+        assert(target->access_flags & JVM_ACC_STATIC);
+        op_invokestatic(target.get());
+        break;
+    }
+    case JVM_OPC_return: {
+        op_ret_void();
+        break;
+    }
+    case JVM_OPC_new: {
+        op_new();
+        break;
+    }
     case JVM_OPC_arraylength: {
         op_arraylength();
         break;

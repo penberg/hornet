@@ -26,6 +26,26 @@ void dynasm_translator::op_store(type t, uint16_t idx)
     |  mov [rbp-8*idx], rax
 }
 
+void dynasm_translator::op_pop()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_dup()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_dup_x1()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_swap()
+{
+    assert(0);
+}
+
 void dynasm_translator::op_binary(type t, binop op)
 {
     |  pop rdx
@@ -110,11 +130,41 @@ void dynasm_translator::op_binary(type t, binop op)
     |  push rax
 }
 
-void dynasm_translator::op_returnvoid()
+void dynasm_translator::op_iinc(uint8_t idx, jint value)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_if_cmp(type t, cmpop op, int16_t offset)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_goto(int16_t offset)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_ret()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_ret_void()
 {
     |  add rbp, _method->max_locals*8
     |  leave
     |  ret
+}
+
+void dynasm_translator::op_invokestatic(method* method)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_new()
+{
+    assert(0);
 }
 
 void dynasm_translator::op_arraylength()

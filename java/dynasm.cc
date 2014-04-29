@@ -27,9 +27,19 @@ public:
     virtual void op_const (type t, int64_t value) override;
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
+    virtual void op_pop() override;
+    virtual void op_dup() override;
+    virtual void op_dup_x1() override;
+    virtual void op_swap() override;
     virtual void op_binary(type t, binop op) override;
+    virtual void op_iinc(uint8_t idx, jint value) override;
+    virtual void op_if_cmp(type t, cmpop op, int16_t offset) override;
+    virtual void op_goto(int16_t offset) override;
+    virtual void op_ret() override;
+    virtual void op_ret_void() override;
+    virtual void op_invokestatic(method* target) override;
+    virtual void op_new() override;
     virtual void op_arraylength() override;
-    virtual void op_returnvoid() override;
 
 private:
     dynasm_backend* ctx;

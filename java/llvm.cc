@@ -61,9 +61,19 @@ public:
     virtual void op_const (type t, int64_t value) override;
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
+    virtual void op_pop() override;
+    virtual void op_dup() override;
+    virtual void op_dup_x1() override;
+    virtual void op_swap() override;
     virtual void op_binary(type t, binop op) override;
+    virtual void op_iinc(uint8_t idx, jint value) override;
+    virtual void op_if_cmp(type t, cmpop op, int16_t offset) override;
+    virtual void op_goto(int16_t offset) override;
+    virtual void op_ret() override;
+    virtual void op_ret_void() override;
+    virtual void op_new() override;
+    virtual void op_invokestatic(method* target) override;
     virtual void op_arraylength() override;
-    virtual void op_returnvoid() override;
 
 private:
     AllocaInst* lookup_local(unsigned int idx, Type* type);
@@ -147,6 +157,26 @@ void llvm_translator::op_store(type t, uint16_t idx)
     _builder.CreateStore(value, local);
 }
 
+void llvm_translator::op_pop()
+{
+    assert(0);
+}
+
+void llvm_translator::op_dup()
+{
+    assert(0);
+}
+
+void llvm_translator::op_dup_x1()
+{
+    assert(0);
+}
+
+void llvm_translator::op_swap()
+{
+    assert(0);
+}
+
 void llvm_translator::op_binary(type t, binop op)
 {
     auto value2 = _mimic_stack.top();
@@ -157,9 +187,39 @@ void llvm_translator::op_binary(type t, binop op)
     _mimic_stack.push(result);
 }
 
-void llvm_translator::op_returnvoid()
+void llvm_translator::op_iinc(uint8_t idx, jint value)
+{
+    assert(0);
+}
+
+void llvm_translator::op_if_cmp(type t, cmpop op, int16_t offset)
+{
+    assert(0);
+}
+
+void llvm_translator::op_goto(int16_t offset)
+{
+    assert(0);
+}
+
+void llvm_translator::op_ret()
+{
+    assert(0);
+}
+
+void llvm_translator::op_ret_void()
 {
     _builder.CreateRetVoid();
+}
+
+void llvm_translator::op_invokestatic(method* target)
+{
+    assert(0);
+}
+
+void llvm_translator::op_new()
+{
+    assert(0);
 }
 
 void llvm_translator::op_arraylength()
