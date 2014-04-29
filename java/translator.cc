@@ -55,6 +55,34 @@ next_insn:
         op_binary(type::t_int, binop::op_add);
         break;
     }
+    case JVM_OPC_isub: {
+        op_binary(type::t_int, binop::op_sub);
+        break;
+    }
+    case JVM_OPC_imul: {
+        op_binary(type::t_int, binop::op_mul);
+        break;
+    }
+    case JVM_OPC_idiv: {
+        op_binary(type::t_int, binop::op_div);
+        break;
+    }
+    case JVM_OPC_irem: {
+        op_binary(type::t_int, binop::op_rem);
+        break;
+    }
+    case JVM_OPC_iand: {
+        op_binary(type::t_int, binop::op_and);
+        break;
+    }
+    case JVM_OPC_ior: {
+        op_binary(type::t_int, binop::op_or);
+        break;
+    }
+    case JVM_OPC_ixor: {
+        op_binary(type::t_int, binop::op_xor);
+        break;
+    }
     case JVM_OPC_return:
         op_returnvoid();
         return;
