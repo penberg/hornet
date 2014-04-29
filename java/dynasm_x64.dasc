@@ -53,7 +53,7 @@ void dynasm_translator::op_binary(type t, binop op)
             |  mov  edx, 0
             |  cdq
             |  idiv ecx
-            |  mov  edx, eax
+            |  mov  eax, edx
             break;
         case binop::op_and:
             |  and eax, edx
@@ -89,7 +89,7 @@ void dynasm_translator::op_binary(type t, binop op)
             |  mov  rdx, 0
             |  cdq
             |  idiv rcx
-            |  mov  rdx, rax
+            |  mov  rax, rdx
             break;
         case binop::op_and:
             |  and rax, rdx
