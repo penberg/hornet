@@ -68,6 +68,42 @@ void dynasm_translator::op_binary(type t, binop op)
         }
         break;
     }
+    case type::t_long: {
+        switch (op) {
+        case binop::op_add:
+            |  add rax, rdx
+            break;
+        case binop::op_sub:
+            |  sub rax, rdx
+            break;
+        case binop::op_mul:
+            |  mul rdx
+            break;
+        case binop::op_div:
+            |  mov  rcx, rdx
+            |  cdq
+            |  idiv rcx
+            break;
+        case binop::op_rem:
+            |  mov  rcx, rdx
+            |  mov  rdx, 0
+            |  cdq
+            |  idiv rcx
+            |  mov  rdx, rax
+            break;
+        case binop::op_and:
+            |  and rax, rdx
+            break;
+        case binop::op_or:
+            |  or rax, rdx
+            break;
+        case binop::op_xor:
+            |  xor rax, rdx
+            break;
+        default: assert(0);
+        }
+        break;
+    }
     default: assert(0);
     }
 
