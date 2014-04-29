@@ -1,7 +1,7 @@
 #!/bin/sh
 
 javac tests/*.java
-#./hornet -cp tests NoMainTest
-./hornet -cp tests StartupTest
-./hornet -cp tests ArithmeticTest
-#./hornet -cp tests GcLatencyTest
+#./hornet $* -cp tests NoMainTest
+./hornet $* -cp tests StartupTest
+./hornet $* -cp tests ArithmeticTest
+#./hornet $* -cp tests GcLatencyTest
