@@ -130,7 +130,9 @@ void llvm_translator::op_const(type t, int64_t value)
 
 void llvm_translator::op_load(type t, uint16_t idx)
 {
-    auto value = _builder.CreateLoad(_locals[idx]);
+    auto local = lookup_local(idx, typeof(t));
+
+    auto value = _builder.CreateLoad(local);
 
     _mimic_stack.push(value);
 }
