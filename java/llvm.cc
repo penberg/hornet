@@ -36,6 +36,13 @@ Instruction::BinaryOps to_binary_op(binop op)
 {
     switch (op) {
     case binop::op_add: return Instruction::BinaryOps::Add;
+    case binop::op_sub: return Instruction::BinaryOps::Sub;
+    case binop::op_mul: return Instruction::BinaryOps::Mul;
+    case binop::op_div: return Instruction::BinaryOps::SDiv;
+    case binop::op_rem: return Instruction::BinaryOps::SRem;
+    case binop::op_and: return Instruction::BinaryOps::And;
+    case binop::op_or:  return Instruction::BinaryOps::Or;
+    case binop::op_xor: return Instruction::BinaryOps::Xor;
     default:            assert(0);
     }
 }
