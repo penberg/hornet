@@ -544,7 +544,7 @@ value_t interp(frame& frame, const char *code)
             dispatch();
 
         op_new:
-            op_arraylength(frame);
+            op_new(frame);
             dispatch();
 
         op_arraylength:
