@@ -83,6 +83,7 @@ OBJS += java/loader.o
 OBJS += java/translator.o
 OBJS += java/verify.o
 OBJS += java/zip.o
+OBJS += mps/mps.o
 OBJS += vm/alloc.o
 OBJS += vm/field.o
 OBJS += vm/gc.o
@@ -120,10 +121,13 @@ java/dynasm.cc: java/dynasm_x64.h
 	$(E) "  DASM  " $@
 	$(Q) luajit dynasm/dynasm.lua $< > $@ 
 
+%.o: %.c
+	$(E) "  CC    " $@
+	$(Q) $(CC) -c $(CFLAGS) $< -o $@
+
 %.o: %.cc
 	$(E) "  CXX   " $@
 	$(Q) $(CXX) -c $(CXXFLAGS) $< -o $@
-
 
 install: all
 	$(E) "  INSTALL "
