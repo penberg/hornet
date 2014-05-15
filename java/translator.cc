@@ -281,6 +281,18 @@ next_insn:
         op_ret();
         break;
     }
+    case JVM_OPC_invokespecial: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto target = _method->klass->resolve_method(idx);
+        if (_method->klass->access_flags & JVM_ACC_SUPER
+            && target->klass->is_subclass_of(_method->klass->super)
+            && target->is_init()) {
+           target = target->klass->super->lookup_method(target->name, target->descriptor);
+        }
+        assert(target != nullptr);
+        op_invokestatic(target.get());
+        break;
+    }
     case JVM_OPC_invokestatic: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto target = _method->klass->resolve_method(idx);

@@ -58,6 +58,17 @@ struct klass {
         return _const_pool;
     }
 
+    bool is_subclass_of(klass* klass) {
+        auto* super = this;
+        while (super != nullptr) {
+            if (super == klass) {
+                return true;
+            }
+            super = super->super;
+        }
+        return false;
+    }
+
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
     std::shared_ptr<field> lookup_field(std::string name, std::string desciptor);
 
@@ -99,6 +110,10 @@ struct method {
 
     method();
     ~method();
+
+    bool is_init() const {
+        return name[0] == '<';
+    }
 
     bool matches(std::string name, std::string descriptor);
 };

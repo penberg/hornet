@@ -326,7 +326,6 @@ enum class opc : uint8_t {
 
     getstatic,
 
-    invokespecial,
     invokestatic,
 
     new_,
@@ -407,7 +406,6 @@ value_t interp(frame& frame, const char *code)
 
         &&op_getstatic,
 
-        &&op_invokespecial,
         &&op_invokestatic,
 
         &&op_new,
@@ -535,14 +533,11 @@ value_t interp(frame& frame, const char *code)
         op_getstatic:
             assert(0);
 
-        op_invokespecial:
-            assert(0);
-
-        op_invokestatic:
+        op_invokestatic: {
             auto* target = read_const<method*>(code, frame.pc);
             op_invokestatic(target, frame);
             dispatch();
-
+        }
         op_new:
             op_new(frame);
             dispatch();
