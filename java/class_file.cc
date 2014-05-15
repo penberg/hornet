@@ -40,7 +40,7 @@ std::shared_ptr<klass> class_file::parse()
 
     auto const_pool = read_constant_pool();
 
-    /*auto access_flags = */read_u2();
+    auto access_flags = read_u2();
 
     /*auto this_class = */read_u2();
 
@@ -74,6 +74,8 @@ std::shared_ptr<klass> class_file::parse()
     for (auto i = 0; i < attr_count; i++) {
         read_attr_info(*const_pool);
     }
+
+    klass->access_flags = access_flags;
 
     if (super_class) {
         auto super = klass->resolve_class(super_class);

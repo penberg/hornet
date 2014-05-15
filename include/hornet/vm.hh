@@ -43,8 +43,9 @@ using field_list_type = std::vector<std::shared_ptr<field>>;
 
 struct klass {
     struct object object;
-    std::string name;
-    klass* super;
+    std::string   name;
+    klass*        super;
+    uint16_t      access_flags;
 
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     ~klass();
