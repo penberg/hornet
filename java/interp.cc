@@ -523,7 +523,9 @@ value_t interp(frame& frame, const char *code)
             assert(0);
 
         op_goto:
-            assert(0);
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            frame.pc = offset;
+            dispatch();
 
         op_ret:
             auto value = frame.ostack.top();
@@ -557,6 +559,7 @@ public:
     T trampoline();
 
     virtual void prologue () override;
+    virtual void begin(std::shared_ptr<basic_block> bblock) override;
     virtual void op_const (type t, int64_t value) override;
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
@@ -566,8 +569,8 @@ public:
     virtual void op_swap() override;
     virtual void op_binary(type t, binop op) override;
     virtual void op_iinc(uint8_t idx, jint value) override;
-    virtual void op_if_cmp(type t, cmpop op, int16_t offset) override;
-    virtual void op_goto(int16_t offset) override;
+    virtual void op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock) override;
+    virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
     virtual void op_ret() override;
     virtual void op_ret_void() override;
     virtual void op_invokestatic(method* target) override;
@@ -588,6 +591,7 @@ private:
       *dst = x;
       _pc += sizeof(T);
     }
+    std::map<std::shared_ptr<basic_block>, uint16_t> _bblock_map;
     std::vector<uint8_t> _code;
     uint16_t _pc;
 };
@@ -609,6 +613,11 @@ template<typename T> T interp_translator::trampoline()
 
 void interp_translator::prologue()
 {
+}
+
+void interp_translator::begin(std::shared_ptr<basic_block> bblock)
+{
+    _bblock_map.insert(std::make_pair(bblock, _pc));
 }
 
 void interp_translator::op_const(type t, int64_t value)
@@ -700,7 +709,7 @@ void interp_translator::op_iinc(uint8_t idx, jint value)
     put_const(value);
 }
 
-void interp_translator::op_if_cmp(type t, cmpop op, int16_t offset)
+void interp_translator::op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock)
 {
     switch (t) {
     case type::t_int: {
@@ -717,11 +726,26 @@ void interp_translator::op_if_cmp(type t, cmpop op, int16_t offset)
     }
     default: assert(0);
     }
+
+    auto it = _bblock_map.find(bblock);
+
+    assert(it != _bblock_map.end());
+
+    uint16_t offset = it->second;
+
+    put_const(offset);
 }
 
-void interp_translator::op_goto(int16_t offset)
+void interp_translator::op_goto(std::shared_ptr<basic_block> bblock)
 {
     put_opc(opc::goto_);
+
+    auto it = _bblock_map.find(bblock);
+
+    assert(it != _bblock_map.end());
+
+    uint16_t offset = it->second;
+
     put_const(offset);
 }
 

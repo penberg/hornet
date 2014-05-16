@@ -9,6 +9,10 @@ void dynasm_translator::prologue()
     |  sub rbp, _method->max_locals*8
 }
 
+void dynasm_translator::begin(std::shared_ptr<basic_block> bblock)
+{
+}
+
 void dynasm_translator::op_const(type t, int64_t value)
 {
     |  push value
@@ -135,12 +139,12 @@ void dynasm_translator::op_iinc(uint8_t idx, jint value)
     assert(0);
 }
 
-void dynasm_translator::op_if_cmp(type t, cmpop op, int16_t offset)
+void dynasm_translator::op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock)
 {
     assert(0);
 }
 
-void dynasm_translator::op_goto(int16_t offset)
+void dynasm_translator::op_goto(std::shared_ptr<basic_block> bblock)
 {
     assert(0);
 }

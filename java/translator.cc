@@ -14,12 +14,23 @@ namespace hornet {
 
 void translator::translate()
 {
+    scan();
+
     prologue();
 
-    uint16_t pc = 0;
+    for (auto bblock : _bblock_list) {
+        translate(bblock);
+    }
+}
+
+void translator::translate(std::shared_ptr<basic_block> bblock)
+{
+    uint16_t pc = bblock->start;
+
+    begin(bblock);
 
 next_insn:
-    if (pc >= _method->code_length) {
+    if (pc >= bblock->end) {
         return;
     }
 
@@ -240,37 +251,44 @@ next_insn:
     }
     case JVM_OPC_if_icmpeq: {
         int16_t offset = read_opc_u2(_method->code + pc);
-        op_if_cmp(type::t_int, cmpop::op_cmpeq, offset);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_int, cmpop::op_cmpeq, target);
         break;
     }
     case JVM_OPC_if_icmpne: {
         int16_t offset = read_opc_u2(_method->code + pc);
-        op_if_cmp(type::t_int, cmpop::op_cmpne, offset);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_int, cmpop::op_cmpne, target);
         break;
     }
     case JVM_OPC_if_icmplt: {
         int16_t offset = read_opc_u2(_method->code + pc);
-        op_if_cmp(type::t_int, cmpop::op_cmplt, offset);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_int, cmpop::op_cmplt, target);
         break;
     }
     case JVM_OPC_if_icmpge: {
         int16_t offset = read_opc_u2(_method->code + pc);
-        op_if_cmp(type::t_int, cmpop::op_cmpge, offset);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_int, cmpop::op_cmpge, target);
         break;
     }
     case JVM_OPC_if_icmpgt: {
         int16_t offset = read_opc_u2(_method->code + pc);
-        op_if_cmp(type::t_int, cmpop::op_cmpgt, offset);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_int, cmpop::op_cmpgt, target);
         break;
     }
     case JVM_OPC_if_icmple: {
         int16_t offset = read_opc_u2(_method->code + pc);
-        op_if_cmp(type::t_int, cmpop::op_cmple, offset);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_int, cmpop::op_cmple, target);
         break;
     }
     case JVM_OPC_goto: {
         int16_t offset = read_opc_u2(_method->code + pc);
-        op_goto(offset);
+        auto target = lookup(pc + offset);
+        op_goto(target);
         break;
     }
     case JVM_OPC_ireturn:
@@ -321,6 +339,96 @@ next_insn:
     pc += opcode_length[opc];
 
     goto next_insn;
+}
+
+std::shared_ptr<basic_block> translator::lookup(uint16_t offset)
+{
+    auto it = _bblock_map.find(offset);
+
+    assert(it != _bblock_map.end());
+
+    return it->second;
+}
+
+static bool is_branch(uint8_t opc)
+{
+    switch (opc) {
+    case JVM_OPC_goto:
+    case JVM_OPC_goto_w:
+    case JVM_OPC_ifeq:
+    case JVM_OPC_ifge:
+    case JVM_OPC_ifgt:
+    case JVM_OPC_ifle:
+    case JVM_OPC_iflt:
+    case JVM_OPC_ifne:
+    case JVM_OPC_ifnonnull:
+    case JVM_OPC_ifnull:
+    case JVM_OPC_if_acmpeq:
+    case JVM_OPC_if_acmpne:
+    case JVM_OPC_if_icmpeq:
+    case JVM_OPC_if_icmpge:
+    case JVM_OPC_if_icmpgt:
+    case JVM_OPC_if_icmple:
+    case JVM_OPC_if_icmplt:
+    case JVM_OPC_if_icmpne:
+    case JVM_OPC_jsr:
+    case JVM_OPC_jsr_w:
+    case JVM_OPC_lookupswitch:
+    case JVM_OPC_tableswitch:
+        return true;
+    default:
+        return false;
+    }
+}
+
+static bool is_return(uint8_t opc)
+{
+    switch (opc) {
+    case JVM_OPC_ireturn:
+    case JVM_OPC_lreturn:
+    case JVM_OPC_freturn:
+    case JVM_OPC_dreturn:
+    case JVM_OPC_areturn:
+    case JVM_OPC_return:
+        return true;
+    default:
+        return false;
+    }
+}
+
+static bool is_throw(uint8_t opc)
+{
+    switch (opc) {
+    case JVM_OPC_athrow:
+        return true;
+    default:
+        return false;
+    }
+}
+
+static bool is_bblock_end(uint8_t opc)
+{
+    return is_branch(opc) || is_return(opc) || is_throw(opc);
+}
+
+void translator::scan()
+{
+    auto bblock = std::make_shared<basic_block>(0, _method->code_length);
+
+    _bblock_map.insert({0, bblock});
+    _bblock_list.push_back(bblock);
+
+    auto pos = bblock->start;
+
+    while (pos < bblock->end) {
+        uint8_t opc = _method->code[pos];
+        pos += opcode_length[opc];
+        if (is_bblock_end(opc)) {
+            bblock = bblock->split_at(pos);
+            _bblock_map.insert({pos, bblock});
+            _bblock_list.push_back(bblock);
+        }
+    }
 }
 
 }
