@@ -24,6 +24,7 @@ endif
 
 WARNINGS = -Wall -Wextra $(CXXFLAGS_WERROR) -Wno-unused-parameter
 INCLUDES = -Iinclude -I$(JAVA_HOME)/include/ $(LIBZIP_INCLUDES)
+LIBS = -lpthread
 OPTIMIZATIONS = -O3
 CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c++11 -MMD
 
