@@ -1,4 +1,4 @@
-#include "hornet/vm.hh"
+#include "hornet/java.hh"
 
 #include "hornet/gc.hh"
 

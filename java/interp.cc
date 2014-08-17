@@ -232,16 +232,18 @@ void op_getstatic(method* method, frame& frame, uint16_t idx)
 
 void op_invokestatic(method* target, frame& frame)
 {
-    hornet::frame new_frame(target->max_locals);
+    auto thread = hornet::thread::current();
+    auto new_frame = thread->make_frame(target->max_locals);
     for (int i = 0; i < target->args_count; i++) {
         auto arg_idx = target->args_count - i - 1;
-        new_frame.locals[arg_idx] = frame.ostack.top();
+        new_frame->locals[arg_idx] = frame.ostack.top();
         frame.ostack.pop();
     }
-    auto result = hornet::_backend->execute(target, new_frame);
+    auto result = hornet::_backend->execute(target, *new_frame);
     if (target->return_type != &jvm_void_klass) {
         frame.ostack.push(result);
     }
+    thread->free_frame(new_frame);
 }
 
 void op_new(frame& frame)

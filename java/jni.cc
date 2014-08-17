@@ -189,13 +189,17 @@ static void HORNET_JNI(CallStaticVoidMethodV)(JNIEnv *env, jclass clazz, jmethod
 {
     auto* method = hornet::from_jmethodID(methodID);
 
-    hornet::frame frame(method->max_locals);
+    auto thread = hornet::thread::current();
+
+    auto frame = thread->make_frame(method->max_locals);
 
     for (int i = 0; i < method->args_count; i++) {
-        frame.locals[i] = va_arg(args, uint64_t);
+        frame->locals[i] = va_arg(args, uint64_t);
     }
 
-    hornet::_backend->execute(method, frame);
+    hornet::_backend->execute(method, *frame);
+
+    thread->free_frame(frame);
 }
 
 static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodID methodID, ...)

@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <utility>
 #include <memory>
 #include <string>
 #include <vector>
@@ -353,6 +354,59 @@ public:
 };
 
 extern backend* _backend;
+
+class thread {
+public:
+    thread();
+    ~thread();
+
+    object *exception;
+
+    static thread *current() {
+        static thread thread;
+
+        return &thread;
+    }
+
+    template<typename... Args>
+    frame* make_frame(Args&&... args) {
+        auto f = new frame(std::forward<Args>(args)...);
+        _frames.push_back(std::unique_ptr<frame>(f));
+        return f;
+    }
+
+    void free_frame(frame* frame) {
+        assert(frame == _frames.back().get());
+        _frames.pop_back();
+    }
+
+    template<typename T>
+    T* alloc() { return alloc<T>(0); }
+
+    template<typename T>
+    T* alloc(size_t extra) {
+        auto size = sizeof(T) + extra;
+        if (!_alloc_buffer->is_enough_space(size)) {
+            _alloc_buffer = memory_block::swap(_alloc_buffer);
+        }
+        if (!_alloc_buffer) {
+            return nullptr;
+        }
+        auto p = _alloc_buffer->alloc(size);
+        return reinterpret_cast<T*>(p);
+    }
+
+private:
+    std::vector<std::unique_ptr<frame>> _frames;
+    memory_block* _alloc_buffer;
+};
+
+inline void throw_exception(struct object *exception)
+{
+    thread *current = thread::current();
+
+    current->exception = exception;
+}
 
 }
 

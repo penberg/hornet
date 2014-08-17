@@ -1,5 +1,7 @@
 #include "hornet/vm.hh"
 
+#include "hornet/java.hh"
+
 #include <cstdlib>
 
 namespace hornet {
