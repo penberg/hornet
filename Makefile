@@ -110,7 +110,7 @@ all: $(PROGRAMS)
 
 hornet: $(OBJS) hornet.cc
 	$(E) "  LINK  " $@
-	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -lz hornet.cc -o hornet
+	$(Q) $(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -ltinfo -ldl -lz hornet.cc -o hornet
 
 define INSTALL_EXEC
 	install -v $1 $(DESTDIR)$2/$1 || exit 1;
