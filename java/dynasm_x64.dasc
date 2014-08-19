@@ -166,6 +166,16 @@ void dynasm_translator::op_invokestatic(method* method)
     assert(0);
 }
 
+void dynasm_translator::op_getstatic(field* field)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_putstatic(field* field)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_new()
 {
     assert(0);
