@@ -331,6 +331,18 @@ next_insn:
         op_arraylength();
         break;
     }
+    case JVM_OPC_getstatic: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto field = _method->klass->resolve_field(idx);
+        op_getstatic(field.get());
+        break;
+    }
+    case JVM_OPC_putstatic: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto field = _method->klass->resolve_field(idx);
+        op_putstatic(field.get());
+        break;
+    }
     default:
         fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
         abort();

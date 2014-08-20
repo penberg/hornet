@@ -223,11 +223,17 @@ void op_goto(frame& frame, int16_t offset)
     frame.pc += offset;
 }
 
-void op_getstatic(method* method, frame& frame, uint16_t idx)
+void op_getstatic(field* field, frame& frame)
 {
-    auto field = method->klass->resolve_field(idx);
     assert(field != nullptr);
     frame.ostack.push(field->value);
+}
+
+void op_putstatic(field* field, frame& frame)
+{
+    assert(field != nullptr);
+    field->value = frame.ostack.top();
+    frame.ostack.pop();
 }
 
 void op_invokestatic(method* target, frame& frame)
@@ -327,6 +333,7 @@ enum class opc : uint8_t {
     ret_void,
 
     getstatic,
+    putstatic,
 
     invokestatic,
 
@@ -407,6 +414,7 @@ value_t interp(frame& frame, const char *code)
         &&op_ret_void,
 
         &&op_getstatic,
+        &&op_putstatic,
 
         &&op_invokestatic,
 
@@ -534,14 +542,24 @@ value_t interp(frame& frame, const char *code)
             frame.ostack.pop();
             return value;
 
-        op_getstatic:
-            assert(0);
+        op_getstatic: {
+            auto* target = read_const<field*>(code, frame.pc);
+	    op_getstatic(target, frame);
+	    dispatch();
+        }
+
+        op_putstatic: {
+            auto* target = read_const<field*>(code, frame.pc);
+	    op_putstatic(target, frame);
+	    dispatch();
+        }
 
         op_invokestatic: {
             auto* target = read_const<method*>(code, frame.pc);
             op_invokestatic(target, frame);
             dispatch();
         }
+
         op_new:
             op_new(frame);
             dispatch();
@@ -575,6 +593,8 @@ public:
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
     virtual void op_ret() override;
     virtual void op_ret_void() override;
+    virtual void op_getstatic(field* target) override;
+    virtual void op_putstatic(field* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_new() override;
     virtual void op_arraylength() override;
@@ -759,6 +779,18 @@ void interp_translator::op_ret()
 void interp_translator::op_ret_void()
 {
     put_opc(opc::ret_void);
+}
+
+void interp_translator::op_getstatic(field* target)
+{
+    put_opc(opc::getstatic);
+    put_const(target);
+}
+
+void interp_translator::op_putstatic(field* target)
+{
+    put_opc(opc::putstatic);
+    put_const(target);
 }
 
 void interp_translator::op_invokestatic(method* target)
