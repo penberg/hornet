@@ -362,6 +362,16 @@ std::shared_ptr<basic_block> translator::lookup(uint16_t offset)
     return it->second;
 }
 
+std::shared_ptr<basic_block> translator::lookup_contains(uint16_t offset)
+{
+    for (auto bblock : _bblock_list) {
+        if (bblock->start <= offset && offset < bblock->end) {
+            return bblock;
+        }
+    }
+    assert(0);
+}
+
 static bool is_branch(uint8_t opc)
 {
     switch (opc) {
@@ -423,6 +433,36 @@ static bool is_bblock_end(uint8_t opc)
     return is_branch(opc) || is_return(opc) || is_throw(opc);
 }
 
+static uint16_t branch_target(char* code, uint16_t pos)
+{
+    uint8_t opc = code[pos];
+    switch (opc) {
+    case JVM_OPC_goto:
+    case JVM_OPC_goto_w:
+    case JVM_OPC_ifeq:
+    case JVM_OPC_ifge:
+    case JVM_OPC_ifgt:
+    case JVM_OPC_ifle:
+    case JVM_OPC_iflt:
+    case JVM_OPC_ifne:
+    case JVM_OPC_ifnonnull:
+    case JVM_OPC_ifnull:
+    case JVM_OPC_if_acmpeq:
+    case JVM_OPC_if_acmpne:
+    case JVM_OPC_if_icmpeq:
+    case JVM_OPC_if_icmpge:
+    case JVM_OPC_if_icmpgt:
+    case JVM_OPC_if_icmple:
+    case JVM_OPC_if_icmplt:
+    case JVM_OPC_if_icmpne: {
+        int16_t offset = read_opc_u2(code + pos);
+        return pos + offset;
+    }
+    default:
+        assert(0);
+    }
+}
+
 void translator::scan()
 {
     auto bblock = std::make_shared<basic_block>(0, _method->code_length);
@@ -430,8 +470,7 @@ void translator::scan()
     _bblock_map.insert({0, bblock});
     _bblock_list.push_back(bblock);
 
-    auto pos = bblock->start;
-
+    uint16_t pos = 0;
     while (pos < bblock->end) {
         uint8_t opc = _method->code[pos];
         pos += opcode_length[opc];
@@ -440,6 +479,20 @@ void translator::scan()
             _bblock_map.insert({pos, bblock});
             _bblock_list.push_back(bblock);
         }
+    }
+    pos = 0;
+    while (pos < _method->code_length) {
+        uint8_t opc = _method->code[pos];
+        if (is_branch(opc)) {
+            auto target_pc = branch_target(_method->code, pos);
+            auto bblock = lookup_contains(target_pc);
+            if (bblock->start != target_pc) {
+                auto target = bblock->split_at(target_pc);
+                _bblock_map.insert({target_pc, target});
+                _bblock_list.push_back(target);
+            }
+        }
+        pos += opcode_length[opc];
     }
 }
 

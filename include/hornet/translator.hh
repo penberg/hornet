@@ -74,6 +74,7 @@ protected:
     void translate(std::shared_ptr<basic_block> bblock);
 
     std::shared_ptr<basic_block> lookup(uint16_t offset);
+    std::shared_ptr<basic_block> lookup_contains(uint16_t offset);
 
     virtual void prologue () = 0;
     virtual void begin(std::shared_ptr<basic_block> bblock) = 0;
