@@ -9,6 +9,10 @@ void dynasm_translator::prologue()
     |  sub rbp, _method->max_locals*8
 }
 
+void dynasm_translator::epilogue()
+{
+}
+
 void dynasm_translator::begin(std::shared_ptr<basic_block> bblock)
 {
 }

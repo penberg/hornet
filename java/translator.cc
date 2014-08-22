@@ -6,6 +6,7 @@
 #include <classfile_constants.h>
 #include <jni.h>
 
+#include <algorithm>
 #include <cstdio>
 
 using namespace std;
@@ -21,6 +22,8 @@ void translator::translate()
     for (auto bblock : _bblock_list) {
         translate(bblock);
     }
+
+    epilogue();
 }
 
 void translator::translate(std::shared_ptr<basic_block> bblock)
@@ -463,6 +466,16 @@ static uint16_t branch_target(char* code, uint16_t pos)
     }
 }
 
+// Functor for sorting basic blocks wrapped in shared pointers by start
+// address.
+//
+// XXX: Use boost indirect iterators here?
+struct SortFunctor {
+    bool operator()(shared_ptr<basic_block> i, shared_ptr<basic_block> j) {
+        return i->start < j->start;
+    }
+};
+
 void translator::scan()
 {
     auto bblock = std::make_shared<basic_block>(0, _method->code_length);
@@ -494,6 +507,8 @@ void translator::scan()
         }
         pos += opcode_length[opc];
     }
+
+    sort(_bblock_list.begin(), _bblock_list.end(), SortFunctor());
 }
 
 }

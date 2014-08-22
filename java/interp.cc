@@ -204,17 +204,14 @@ bool eval(cmpop op, T a, T b)
 }
 
 template<typename T>
-void op_if_cmp(method* method, frame& frame, cmpop op, int16_t offset)
+void op_if_cmp(frame& frame, cmpop op, uint16_t offset)
 {
-    uint8_t opc = method->code[frame.pc];
     auto value2 = from_value<T>(frame.ostack.top());
     frame.ostack.pop();
     auto value1 = from_value<T>(frame.ostack.top());
     frame.ostack.pop();
     if (eval(op, value1, value2)) {
-        frame.pc += offset;
-    } else {
-        frame.pc += opcode_length[opc];
+        frame.pc = offset;
     }
 }
 
@@ -523,8 +520,11 @@ value_t interp(frame& frame, const char *code)
         op_if_icmplt:
             assert(0);
 
-        op_if_icmpge:
-            assert(0);
+        op_if_icmpge: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<jint>(frame, cmpop::op_cmpge, offset);
+            dispatch();
+        }
 
         op_if_icmpgt:
             assert(0);
@@ -569,6 +569,21 @@ value_t interp(frame& frame, const char *code)
     }
 }
 
+// A branch label that is backpatched to a branch offset after all basic blocks
+// are translated.
+class label {
+public:
+    // The location of the branch offset that needs to be backpatched in code.
+    uint16_t pc;
+    // The target basic block of this branch label.
+    std::shared_ptr<basic_block> bblock;
+
+    label(uint16_t pc_, std::shared_ptr<basic_block> bblock_)
+        : pc(pc_)
+        , bblock(bblock_)
+    { }
+};
+
 class interp_translator : public translator {
 public:
     interp_translator(method* method);
@@ -577,7 +592,8 @@ public:
     template<typename T>
     T trampoline();
 
-    virtual void prologue () override;
+    virtual void prologue() override;
+    virtual void epilogue() override;
     virtual void begin(std::shared_ptr<basic_block> bblock) override;
     virtual void op_const (type t, int64_t value) override;
     virtual void op_load  (type t, uint16_t idx) override;
@@ -605,15 +621,35 @@ private:
       code[_pc++] = static_cast<uint8_t>(x);
     }
     template<typename T>
-    void put_const(T x) {
-      _code.resize(_code.size() + sizeof(T));
-      auto* code = _code.data() + _pc;
+    void put_const(T x, uint16_t pc) {
+      auto* code = _code.data() + pc;
       auto* dst = reinterpret_cast<T*>(code);
       *dst = x;
+    }
+    template<typename T>
+    void put_const(T x) {
+      _code.resize(_code.size() + sizeof(T));
+     put_const(x, _pc);
       _pc += sizeof(T);
     }
+    // Puts a zero offset to the instruction stream and registers the branch
+    // for backpatching.
+    void put_label(const std::shared_ptr<basic_block>& bblock) {
+      _label_list.push_back(label(_pc, bblock));
+      put_const<uint16_t>(0);
+    }
+    void backpatch() {
+      for (auto&& label : _label_list) {
+        auto it = _bblock_map.find(label.bblock);
+        assert(it != _bblock_map.end());
+        uint16_t offset = it->second;
+        put_const(offset, label.pc);
+      }
+    }
+
     std::map<std::shared_ptr<basic_block>, uint16_t> _bblock_map;
     std::vector<uint8_t> _code;
+    std::vector<label> _label_list;
     uint16_t _pc;
 };
 
@@ -634,6 +670,11 @@ template<typename T> T interp_translator::trampoline()
 
 void interp_translator::prologue()
 {
+}
+
+void interp_translator::epilogue()
+{
+    backpatch();
 }
 
 void interp_translator::begin(std::shared_ptr<basic_block> bblock)
@@ -748,26 +789,14 @@ void interp_translator::op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block>
     default: assert(0);
     }
 
-    auto it = _bblock_map.find(bblock);
-
-    assert(it != _bblock_map.end());
-
-    uint16_t offset = it->second;
-
-    put_const(offset);
+    put_label(bblock);
 }
 
 void interp_translator::op_goto(std::shared_ptr<basic_block> bblock)
 {
     put_opc(opc::goto_);
 
-    auto it = _bblock_map.find(bblock);
-
-    assert(it != _bblock_map.end());
-
-    uint16_t offset = it->second;
-
-    put_const(offset);
+    put_label(bblock);
 }
 
 void interp_translator::op_ret()

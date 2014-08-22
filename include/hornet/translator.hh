@@ -77,6 +77,7 @@ protected:
     std::shared_ptr<basic_block> lookup_contains(uint16_t offset);
 
     virtual void prologue () = 0;
+    virtual void epilogue () = 0;
     virtual void begin(std::shared_ptr<basic_block> bblock) = 0;
     virtual void op_const (type t, int64_t value) = 0;
     virtual void op_load  (type t, uint16_t idx) = 0;

@@ -23,7 +23,8 @@ public:
     template<typename T>
     T trampoline();
 
-    virtual void prologue () override;
+    virtual void prologue() override;
+    virtual void epilogue() override;
     virtual void begin(std::shared_ptr<basic_block> bblock) override;
     virtual void op_const (type t, int64_t value) override;
     virtual void op_load  (type t, uint16_t idx) override;
