@@ -331,6 +331,11 @@ next_insn:
         op_invokestatic(target.get());
         break;
     }
+    case JVM_OPC_invokevirtual: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_invokevirtual(idx);
+        break;
+    }
     case JVM_OPC_return: {
         op_ret_void();
         break;

@@ -94,6 +94,7 @@ protected:
     virtual void op_ret() = 0;
     virtual void op_ret_void() = 0;
     virtual void op_invokestatic(method* target) = 0;
+    virtual void op_invokevirtual(uint16_t idx) = 0;
     virtual void op_getstatic(field* target) = 0;
     virtual void op_putstatic(field* target) = 0;
     virtual void op_new() = 0;

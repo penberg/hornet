@@ -175,6 +175,11 @@ void dynasm_translator::op_invokestatic(method* method)
     assert(0);
 }
 
+void dynasm_translator::op_invokevirtual(uint16_t idx)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_getstatic(field* field)
 {
     assert(0);

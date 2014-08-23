@@ -254,6 +254,11 @@ void op_invokestatic(method* target, frame& frame)
     thread->free_frame(new_frame);
 }
 
+void op_invokevirtual(uint16_t idx, frame& frame)
+{
+    assert(0);
+}
+
 void op_new(frame& frame)
 {
     auto obj = gc_new_object(nullptr);
@@ -340,6 +345,7 @@ enum class opc : uint8_t {
     putstatic,
 
     invokestatic,
+    invokevirtual,
 
     new_,
 
@@ -423,6 +429,7 @@ value_t interp(frame& frame, const char *code)
         &&op_putstatic,
 
         &&op_invokestatic,
+        &&op_invokevirtual,
 
         &&op_new,
 
@@ -571,6 +578,11 @@ value_t interp(frame& frame, const char *code)
             op_invokestatic(target, frame);
             dispatch();
         }
+        op_invokevirtual: {
+            auto idx = read_const<uint16_t>(code, frame.pc);
+            op_invokevirtual(idx, frame);
+            dispatch();
+        }
         op_new:
             op_new(frame);
             dispatch();
@@ -624,6 +636,7 @@ public:
     virtual void op_getstatic(field* target) override;
     virtual void op_putstatic(field* target) override;
     virtual void op_invokestatic(method* target) override;
+    virtual void op_invokevirtual(uint16_t idx) override;
     virtual void op_new() override;
     virtual void op_arraylength() override;
 
@@ -847,6 +860,12 @@ void interp_translator::op_invokestatic(method* target)
 {
     put_opc(opc::invokestatic);
     put_const(target);
+}
+
+void interp_translator::op_invokevirtual(uint16_t idx)
+{
+    put_opc(opc::invokevirtual);
+    put_const(idx);
 }
 
 void interp_translator::op_new()
