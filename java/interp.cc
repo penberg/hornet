@@ -549,8 +549,11 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
 
-        op_if_icmpeq:
-            assert(0);
+        op_if_icmpeq: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<jint>(frame, cmpop::op_cmpeq, offset);
+            dispatch();
+        }
 
         op_if_icmpne:
             assert(0);
