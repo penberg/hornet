@@ -447,13 +447,13 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
         op_load: {
-            auto value = read_const<uint16_t>(code, frame.pc);
-            op_load(frame, value);
+            auto idx = read_const<uint16_t>(code, frame.pc);
+            op_load(frame, idx);
             dispatch();
         }
         op_store: {
-            auto value = read_const<uint16_t>(code, frame.pc);
-            op_store(frame, value);
+            auto idx = read_const<uint16_t>(code, frame.pc);
+            op_store(frame, idx);
             dispatch();
         }
         op_arrayload: {
