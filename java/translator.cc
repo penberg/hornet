@@ -175,6 +175,11 @@ next_insn:
         op_store(type::t_ref, idx);
         break;
     }
+    case JVM_OPC_aastore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_ref, idx);
+        break;
+    }
     case JVM_OPC_pop: {
         op_pop();
         break;
