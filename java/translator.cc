@@ -344,6 +344,11 @@ next_insn:
         op_new();
         break;
     }
+    case JVM_OPC_anewarray: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_anewarray(idx);
+        break;
+    }
     case JVM_OPC_arraylength: {
         op_arraylength();
         break;

@@ -98,6 +98,7 @@ protected:
     virtual void op_getstatic(field* target) = 0;
     virtual void op_putstatic(field* target) = 0;
     virtual void op_new() = 0;
+    virtual void op_anewarray(uint16_t idx) = 0;
     virtual void op_arraylength() = 0;
 
     method* _method;

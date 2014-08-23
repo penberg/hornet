@@ -75,6 +75,7 @@ public:
     virtual void op_ret() override;
     virtual void op_ret_void() override;
     virtual void op_new() override;
+    virtual void op_anewarray(uint16_t idx) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokevirtual(uint16_t idx) override;
     virtual void op_getstatic(field* target) override;
@@ -252,6 +253,11 @@ void llvm_translator::op_putstatic(field* target)
 }
 
 void llvm_translator::op_new()
+{
+    assert(0);
+}
+
+void llvm_translator::op_anewarray(uint16_t idx)
 {
     assert(0);
 }
