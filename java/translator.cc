@@ -127,6 +127,10 @@ next_insn:
         op_load(type::t_ref, idx);
         break;
     }
+    case JVM_OPC_aaload: {
+        op_arrayload(type::t_ref);
+        break;
+    }
     case JVM_OPC_istore: {
         auto idx = read_opc_u1(_method->code + pc);
         op_store(type::t_int, idx);

@@ -34,6 +34,11 @@ void dynasm_translator::op_store(type t, uint16_t idx)
     |  mov [rbp-8*idx], rax
 }
 
+void dynasm_translator::op_arrayload(type t)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_pop()
 {
     assert(0);

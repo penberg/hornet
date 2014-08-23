@@ -29,6 +29,7 @@ public:
     virtual void op_const (type t, int64_t value) override;
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
+    virtual void op_arrayload(type t) override;
     virtual void op_pop() override;
     virtual void op_dup() override;
     virtual void op_dup_x1() override;

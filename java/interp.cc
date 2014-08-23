@@ -52,6 +52,11 @@ void op_store(frame& frame, uint16_t idx)
     frame.ostack.pop();
 }
 
+void op_arrayload(frame& frame)
+{
+    assert(0);
+}
+
 void op_pop(frame& frame)
 {
     frame.ostack.pop();
@@ -275,6 +280,8 @@ enum class opc : uint8_t {
     load,
     store,
 
+    arrayload,
+
     pop,
     dup,
     dup_x1,
@@ -355,6 +362,8 @@ value_t interp(frame& frame, const char *code)
 
         &&op_load,
         &&op_store,
+
+        &&op_arrayload,
 
         &&op_pop,
         &&op_dup,
@@ -447,7 +456,10 @@ value_t interp(frame& frame, const char *code)
             op_store(frame, value);
             dispatch();
         }
-
+        op_arrayload: {
+            op_arrayload(frame);
+            dispatch();
+        }
         op_pop: {
             op_pop(frame);
             dispatch();
@@ -598,6 +610,7 @@ public:
     virtual void op_const (type t, int64_t value) override;
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
+    virtual void op_arrayload(type t) override;
     virtual void op_pop() override;
     virtual void op_dup() override;
     virtual void op_dup_x1() override;
@@ -707,6 +720,11 @@ void interp_translator::op_store(type t, uint16_t idx)
 {
     put_opc(opc::store);
     put_const(idx);
+}
+
+void interp_translator::op_arrayload(type t)
+{
+    put_opc(opc::arrayload);
 }
 
 void interp_translator::op_pop()
