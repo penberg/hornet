@@ -82,6 +82,11 @@ next_insn:
             op_const(type::t_int, value);
             break;
         }
+        case cp_tag::const_string: {
+            auto value = const_pool->get_string(idx);
+            op_const(type::t_ref, reinterpret_cast<int64_t>(value));
+            break;
+        }
         default:
             assert(0);
             break;

@@ -706,6 +706,10 @@ void interp_translator::op_const(type t, int64_t value)
         put_opc(opc::lconst);
         put_const<jlong>(value);
         break;
+    case type::t_ref:
+        put_opc(opc::lconst);
+        put_const<jobject>(reinterpret_cast<jobject>(value));
+        break;
     default: assert(0);
     }
 }

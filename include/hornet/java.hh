@@ -147,6 +147,7 @@ public:
     cp_info *get_name_and_type(uint16_t idx);
     jint get_integer(uint16_t idx);
     const_utf8_info *get_utf8(uint16_t idx);
+    string *get_string(uint16_t idx);
 
 private:
     std::vector<std::shared_ptr<cp_info>> _entries;

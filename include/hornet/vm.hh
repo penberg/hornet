@@ -127,6 +127,14 @@ struct array {
         , length(length) {}
 };
 
+struct string {
+    const char* data;
+
+    string(const char* data_)
+        : data(data_)
+    { }
+};
+
 #define java_lang_NoClassDefFoundError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)

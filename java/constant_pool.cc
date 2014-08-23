@@ -1,6 +1,7 @@
 #include "hornet/java.hh"
 #include "hornet/vm.hh"
 
+#include <unordered_map>
 #include <cassert>
 
 namespace hornet {
@@ -96,6 +97,34 @@ const_utf8_info *constant_pool::get_utf8(uint16_t idx)
     assert(entry->tag == cp_tag::const_utf8);
 
     return reinterpret_cast<const_utf8_info*>(entry.get());
+}
+
+std::mutex _intern_mutex;
+std::unordered_map<std::string, std::shared_ptr<string>> _intern;
+
+string* intern_string(std::string str)
+{
+    std::lock_guard<std::mutex> lock(_intern_mutex);
+    auto it = _intern.find(str);
+    if (it == _intern.end()) {
+        auto intern = std::make_shared<string>(str.c_str());
+        _intern.insert({str, intern});
+        return intern.get();
+    }
+    return it->second.get();
+}
+
+string *constant_pool::get_string(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    assert(entry->tag == cp_tag::const_string);
+
+    auto utf8 = get_utf8(entry->string_index);
+
+    return intern_string(std::string(utf8->bytes));
 }
 
 }
