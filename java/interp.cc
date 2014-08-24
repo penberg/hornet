@@ -17,7 +17,7 @@ value_t to_value(T x)
     return static_cast<value_t>(x);
 }
 
-template<typename T>
+template<>
 value_t to_value(object* obj)
 {
     return reinterpret_cast<value_t>(obj);
@@ -266,7 +266,7 @@ void op_invokevirtual(uint16_t idx, frame& frame)
 
 void op_new(frame& frame)
 {
-    auto obj = gc_new_object(nullptr);
+    object* obj = gc_new_object(nullptr);
     frame.ostack.push(to_value<object*>(obj));
 }
 
@@ -291,6 +291,7 @@ void op_arraylength(frame& frame)
 enum class opc : uint8_t {
     iconst,
     lconst,
+    aconst,
 
     load,
     store,
@@ -377,6 +378,7 @@ value_t interp(frame& frame, const char *code)
     static void* dispatch_table[] = {
         &&op_iconst,
         &&op_lconst,
+        &&op_aconst,
 
         &&op_load,
         &&op_store,
@@ -467,6 +469,11 @@ value_t interp(frame& frame, const char *code)
             op_const(frame, value);
             dispatch();
         }
+        op_aconst: {
+            auto value = read_const<object*>(code, frame.pc);
+            op_const(frame, value);
+            dispatch();
+        }
         op_load: {
             auto idx = read_const<uint16_t>(code, frame.pc);
             op_load(frame, idx);
@@ -540,7 +547,7 @@ value_t interp(frame& frame, const char *code)
         op_ineg: op_unary<jint>(frame, unop::op_neg); dispatch();
 
         op_ret_void:
-            return to_value<jobject>(nullptr);
+            return to_value<object*>(nullptr);
 
         op_iinc: {
             auto idx = read_const<uint8_t>(code, frame.pc);
@@ -749,8 +756,8 @@ void interp_translator::op_const(type t, int64_t value)
         put_const<jlong>(value);
         break;
     case type::t_ref:
-        put_opc(opc::lconst);
-        put_const<jobject>(reinterpret_cast<jobject>(value));
+        put_opc(opc::aconst);
+        put_const<object*>(reinterpret_cast<object*>(value));
         break;
     default: assert(0);
     }
