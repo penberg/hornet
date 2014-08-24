@@ -115,14 +115,14 @@ int main(int argc, char *argv[])
     if (idx == argc)
         usage();
 
-    auto initial_class_name = argv[idx];
+    auto initial_class_name = argv[idx++];
 
     if (JNI_CreateJavaVM(&vm, reinterpret_cast<void **>(&env), &vm_args) != JNI_OK) {
         fprintf(stderr, "error: Cannot create a virtual machine.\n");
         exit(EXIT_FAILURE);
     }
 
-    auto retval = vm_run(vm, env, initial_class_name, argc - 1, argv + 1);
+    auto retval = vm_run(vm, env, initial_class_name, argc - idx, argv + idx);
 
     vm->DestroyJavaVM();
 
