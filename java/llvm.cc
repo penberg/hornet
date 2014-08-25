@@ -19,6 +19,8 @@ using namespace std;
 
 namespace hornet {
 
+bool llvm_backend::debug = false;
+
 using namespace llvm;
 
 Module*          module;
@@ -143,6 +145,9 @@ void llvm_translator::prologue()
 
 void llvm_translator::epilogue()
 {
+    if (llvm_backend::debug) {
+        _func->dump();
+    }
 }
 
 void llvm_translator::begin(std::shared_ptr<basic_block> bblock)

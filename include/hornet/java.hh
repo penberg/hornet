@@ -352,6 +352,8 @@ public:
     llvm_backend();
     ~llvm_backend();
     virtual value_t execute(method* method, frame& frame) override;
+
+    static bool debug;
 };
 
 extern backend* _backend;

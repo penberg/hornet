@@ -81,6 +81,14 @@ static JavaVM HORNET_JNI(JavaVM) = {
     &HORNET_JNI(JNIInvokeInterface),
 };
 
+static bool option_matches(const char* option, const char* expected)
+{
+    if (strlen(option) != strlen(expected)) {
+        return false;
+    }
+    return !strncmp(option, expected, strlen(option));
+}
+
 jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
 {
     auto vm_args = reinterpret_cast<JavaVMInitArgs*>(args);
@@ -110,9 +118,19 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
             return JNI_ERR;
 #endif
         }
-        if (!strcmp(opt, "-XX:+LLVM")) {
+        if (option_matches(opt, "-XX:+LLVM")) {
 #ifdef CONFIG_HAVE_LLVM
             backend = hornet::backend_type::llvm;
+#else
+            fprintf(stderr, "error: LLVM support is not compiled in.\n");
+            return JNI_ERR;
+#endif
+            continue;
+        }
+        if (option_matches(opt, "-XX:+LLVMDebug")) {
+#ifdef CONFIG_HAVE_LLVM
+            backend = hornet::backend_type::llvm;
+            hornet::llvm_backend::debug = true;
 #else
             fprintf(stderr, "error: LLVM support is not compiled in.\n");
             return JNI_ERR;
