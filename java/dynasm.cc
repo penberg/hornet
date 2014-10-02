@@ -42,7 +42,7 @@ public:
     virtual void op_ret() override;
     virtual void op_ret_void() override;
     virtual void op_invokestatic(method* target) override;
-    virtual void op_invokevirtual(uint16_t idx) override;
+    virtual void op_invokevirtual(method* target) override;
     virtual void op_getstatic(field* target) override;
     virtual void op_putstatic(field* target) override;
     virtual void op_new() override;

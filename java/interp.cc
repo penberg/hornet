@@ -259,7 +259,7 @@ void op_invokestatic(method* target, frame& frame)
     thread->free_frame(new_frame);
 }
 
-void op_invokevirtual(uint16_t idx, frame& frame)
+void op_invokevirtual(method* target, frame& frame)
 {
     assert(0);
 }
@@ -608,8 +608,8 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
         op_invokevirtual: {
-            auto idx = read_const<uint16_t>(code, frame.pc);
-            op_invokevirtual(idx, frame);
+            auto* target = read_const<method*>(code, frame.pc);
+            op_invokevirtual(target, frame);
             dispatch();
         }
         op_new: {
@@ -671,7 +671,7 @@ public:
     virtual void op_getstatic(field* target) override;
     virtual void op_putstatic(field* target) override;
     virtual void op_invokestatic(method* target) override;
-    virtual void op_invokevirtual(uint16_t idx) override;
+    virtual void op_invokevirtual(method* target) override;
     virtual void op_new() override;
     virtual void op_anewarray(uint16_t idx) override;
     virtual void op_arraylength() override;
@@ -904,10 +904,10 @@ void interp_translator::op_invokestatic(method* target)
     put_const(target);
 }
 
-void interp_translator::op_invokevirtual(uint16_t idx)
+void interp_translator::op_invokevirtual(method* target)
 {
     put_opc(opc::invokevirtual);
-    put_const(idx);
+    put_const(target);
 }
 
 void interp_translator::op_new()

@@ -338,7 +338,10 @@ next_insn:
     }
     case JVM_OPC_invokevirtual: {
         uint16_t idx = read_opc_u2(_method->code + pc);
-        op_invokevirtual(idx);
+        auto target = _method->klass->resolve_method(idx);
+        assert(target != nullptr);
+        assert(!(target->access_flags & JVM_ACC_STATIC));
+        op_invokevirtual(target.get());
         break;
     }
     case JVM_OPC_return: {
