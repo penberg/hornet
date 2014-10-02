@@ -7,6 +7,7 @@ applications.
 
 ## Features
 
+* [MPS](http://www.ravenbrook.com/project/mps/) based incremental GC with very low pause times.
 * Multiple backends:
     * Interpreter
     * DynASM (x86-64)
@@ -17,7 +18,6 @@ applications.
 
 ### Planned
 
-* Pauseless GC
 * LLVM ahead-of-compilation
 * RTJS class library support
 

@@ -1,8 +1,6 @@
 #ifndef HORNET_VM_HH
 #define HORNET_VM_HH
 
-#include <hornet/gc.hh>
-
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -33,9 +31,13 @@ extern jvm *_jvm;
 typedef uint64_t value_t;
 
 struct object {
-    struct klass *klass;
+    struct object* fwd;
+    struct klass*  klass;
 
-    object(struct klass* _klass) : klass(_klass) {}
+    object(struct klass* _klass)
+        : fwd(nullptr)
+        , klass(_klass)
+    { }
 };
 
 using method_list_type = std::vector<std::shared_ptr<method>>;
@@ -138,6 +140,8 @@ struct string {
 #define java_lang_NoClassDefFoundError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)
+
+void gc_init();
 
 object* gc_new_object(klass* klass);
 array* gc_new_object_array(klass* klass, size_t length);

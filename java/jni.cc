@@ -171,6 +171,8 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
     *vm	= &HORNET_JNI(JavaVM);
     *env	= &HORNET_JNI(JNIEnv);
 
+    hornet::gc_init();
+
     hornet::system_loader::init();
 
     return JNI_OK;
