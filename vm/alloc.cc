@@ -25,28 +25,24 @@ object* gc_new_object(klass* klass)
 {
     size_t size = sizeof(object);
     mps_addr_t addr;
-    object* obj;
     do {
         mps_res_t res = mps_reserve(&addr, obj_ap, size);
         if (res != MPS_RES_OK)
             assert(0);
-        obj = new (addr) object{klass};
     } while (!mps_commit(obj_ap, addr, size));
-    return obj;
+    return new (addr) object{klass};
 }
 
 array* gc_new_object_array(klass* klass, size_t length)
 {
     size_t size = sizeof(array) + length * sizeof(void*);
     mps_addr_t addr;
-    array* obj;
     do {
         mps_res_t res = mps_reserve(&addr, obj_ap, size);
         if (res != MPS_RES_OK)
             assert(0);
-        obj = new (addr) array{klass, static_cast<uint32_t>(length)};
     } while (!mps_commit(obj_ap, addr, size));
-    return obj;
+    return new (addr) array{klass, static_cast<uint32_t>(length)};
 }
 
 static void obj_pad(mps_addr_t addr, size_t size)
