@@ -130,10 +130,12 @@ struct array {
 };
 
 struct string {
+    struct object object;
     const char* data;
 
     string(const char* data_)
-        : data(data_)
+        : object(nullptr)
+        , data(data_)
     { }
 };
 
