@@ -370,6 +370,8 @@ enum class opc : uint8_t {
     if_icmpge,
     if_icmpgt,
     if_icmple,
+    if_acmpeq,
+    if_acmpne,
 
     goto_,
 
@@ -457,6 +459,8 @@ value_t interp(frame& frame, const char *code)
         &&op_if_icmpge,
         &&op_if_icmpgt,
         &&op_if_icmple,
+        &&op_if_acmpeq,
+        &&op_if_acmpne,
 
         &&op_goto,
 
@@ -602,6 +606,18 @@ value_t interp(frame& frame, const char *code)
 
         op_if_icmple:
             assert(0);
+
+        op_if_acmpeq: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<object*>(frame, cmpop::op_cmpeq, offset);
+            dispatch();
+        }
+
+        op_if_acmpne: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<object*>(frame, cmpop::op_cmpne, offset);
+            dispatch();
+        }
 
         op_goto:
             auto offset = read_const<uint16_t>(code, frame.pc);
@@ -883,6 +899,14 @@ void interp_translator::op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block>
         case cmpop::op_cmpge: put_opc(opc::if_icmpge); break;
         case cmpop::op_cmpgt: put_opc(opc::if_icmpgt); break;
         case cmpop::op_cmple: put_opc(opc::if_icmple); break;
+        default:              assert(0);
+        }
+        break;
+    }
+    case type::t_ref: {
+        switch (op) {
+        case cmpop::op_cmpeq: put_opc(opc::if_acmpeq); break;
+        case cmpop::op_cmpne: put_opc(opc::if_acmpne); break;
         default:              assert(0);
         }
         break;
