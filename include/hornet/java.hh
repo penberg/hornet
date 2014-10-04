@@ -164,6 +164,7 @@ public:
     cp_info *get_name_and_type(uint16_t idx);
     jint get_integer(uint16_t idx);
     jlong get_long(uint16_t idx);
+    jfloat get_float(uint16_t idx);
     jdouble get_double(uint16_t idx);
     const_utf8_info *get_utf8(uint16_t idx);
     string *get_string(uint16_t idx);

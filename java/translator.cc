@@ -94,6 +94,21 @@ next_insn:
             op_const(type::t_int, value);
             break;
         }
+        case cp_tag::const_long: {
+            auto value = const_pool->get_long(idx);
+            op_const(type::t_long, value);
+            break;
+        }
+        case cp_tag::const_float: {
+            auto value = const_pool->get_float(idx);
+            op_const(type::t_float, value);
+            break;
+        }
+        case cp_tag::const_double: {
+            auto value = const_pool->get_double(idx);
+            op_const(type::t_double, value);
+            break;
+        }
         case cp_tag::const_string: {
             auto value = const_pool->get_string(idx);
             op_const(type::t_ref, reinterpret_cast<int64_t>(value));

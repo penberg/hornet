@@ -90,6 +90,19 @@ jlong constant_pool::get_long(uint16_t idx)
     return value->long_value;
 }
 
+jfloat constant_pool::get_float(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    assert(entry->tag == cp_tag::const_float);
+
+    auto value = reinterpret_cast<cp_info*>(entry.get());
+
+    return value->float_value;
+}
+
 jdouble constant_pool::get_double(uint16_t idx)
 {
     assert(idx < _entries.size());
