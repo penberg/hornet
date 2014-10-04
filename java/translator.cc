@@ -349,7 +349,10 @@ next_insn:
         break;
     }
     case JVM_OPC_new: {
-        op_new();
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto klass = _method->klass->resolve_class(idx);
+        assert(klass != nullptr);
+        op_new(klass.get());
         break;
     }
     case JVM_OPC_anewarray: {

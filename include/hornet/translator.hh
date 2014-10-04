@@ -12,6 +12,7 @@ namespace hornet {
 
 struct method;
 struct field;
+struct klass;
 
 enum class type {
     t_int,
@@ -98,7 +99,7 @@ protected:
     virtual void op_invokevirtual(method* target) = 0;
     virtual void op_getstatic(field* target) = 0;
     virtual void op_putstatic(field* target) = 0;
-    virtual void op_new() = 0;
+    virtual void op_new(klass* klass) = 0;
     virtual void op_anewarray(uint16_t idx) = 0;
     virtual void op_arraylength() = 0;
 

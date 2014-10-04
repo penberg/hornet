@@ -195,7 +195,7 @@ void dynasm_translator::op_putstatic(field* field)
     assert(0);
 }
 
-void dynasm_translator::op_new()
+void dynasm_translator::op_new(klass* klass)
 {
     assert(0);
 }

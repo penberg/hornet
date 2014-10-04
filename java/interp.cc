@@ -672,7 +672,7 @@ public:
     virtual void op_putstatic(field* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokevirtual(method* target) override;
-    virtual void op_new() override;
+    virtual void op_new(klass* klass) override;
     virtual void op_anewarray(uint16_t idx) override;
     virtual void op_arraylength() override;
 
@@ -910,7 +910,7 @@ void interp_translator::op_invokevirtual(method* target)
     put_const(target);
 }
 
-void interp_translator::op_new()
+void interp_translator::op_new(klass* klass)
 {
     put_opc(opc::new_);
 }

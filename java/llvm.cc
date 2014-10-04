@@ -77,7 +77,7 @@ public:
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
     virtual void op_ret() override;
     virtual void op_ret_void() override;
-    virtual void op_new() override;
+    virtual void op_new(klass* klass) override;
     virtual void op_anewarray(uint16_t idx) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokevirtual(method* target) override;
@@ -263,7 +263,7 @@ void llvm_translator::op_putstatic(field* target)
     assert(0);
 }
 
-void llvm_translator::op_new()
+void llvm_translator::op_new(klass* klass)
 {
     assert(0);
 }
