@@ -302,6 +302,18 @@ next_insn:
         op_if_cmp(type::t_int, cmpop::op_cmple, target);
         break;
     }
+    case JVM_OPC_if_acmpeq: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_ref, cmpop::op_cmpeq, target);
+        break;
+    }
+    case JVM_OPC_if_acmpne: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if_cmp(type::t_ref, cmpop::op_cmpne, target);
+        break;
+    }
     case JVM_OPC_goto: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
