@@ -58,7 +58,7 @@ next_insn:
     }
     case JVM_OPC_lconst_0:
     case JVM_OPC_lconst_1: {
-        jint value = opc - JVM_OPC_lconst_0;
+        jlong value = opc - JVM_OPC_lconst_0;
         op_const(type::t_long, value);
         break;
     }
