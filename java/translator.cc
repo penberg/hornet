@@ -93,6 +93,27 @@ next_insn:
         }
         break;
     }
+    case JVM_OPC_ldc2_w: {
+        auto idx = read_opc_u2(_method->code + pc);
+        auto const_pool = _method->klass->const_pool();
+        auto cp_info = const_pool->get(idx);
+        switch (cp_info->tag) {
+        case cp_tag::const_long: {
+            auto value = const_pool->get_long(idx);
+            op_const(type::t_long, value);
+            break;
+        }
+        case cp_tag::const_double: {
+            auto value = const_pool->get_double(idx);
+            op_const(type::t_double, value);
+            break;
+        }
+        default:
+            assert(0);
+            break;
+        }
+        break;
+    }
     case JVM_OPC_iload: {
         auto idx = read_opc_u1(_method->code + pc);
         op_load(type::t_int, idx);

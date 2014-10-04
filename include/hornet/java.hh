@@ -59,7 +59,9 @@ struct cp_info {
         struct {
             uint16_t string_index;
         };
-        jint     value;
+        jint     int_value;
+        jlong    long_value;
+        jdouble  double_value;
     };
 
     static inline
@@ -103,14 +105,21 @@ struct cp_info {
     static inline
     std::shared_ptr<cp_info> const_integer(jint value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_integer);
-        ret->value = value;
+        ret->int_value = value;
         return ret;
     }
 
     static inline
     std::shared_ptr<cp_info> const_long(jlong value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_long);
-        ret->value = value;
+        ret->long_value = value;
+        return ret;
+    }
+
+    static inline
+    std::shared_ptr<cp_info> const_double(jdouble value) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_double);
+        ret->double_value = value;
         return ret;
     }
 
@@ -146,6 +155,8 @@ public:
     cp_info *get_methodref(uint16_t idx);
     cp_info *get_name_and_type(uint16_t idx);
     jint get_integer(uint16_t idx);
+    jlong get_long(uint16_t idx);
+    jdouble get_double(uint16_t idx);
     const_utf8_info *get_utf8(uint16_t idx);
     string *get_string(uint16_t idx);
 

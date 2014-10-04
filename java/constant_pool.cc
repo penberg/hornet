@@ -72,9 +72,35 @@ jint constant_pool::get_integer(uint16_t idx)
 
     assert(entry->tag == cp_tag::const_integer);
 
-    auto integer = reinterpret_cast<cp_info*>(entry.get());
+    auto value = reinterpret_cast<cp_info*>(entry.get());
 
-    return integer->value;
+    return value->int_value;
+}
+
+jlong constant_pool::get_long(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    assert(entry->tag == cp_tag::const_long);
+
+    auto value = reinterpret_cast<cp_info*>(entry.get());
+
+    return value->long_value;
+}
+
+jdouble constant_pool::get_double(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    assert(entry->tag == cp_tag::const_double);
+
+    auto value = reinterpret_cast<cp_info*>(entry.get());
+
+    return value->double_value;
 }
 
 cp_info *constant_pool::get_name_and_type(uint16_t idx)

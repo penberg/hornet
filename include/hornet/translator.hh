@@ -17,6 +17,7 @@ struct klass;
 enum class type {
     t_int,
     t_long,
+    t_double,
     t_ref,
 };
 
