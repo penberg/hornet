@@ -61,6 +61,7 @@ struct cp_info {
         };
         jint     int_value;
         jlong    long_value;
+        jfloat   float_value;
         jdouble  double_value;
     };
 
@@ -113,6 +114,13 @@ struct cp_info {
     std::shared_ptr<cp_info> const_long(jlong value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_long);
         ret->long_value = value;
+        return ret;
+    }
+
+    static inline
+    std::shared_ptr<cp_info> const_float(jfloat value) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_float);
+        ret->float_value = value;
         return ret;
     }
 
@@ -202,9 +210,9 @@ private:
     std::shared_ptr<cp_info> read_const_interface_methodref();
     std::shared_ptr<cp_info> read_const_string();
     std::shared_ptr<cp_info> read_const_integer();
-    void read_const_float();
+    std::shared_ptr<cp_info> read_const_float();
     std::shared_ptr<cp_info> read_const_long();
-    void read_const_double();
+    std::shared_ptr<cp_info> read_const_double();
     std::shared_ptr<cp_info> read_const_name_and_type();
     std::shared_ptr<cp_info> read_const_utf8();
     void read_const_method_handle();

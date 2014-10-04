@@ -118,13 +118,13 @@ std::shared_ptr<constant_pool> class_file::read_constant_pool()
             cp_info = read_const_integer();
             break;
         case JVM_CONSTANT_Float:
-            read_const_float();
+            cp_info = read_const_float();
             break;
         case JVM_CONSTANT_Long:
             cp_info = read_const_long();
             break;
         case JVM_CONSTANT_Double:
-            read_const_double();
+            cp_info = read_const_double();
             break;
         case JVM_CONSTANT_NameAndType:
             cp_info = read_const_name_and_type();
@@ -200,23 +200,33 @@ std::shared_ptr<cp_info> class_file::read_const_integer()
     return cp_info::const_integer(value);
 }
 
-void class_file::read_const_float()
+std::shared_ptr<cp_info> class_file::read_const_float()
 {
-    /*auto bytes = */read_u4();
+    auto bytes = read_u4();
+
+    jfloat value;
+
+    memcpy(&value, &bytes, sizeof(value));
+
+    return cp_info::const_float(value);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_long()
 {
-    auto high_bytes = read_u4();
-    auto low_bytes = read_u4();
+    auto bytes = read_u8();
 
-    return cp_info::const_long((uint64_t)high_bytes << 32 || (uint64_t)low_bytes);
+    return cp_info::const_long(bytes);
 }
 
-void class_file::read_const_double()
+std::shared_ptr<cp_info> class_file::read_const_double()
 {
-    /*auto high_bytes = */read_u4();
-    /*auto low_bytes = */read_u4();
+    auto bytes = read_u8();
+
+    jdouble value;
+
+    memcpy(&value, &bytes, sizeof(value));
+
+    return cp_info::const_double(value);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_name_and_type()
