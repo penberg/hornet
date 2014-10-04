@@ -314,6 +314,8 @@ void op_arraylength(frame& frame)
 enum class opc : uint8_t {
     iconst,
     lconst,
+    fconst,
+    dconst,
     aconst,
 
     load,
@@ -403,6 +405,8 @@ value_t interp(frame& frame, const char *code)
     static void* dispatch_table[] = {
         &&op_iconst,
         &&op_lconst,
+        &&op_fconst,
+        &&op_dconst,
         &&op_aconst,
 
         &&op_load,
@@ -493,6 +497,16 @@ value_t interp(frame& frame, const char *code)
         }
         op_lconst: {
             auto value = read_const<jlong>(code, frame.pc);
+            op_const(frame, value);
+            dispatch();
+        }
+        op_fconst: {
+            auto value = read_const<jfloat>(code, frame.pc);
+            op_const(frame, value);
+            dispatch();
+        }
+        op_dconst: {
+            auto value = read_const<jdouble>(code, frame.pc);
             op_const(frame, value);
             dispatch();
         }
@@ -794,6 +808,14 @@ void interp_translator::op_const(type t, int64_t value)
     case type::t_long:
         put_opc(opc::lconst);
         put_const<jlong>(value);
+        break;
+    case type::t_float:
+        put_opc(opc::fconst);
+        put_const<jfloat>(value);
+        break;
+    case type::t_double:
+        put_opc(opc::dconst);
+        put_const<jdouble>(value);
         break;
     case type::t_ref:
         put_opc(opc::aconst);

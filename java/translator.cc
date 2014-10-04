@@ -62,6 +62,18 @@ next_insn:
         op_const(type::t_long, value);
         break;
     }
+    case JVM_OPC_fconst_0:
+    case JVM_OPC_fconst_1: {
+        jfloat value = opc - JVM_OPC_fconst_0;
+        op_const(type::t_float, value);
+        break;
+    }
+    case JVM_OPC_dconst_0:
+    case JVM_OPC_dconst_1: {
+        jdouble value = opc - JVM_OPC_dconst_0;
+        op_const(type::t_double, value);
+        break;
+    }
     case JVM_OPC_bipush: {
         int8_t value = read_opc_u1(_method->code + pc);
         op_const(type::t_int, value);
