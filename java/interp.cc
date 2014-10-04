@@ -264,9 +264,9 @@ void op_invokevirtual(method* target, frame& frame)
     assert(0);
 }
 
-void op_new(frame& frame)
+void op_new(klass* klass, frame& frame)
 {
-    object* obj = gc_new_object(nullptr);
+    object* obj = gc_new_object(klass);
     frame.ostack.push(to_value<object*>(obj));
 }
 
@@ -613,7 +613,8 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
         op_new: {
-            op_new(frame);
+            auto* type = read_const<klass*>(code, frame.pc);
+            op_new(type, frame);
             dispatch();
         }
         op_anewarray: {
@@ -913,6 +914,7 @@ void interp_translator::op_invokevirtual(method* target)
 void interp_translator::op_new(klass* klass)
 {
     put_opc(opc::new_);
+    put_const(klass);
 }
 
 void interp_translator::op_anewarray(uint16_t idx)
