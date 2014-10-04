@@ -35,6 +35,12 @@ array* from_value<array*>(value_t value)
     return reinterpret_cast<array*>(value);
 }
 
+template<>
+object* from_value<object*>(value_t value)
+{
+    return reinterpret_cast<object*>(value);
+}
+
 template<typename T>
 void op_const(frame& frame, T value)
 {
@@ -259,9 +265,26 @@ void op_invokestatic(method* target, frame& frame)
     thread->free_frame(new_frame);
 }
 
-void op_invokevirtual(method* target, frame& frame)
+void op_invokevirtual(method* desc, frame& frame)
 {
-    assert(0);
+    auto thread = hornet::thread::current();
+    auto new_frame = thread->make_frame(desc->max_locals);
+    for (int i = 0; i < desc->args_count; i++) {
+        auto arg_idx = desc->args_count - i - 1;
+        new_frame->locals[arg_idx] = frame.ostack.top();
+        frame.ostack.pop();
+    }
+    auto objectref = from_value<object*>(frame.ostack.top());
+    frame.ostack.pop();
+    assert(objectref != nullptr);
+    auto klass = objectref->klass;
+    assert(klass != nullptr);
+    auto target = klass->lookup_method(desc->name, desc->descriptor);
+    auto result = hornet::_backend->execute(target.get(), *new_frame);
+    if (target->return_type != &jvm_void_klass) {
+        frame.ostack.push(result);
+    }
+    thread->free_frame(new_frame);
 }
 
 void op_new(klass* klass, frame& frame)
