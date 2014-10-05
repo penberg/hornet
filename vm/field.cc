@@ -3,6 +3,7 @@
 namespace hornet {
 
 field::field()
+    : value(0)
 {
 }
 
