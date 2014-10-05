@@ -239,18 +239,21 @@ void op_goto(frame& frame, int16_t offset)
 void op_getstatic(field* field, frame& frame)
 {
     assert(field != nullptr);
+    field->klass->init();
     frame.ostack.push(field->value);
 }
 
 void op_putstatic(field* field, frame& frame)
 {
     assert(field != nullptr);
+    field->klass->init();
     field->value = frame.ostack.top();
     frame.ostack.pop();
 }
 
 void op_invokestatic(method* target, frame& frame)
 {
+    target->klass->init();
     auto thread = hornet::thread::current();
     auto new_frame = thread->make_frame(target->max_locals);
     for (int i = 0; i < target->args_count; i++) {
@@ -289,6 +292,7 @@ void op_invokevirtual(method* desc, frame& frame)
 
 void op_new(klass* klass, frame& frame)
 {
+    klass->init();
     object* obj = gc_new_object(klass);
     frame.ostack.push(to_value<object*>(obj));
 }

@@ -2,8 +2,9 @@
 
 namespace hornet {
 
-field::field()
-    : value(0)
+field::field(struct klass* klass_)
+    : klass(klass_)
+    , value(0)
 {
 }
 

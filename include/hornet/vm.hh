@@ -43,18 +43,26 @@ struct object {
 using method_list_type = std::vector<std::shared_ptr<method>>;
 using field_list_type = std::vector<std::shared_ptr<field>>;
 
+enum class klass_state {
+    loaded,
+    initialized,
+};
+
 struct klass {
     struct object object;
     std::string   name;
     klass*        super;
     uint16_t      access_flags;
+    klass_state   state = klass_state::loaded;
 
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     ~klass();
 
+    void init();
+    bool verify();
+
     void add(std::shared_ptr<method> method);
     void add(std::shared_ptr<field> field);
-    bool verify();
 
     std::shared_ptr<constant_pool> const_pool() const {
         return _const_pool;
@@ -86,11 +94,12 @@ private:
 };
 
 struct field {
-    value_t     value;
-    std::string name;
-    std::string descriptor;
+    struct klass* klass;
+    value_t       value;
+    std::string   name;
+    std::string   descriptor;
 
-    field();
+    field(struct klass* klass_);
     ~field();
 
     bool matches(std::string name, std::string descriptor);

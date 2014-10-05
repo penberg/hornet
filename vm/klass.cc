@@ -86,6 +86,25 @@ std::shared_ptr<method> klass::resolve_method(uint16_t idx)
     return target_klass->lookup_method(method_name->bytes, method_type->bytes);
 }
 
+void klass::init()
+{
+    switch (state) {
+    case klass_state::loaded: {
+        state = klass_state::initialized;
+        auto clinit = lookup_method("<clinit>", "()V");
+        if (clinit) {
+            auto thread = hornet::thread::current();
+            auto new_frame = thread->make_frame(0);
+            hornet::_backend->execute(clinit.get(), *new_frame);
+            thread->free_frame(new_frame);
+        }
+        break;
+    }
+    case klass_state::initialized:
+        break;
+    }
+}
+
 bool klass::verify()
 {
     for (auto method : _methods) {

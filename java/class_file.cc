@@ -56,7 +56,7 @@ std::shared_ptr<klass> class_file::parse()
     auto fields_count = read_u2();
 
     for (auto i = 0; i < fields_count; i++) {
-        auto field = read_field_info(*const_pool);
+        auto field = read_field_info(klass, *const_pool);
 
         klass->add(field);
     }
@@ -276,7 +276,7 @@ void class_file::read_const_invoke_dynamic()
     /*auto name_and_type_index = */read_u2();
 }
 
-std::shared_ptr<field> class_file::read_field_info(constant_pool &constant_pool)
+std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &constant_pool)
 {
     /*auto access_flags = */read_u2();
     auto name_index = read_u2();
@@ -287,7 +287,7 @@ std::shared_ptr<field> class_file::read_field_info(constant_pool &constant_pool)
 
     auto *cp_descriptor = constant_pool.get_utf8(descriptor_index);
 
-    auto f = std::make_shared<field>();
+    auto f = std::make_shared<field>(klass);
 
     f->name         = cp_name->bytes;
     f->descriptor   = cp_descriptor->bytes;
