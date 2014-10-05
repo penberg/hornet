@@ -8,10 +8,10 @@
 #include <sstream>
 #include <jni.h>
 
-#define STUB \
-    do { \
-        fprintf(stderr, "warning: jni: %s: stubbed out\n", __func__); \
-    } while (0);
+static void jni_api_stub()
+{
+    assert(0);
+}
 
 static jint HORNET_JNI(DestroyJavaVM)(JavaVM *vm)
 {
@@ -262,7 +262,7 @@ static jboolean HORNET_JNI(ExceptionCheck)(JNIEnv *env)
     return JNI_FALSE;
 }
 
-#define HORNET_DEFINE_JNI_STUB(name) .name = nullptr
+#define HORNET_DEFINE_JNI_STUB(name) .name = reinterpret_cast<decltype(JNINativeInterface_::name)>(jni_api_stub)
 
 const struct JNINativeInterface_ HORNET_JNI(JNINativeInterface) = {
     .reserved0 = nullptr,
