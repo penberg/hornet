@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <cassert>
 #include <climits>
+#include <cstring>
 #include <fcntl.h>
 #include <cstdio>
 
@@ -19,6 +20,7 @@ void loader::register_entry(std::string path)
     struct stat st;
 
     if (stat(path.c_str(), &st) < 0) {
+        fprintf(stderr, "warning: %s: %s\n", path.c_str(), strerror(errno));
         return;
     }
     if (S_ISDIR(st.st_mode)) {
