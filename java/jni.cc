@@ -233,6 +233,13 @@ static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodI
     va_end(args);
 }
 
+static jstring HORNET_JNI(NewStringUTF)(JNIEnv* env, const char* bytes)
+{
+    auto string = hornet::intern_string(std::string{bytes});
+
+    return hornet::to_jstring(string);
+}
+
 static jobjectArray
 HORNET_JNI(NewObjectArray)(JNIEnv* env, jsize len, jclass clazz, jobject init)
 {
@@ -425,7 +432,7 @@ const struct JNINativeInterface_ HORNET_JNI(JNINativeInterface) = {
     HORNET_DEFINE_JNI_STUB(GetStringLength),
     HORNET_DEFINE_JNI_STUB(GetStringChars),
     HORNET_DEFINE_JNI_STUB(ReleaseStringChars),
-    HORNET_DEFINE_JNI_STUB(NewStringUTF),
+    HORNET_DEFINE_JNI(NewStringUTF),
     HORNET_DEFINE_JNI_STUB(GetStringUTFLength),
     HORNET_DEFINE_JNI_STUB(GetStringUTFChars),
     HORNET_DEFINE_JNI_STUB(ReleaseStringUTFChars),

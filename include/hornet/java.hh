@@ -196,6 +196,8 @@ struct unknown_attr : attr_info {
     unknown_attr() : attr_info(attr_type::unknown) {}
 };
 
+string* intern_string(std::string str);
+
 class class_file {
 public:
     explicit class_file(void *data, size_t size);
