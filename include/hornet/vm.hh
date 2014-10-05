@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <mutex>
+#include <map>
 
 namespace hornet {
 
@@ -18,12 +18,12 @@ class loader;
 
 class jvm {
 public:
-    void register_klass(std::shared_ptr<klass> klass);
+    std::shared_ptr<klass> lookup_class(std::string name);
+    void register_class(std::shared_ptr<klass> klass);
     void invoke(method* method);
 
 private:
-    std::mutex _mutex;
-    std::vector<std::shared_ptr<klass>> _klasses;
+    std::map<std::string, std::shared_ptr<klass>> _classes;
 };
 
 extern jvm *_jvm;

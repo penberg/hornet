@@ -32,7 +32,13 @@ void loader::register_entry(std::string path)
 
 std::shared_ptr<klass> loader::load_class(const char *class_name)
 {
-    auto klass = try_to_load_class(class_name);
+    auto klass = hornet::_jvm->lookup_class(class_name);
+
+    if (klass) {
+        return klass;
+    }
+
+    klass = try_to_load_class(class_name);
 
     if (!klass) {
         hornet::throw_exception(java_lang_NoClassDefFoundError);
@@ -44,7 +50,7 @@ std::shared_ptr<klass> loader::load_class(const char *class_name)
         return nullptr;
     }
 
-    hornet::_jvm->register_klass(klass);
+    hornet::_jvm->register_class(klass);
 
     return klass;
 }
