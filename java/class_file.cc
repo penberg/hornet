@@ -42,7 +42,7 @@ std::shared_ptr<klass> class_file::parse()
 
     auto access_flags = read_u2();
 
-    /*auto this_class = */read_u2();
+    auto this_class = read_u2();
 
     auto super_class = read_u2();
 
@@ -83,6 +83,12 @@ std::shared_ptr<klass> class_file::parse()
     } else {
         klass->super = nullptr;
     }
+
+    auto klassref = const_pool->get_class(this_class);
+
+    auto klass_name = const_pool->get_utf8(klassref->name_index);
+
+    klass->name = klass_name->bytes;
 
     return std::shared_ptr<hornet::klass>(klass);
 }
