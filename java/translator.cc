@@ -353,13 +353,14 @@ next_insn:
     case JVM_OPC_invokespecial: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto target = _method->klass->resolve_method(idx);
-        if (_method->klass->access_flags & JVM_ACC_SUPER
-            && target->klass->is_subclass_of(_method->klass->super)
-            && target->is_init()) {
-           target = target->klass->super->lookup_method(target->name, target->descriptor);
-        }
         assert(target != nullptr);
-        op_invokestatic(target.get());
+        if (_method->klass->access_flags & JVM_ACC_SUPER
+                && target->klass->is_subclass_of(_method->klass->super)
+                && !target->is_init()) {
+            op_invokevirtual(target.get());
+        } else {
+            op_invokestatic(target.get());
+        }
         break;
     }
     case JVM_OPC_invokestatic: {
