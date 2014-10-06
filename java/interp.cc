@@ -592,8 +592,9 @@ value_t interp(frame& frame, const char *code)
 
         op_ineg: op_unary<jint>(frame, unop::op_neg); dispatch();
 
-        op_ret_void:
+        op_ret_void: {
             return to_value<object*>(nullptr);
+        }
 
         op_iinc: {
             auto idx = read_const<uint8_t>(code, frame.pc);
@@ -638,15 +639,17 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
 
-        op_goto:
+        op_goto: {
             auto offset = read_const<uint16_t>(code, frame.pc);
             frame.pc = offset;
             dispatch();
+        }
 
-        op_ret:
+        op_ret: {
             auto value = frame.ostack.top();
             frame.ostack.pop();
             return value;
+        }
 
         op_getstatic: {
             auto* target = read_const<field*>(code, frame.pc);
