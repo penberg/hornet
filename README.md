@@ -42,7 +42,7 @@ Prerequisites:
 **Fedora**
 
 ```
-$ yum install clang java-1.7.0-openjdk-devel
+$ yum install java-1.7.0-openjdk-devel
 ```
 
 If you want to enable the [DynASM](http://luajit.org/dynasm.html) backend,

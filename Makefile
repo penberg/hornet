@@ -8,8 +8,6 @@ PREFIX ?= $(HOME)
 DESTDIR=
 BINDIR=$(PREFIX)/bin
 
-CXX ?= clang++
-
 LLVM_CONFIG ?= llvm-config
 
 LLVM_VERSION = $(shell $(LLVM_CONFIG) --version)
