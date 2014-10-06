@@ -253,6 +253,7 @@ void op_putstatic(field* field, frame& frame)
 
 void op_invokestatic(method* target, frame& frame)
 {
+    assert(!(target->access_flags & JVM_ACC_NATIVE));
     target->klass->init();
     auto thread = hornet::thread::current();
     auto new_frame = thread->make_frame(target->max_locals);
