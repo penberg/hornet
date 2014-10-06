@@ -37,7 +37,7 @@ work-in-progress._
 
 ## Installation
 
-First, install dependencies:
+Prerequisites:
 
 **Fedora**
 
@@ -59,7 +59,13 @@ library:
 $ yum install llvm-dev
 ```
 
-Finally, install Hornet:
+**OS X**
+
+```
+export JAVA_HOME=$(/usr/libexec/java_home)
+```
+
+Build and install Hornet:
 
 ```
 $ make install
