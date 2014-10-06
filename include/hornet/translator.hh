@@ -76,6 +76,8 @@ protected:
 
     void translate(std::shared_ptr<basic_block> bblock);
 
+    void ldc(uint16_t idx);
+
     std::shared_ptr<basic_block> lookup(uint16_t offset);
     std::shared_ptr<basic_block> lookup_contains(uint16_t offset);
 
