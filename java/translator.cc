@@ -168,6 +168,16 @@ next_insn:
         op_store(type::t_long, idx);
         break;
     }
+    case JVM_OPC_fstore: {
+        auto idx = read_opc_u1(_method->code + pc);
+        op_store(type::t_float, idx);
+        break;
+    }
+    case JVM_OPC_dstore: {
+        auto idx = read_opc_u1(_method->code + pc);
+        op_store(type::t_double, idx);
+        break;
+    }
     case JVM_OPC_astore: {
         auto idx = read_opc_u1(_method->code + pc);
         op_store(type::t_ref, idx);
