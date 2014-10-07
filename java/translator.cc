@@ -197,9 +197,39 @@ next_insn:
         op_store(type::t_ref, idx);
         break;
     }
+    case JVM_OPC_iastore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_int, idx);
+        break;
+    }
+    case JVM_OPC_lastore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_long, idx);
+        break;
+    }
+    case JVM_OPC_fastore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_float, idx);
+        break;
+    }
+    case JVM_OPC_dastore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_double, idx);
+        break;
+    }
     case JVM_OPC_aastore: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         op_arraystore(type::t_ref, idx);
+        break;
+    }
+    case JVM_OPC_castore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_char, idx);
+        break;
+    }
+    case JVM_OPC_sastore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_short, idx);
         break;
     }
     case JVM_OPC_pop: {

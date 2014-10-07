@@ -15,6 +15,8 @@ struct field;
 struct klass;
 
 enum class type {
+    t_char,
+    t_short,
     t_int,
     t_long,
     t_float,
