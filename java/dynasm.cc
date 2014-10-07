@@ -46,6 +46,7 @@ public:
     virtual void op_getstatic(field* target) override;
     virtual void op_putstatic(field* target) override;
     virtual void op_new(klass* klass) override;
+    virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(uint16_t idx) override;
     virtual void op_arraylength() override;
 

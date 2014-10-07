@@ -298,6 +298,11 @@ void op_new(klass* klass, frame& frame)
     frame.ostack.push(to_value<object*>(obj));
 }
 
+void op_newarray(uint8_t atype, frame& frame)
+{
+    assert(0);
+}
+
 void op_anewarray(uint16_t idx, frame& frame)
 {
     assert(0);
@@ -392,6 +397,7 @@ enum class opc : uint8_t {
     invokevirtual,
 
     new_,
+    newarray,
     anewarray,
 
     arraylength,
@@ -483,6 +489,7 @@ value_t interp(frame& frame, const char *code)
         &&op_invokevirtual,
 
         &&op_new,
+        &&op_newarray,
         &&op_anewarray,
 
         &&op_arraylength,
@@ -678,6 +685,11 @@ value_t interp(frame& frame, const char *code)
             op_new(type, frame);
             dispatch();
         }
+        op_newarray: {
+            auto atype = read_const<uint8_t>(code, frame.pc);
+            op_newarray(atype, frame);
+            dispatch();
+        }
         op_anewarray: {
             auto idx = read_const<uint16_t>(code, frame.pc);
             op_anewarray(idx, frame);
@@ -735,6 +747,7 @@ public:
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokevirtual(method* target) override;
     virtual void op_new(klass* klass) override;
+    virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(uint16_t idx) override;
     virtual void op_arraylength() override;
 
@@ -992,6 +1005,12 @@ void interp_translator::op_new(klass* klass)
 {
     put_opc(opc::new_);
     put_const(klass);
+}
+
+void interp_translator::op_newarray(uint8_t atype)
+{
+    put_opc(opc::newarray);
+    put_const(atype);
 }
 
 void interp_translator::op_anewarray(uint16_t idx)

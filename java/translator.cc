@@ -390,6 +390,11 @@ next_insn:
         op_new(klass.get());
         break;
     }
+    case JVM_OPC_newarray: {
+        uint16_t atype = read_opc_u1(_method->code + pc);
+        op_newarray(atype);
+        break;
+    }
     case JVM_OPC_anewarray: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         op_anewarray(idx);
