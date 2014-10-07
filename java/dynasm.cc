@@ -41,8 +41,9 @@ public:
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
     virtual void op_ret() override;
     virtual void op_ret_void() override;
-    virtual void op_invokestatic(method* target) override;
     virtual void op_invokevirtual(method* target) override;
+    virtual void op_invokestatic(method* target) override;
+    virtual void op_invokeinterface(method* target) override;
     virtual void op_getstatic(field* target) override;
     virtual void op_putstatic(field* target) override;
     virtual void op_new(klass* klass) override;

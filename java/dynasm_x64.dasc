@@ -175,12 +175,17 @@ void dynasm_translator::op_ret_void()
     |  ret
 }
 
+void dynasm_translator::op_invokevirtual(method* method)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_invokestatic(method* method)
 {
     assert(0);
 }
 
-void dynasm_translator::op_invokevirtual(method* method)
+void dynasm_translator::op_invokeinterface(method* method)
 {
     assert(0);
 }

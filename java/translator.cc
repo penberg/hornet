@@ -408,6 +408,14 @@ next_insn:
         op_ret();
         break;
     }
+    case JVM_OPC_invokevirtual: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto target = _method->klass->resolve_method(idx);
+        assert(target != nullptr);
+        assert(!(target->access_flags & JVM_ACC_STATIC));
+        op_invokevirtual(target.get());
+        break;
+    }
     case JVM_OPC_invokespecial: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto target = _method->klass->resolve_method(idx);
@@ -429,12 +437,15 @@ next_insn:
         op_invokestatic(target.get());
         break;
     }
-    case JVM_OPC_invokevirtual: {
+    case JVM_OPC_invokeinterface: {
         uint16_t idx = read_opc_u2(_method->code + pc);
+        uint8_t count = read_opc_u1(_method->code + pc + 2);
+        uint8_t zero = read_opc_u1(_method->code + pc + 3);
+        assert(count != 0);
+        assert(zero == 0);
         auto target = _method->klass->resolve_method(idx);
         assert(target != nullptr);
-        assert(!(target->access_flags & JVM_ACC_STATIC));
-        op_invokevirtual(target.get());
+        op_invokeinterface(target.get());
         break;
     }
     case JVM_OPC_return: {
