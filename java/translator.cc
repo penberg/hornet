@@ -292,6 +292,14 @@ next_insn:
         op_binary(type::t_long, binop::op_mul);
         break;
     }
+    case JVM_OPC_fmul: {
+        op_binary(type::t_float, binop::op_mul);
+        break;
+    }
+    case JVM_OPC_dmul: {
+        op_binary(type::t_double, binop::op_mul);
+        break;
+    }
     case JVM_OPC_idiv: {
         op_binary(type::t_int, binop::op_div);
         break;
