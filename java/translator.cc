@@ -156,6 +156,22 @@ next_insn:
         op_load(type::t_long, idx);
         break;
     }
+    case JVM_OPC_fload_0:
+    case JVM_OPC_fload_1:
+    case JVM_OPC_fload_2:
+    case JVM_OPC_fload_3: {
+        uint16_t idx = opc - JVM_OPC_fload_0;
+        op_load(type::t_float, idx);
+        break;
+    }
+    case JVM_OPC_dload_0:
+    case JVM_OPC_dload_1:
+    case JVM_OPC_dload_2:
+    case JVM_OPC_dload_3: {
+        uint16_t idx = opc - JVM_OPC_dload_0;
+        op_load(type::t_double, idx);
+        break;
+    }
     case JVM_OPC_aload_0:
     case JVM_OPC_aload_1:
     case JVM_OPC_aload_2:
