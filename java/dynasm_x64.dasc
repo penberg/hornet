@@ -210,7 +210,7 @@ void dynasm_translator::op_newarray(uint8_t atype)
     assert(0);
 }
 
-void dynasm_translator::op_anewarray(uint16_t idx)
+void dynasm_translator::op_anewarray(klass* klass)
 {
     assert(0);
 }

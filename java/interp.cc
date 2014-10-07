@@ -23,6 +23,12 @@ value_t to_value(object* obj)
     return reinterpret_cast<value_t>(obj);
 }
 
+template<>
+value_t to_value(array* arrayref)
+{
+    return reinterpret_cast<value_t>(arrayref);
+}
+
 template<typename T>
 T from_value(value_t value)
 {
@@ -313,9 +319,11 @@ void op_newarray(uint8_t atype, frame& frame)
     assert(0);
 }
 
-void op_anewarray(uint16_t idx, frame& frame)
+void op_anewarray(klass* klass, frame& frame)
 {
-    assert(0);
+    auto count = from_value<jint>(frame.ostack.top());
+    auto* arrayref = gc_new_object_array(klass, count);
+    frame.ostack.push(to_value(arrayref));
 }
 
 void op_arraylength(frame& frame)
@@ -713,8 +721,8 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
         op_anewarray: {
-            auto idx = read_const<uint16_t>(code, frame.pc);
-            op_anewarray(idx, frame);
+            auto* type = read_const<klass*>(code, frame.pc);
+            op_anewarray(type, frame);
             dispatch();
         }
         op_arraylength:
@@ -771,7 +779,7 @@ public:
     virtual void op_invokeinterface(method* target) override;
     virtual void op_new(klass* klass) override;
     virtual void op_newarray(uint8_t atype) override;
-    virtual void op_anewarray(uint16_t idx) override;
+    virtual void op_anewarray(klass* klass) override;
     virtual void op_arraylength() override;
 
 private:
@@ -1064,10 +1072,10 @@ void interp_translator::op_newarray(uint8_t atype)
     put_const(atype);
 }
 
-void interp_translator::op_anewarray(uint16_t idx)
+void interp_translator::op_anewarray(klass* klass)
 {
     put_opc(opc::anewarray);
-    put_const(idx);
+    put_const(klass);
 }
 
 void interp_translator::op_arraylength()

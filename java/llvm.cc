@@ -79,7 +79,7 @@ public:
     virtual void op_ret_void() override;
     virtual void op_new(klass* klass) override;
     virtual void op_newarray(uint8_t atype) override;
-    virtual void op_anewarray(uint16_t idx) override;
+    virtual void op_anewarray(klass* klass) override;
     virtual void op_invokevirtual(method* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
@@ -280,7 +280,7 @@ void llvm_translator::op_newarray(uint8_t atype)
     assert(0);
 }
 
-void llvm_translator::op_anewarray(uint16_t idx)
+void llvm_translator::op_anewarray(klass* klass)
 {
     assert(0);
 }

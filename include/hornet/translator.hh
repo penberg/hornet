@@ -110,7 +110,7 @@ protected:
     virtual void op_putstatic(field* target) = 0;
     virtual void op_new(klass* klass) = 0;
     virtual void op_newarray(uint8_t atype) = 0;
-    virtual void op_anewarray(uint16_t idx) = 0;
+    virtual void op_anewarray(klass *klass) = 0;
     virtual void op_arraylength() = 0;
 
     method* _method;

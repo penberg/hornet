@@ -486,7 +486,9 @@ next_insn:
     }
     case JVM_OPC_anewarray: {
         uint16_t idx = read_opc_u2(_method->code + pc);
-        op_anewarray(idx);
+        auto klass = _method->klass->resolve_class(idx);
+        assert(klass != nullptr);
+        op_anewarray(klass.get());
         break;
     }
     case JVM_OPC_arraylength: {
