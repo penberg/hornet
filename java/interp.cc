@@ -253,20 +253,25 @@ void op_putstatic(field* field, frame& frame)
 
 void op_invokestatic(method* target, frame& frame)
 {
-    assert(!(target->access_flags & JVM_ACC_NATIVE));
+    value_t result;
     target->klass->init();
-    auto thread = hornet::thread::current();
-    auto new_frame = thread->make_frame(target->max_locals);
-    for (int i = 0; i < target->args_count; i++) {
-        auto arg_idx = target->args_count - i - 1;
-        new_frame->locals[arg_idx] = frame.ostack.top();
-        frame.ostack.pop();
+    if (target->access_flags & JVM_ACC_NATIVE) {
+        fprintf(stderr, "warning: %s: stubbed\n", target->full_name().c_str());
+        result = to_value<object*>(nullptr);
+    } else {
+       auto thread = hornet::thread::current();
+       auto new_frame = thread->make_frame(target->max_locals);
+       for (int i = 0; i < target->args_count; i++) {
+           auto arg_idx = target->args_count - i - 1;
+           new_frame->locals[arg_idx] = frame.ostack.top();
+           frame.ostack.pop();
+       }
+       result = hornet::_backend->execute(target, *new_frame);
+       thread->free_frame(new_frame);
     }
-    auto result = hornet::_backend->execute(target, *new_frame);
     if (target->return_type != &jvm_void_klass) {
         frame.ostack.push(result);
     }
-    thread->free_frame(new_frame);
 }
 
 void op_invokevirtual(method* desc, frame& frame)

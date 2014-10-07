@@ -122,6 +122,10 @@ struct method {
     method();
     ~method();
 
+    std::string full_name() const {
+        return klass->name + "." + name + descriptor;
+    }
+
     bool is_init() const {
         return name[0] == '<';
     }
