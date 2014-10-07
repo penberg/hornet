@@ -125,6 +125,16 @@ next_insn:
         op_load(type::t_long, idx);
         break;
     }
+    case JVM_OPC_fload: {
+        auto idx = read_opc_u1(_method->code + pc);
+        op_load(type::t_float, idx);
+        break;
+    }
+    case JVM_OPC_dload: {
+        auto idx = read_opc_u1(_method->code + pc);
+        op_load(type::t_double, idx);
+        break;
+    }
     case JVM_OPC_aload: {
         auto idx = read_opc_u1(_method->code + pc);
         op_load(type::t_ref, idx);
