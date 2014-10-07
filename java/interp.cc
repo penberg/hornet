@@ -366,11 +366,13 @@ enum class opc : uint8_t {
     fsub,
     fmul,
     fdiv,
+    frem,
 
     dadd,
     dsub,
     dmul,
     ddiv,
+    drem,
 
     ineg,
 
@@ -458,11 +460,13 @@ value_t interp(frame& frame, const char *code)
         &&op_fsub,
         &&op_fmul,
         &&op_fdiv,
+        &&op_frem,
 
         &&op_dadd,
         &&op_dsub,
         &&op_dmul,
         &&op_ddiv,
+        &&op_drem,
 
         &&op_ineg,
 
@@ -590,11 +594,13 @@ value_t interp(frame& frame, const char *code)
         op_fsub: op_binary<jfloat> (frame, binop::op_sub); dispatch();
         op_fmul: op_binary<jfloat> (frame, binop::op_mul); dispatch();
         op_fdiv: op_binary<jfloat> (frame, binop::op_div); dispatch();
+        op_frem: op_binary<jfloat> (frame, binop::op_rem); dispatch();
 
         op_dadd: op_binary<jdouble>(frame, binop::op_add); dispatch();
         op_dsub: op_binary<jdouble>(frame, binop::op_sub); dispatch();
         op_dmul: op_binary<jdouble>(frame, binop::op_mul); dispatch();
         op_ddiv: op_binary<jdouble>(frame, binop::op_div); dispatch();
+        op_drem: op_binary<jdouble>(frame, binop::op_rem); dispatch();
 
         op_ishl: op_shift<jint> (frame, shiftop::op_shl, 0x1f); dispatch();
         op_lshl: op_shift<jlong>(frame, shiftop::op_shl, 0x3f); dispatch();
@@ -921,6 +927,28 @@ void interp_translator::op_binary(type t, binop op)
         case binop::op_and: put_opc(opc::land); break;
         case binop::op_or:  put_opc(opc::lor);  break;
         case binop::op_xor: put_opc(opc::lxor); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_float: {
+        switch (op) {
+        case binop::op_add: put_opc(opc::fadd); break;
+        case binop::op_sub: put_opc(opc::fsub); break;
+        case binop::op_mul: put_opc(opc::fmul); break;
+        case binop::op_div: put_opc(opc::fdiv); break;
+        case binop::op_rem: put_opc(opc::frem); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_double: {
+        switch (op) {
+        case binop::op_add: put_opc(opc::dadd); break;
+        case binop::op_sub: put_opc(opc::dsub); break;
+        case binop::op_mul: put_opc(opc::dmul); break;
+        case binop::op_div: put_opc(opc::ddiv); break;
+        case binop::op_rem: put_opc(opc::drem); break;
         default: assert(0);
         }
         break;
