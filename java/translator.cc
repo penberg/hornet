@@ -443,7 +443,7 @@ next_insn:
         uint8_t zero = read_opc_u1(_method->code + pc + 3);
         assert(count != 0);
         assert(zero == 0);
-        auto target = _method->klass->resolve_method(idx);
+        auto target = _method->klass->resolve_interface_method(idx);
         assert(target != nullptr);
         op_invokeinterface(target.get());
         break;

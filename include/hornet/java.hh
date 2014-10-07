@@ -161,6 +161,7 @@ public:
     cp_info *get_class(uint16_t idx);
     cp_info *get_fieldref(uint16_t idx);
     cp_info *get_methodref(uint16_t idx);
+    cp_info *get_interface_methodref(uint16_t idx);
     cp_info *get_name_and_type(uint16_t idx);
     jint get_integer(uint16_t idx);
     jlong get_long(uint16_t idx);

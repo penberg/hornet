@@ -64,6 +64,17 @@ cp_info *constant_pool::get_methodref(uint16_t idx)
     return reinterpret_cast<cp_info*>(entry.get());
 }
 
+cp_info *constant_pool::get_interface_methodref(uint16_t idx)
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    assert(entry->tag == cp_tag::const_interface_methodref);
+
+    return reinterpret_cast<cp_info*>(entry.get());
+}
+
 jint constant_pool::get_integer(uint16_t idx)
 {
     assert(idx < _entries.size());

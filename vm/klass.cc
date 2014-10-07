@@ -86,6 +86,19 @@ std::shared_ptr<method> klass::resolve_method(uint16_t idx)
     return target_klass->lookup_method(method_name->bytes, method_type->bytes);
 }
 
+std::shared_ptr<method> klass::resolve_interface_method(uint16_t idx)
+{
+    auto methodref = _const_pool->get_interface_methodref(idx);
+    auto target_klass = resolve_class(methodref->class_index);
+    if (!target_klass) {
+        return nullptr;
+    }
+    auto method_name_and_type = _const_pool->get_name_and_type(methodref->name_and_type_index);
+    auto method_name = _const_pool->get_utf8(method_name_and_type->name_index);
+    auto method_type = _const_pool->get_utf8(method_name_and_type->descriptor_index);
+    return target_klass->lookup_method(method_name->bytes, method_type->bytes);
+}
+
 void klass::init()
 {
     switch (state) {
