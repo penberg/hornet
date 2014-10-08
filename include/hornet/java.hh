@@ -240,6 +240,8 @@ private:
 
 extern klass jvm_void_klass;
 
+extern bool verbose_compiler;
+
 extern bool verbose_verifier;
 
 bool verify_method(std::shared_ptr<method> method);

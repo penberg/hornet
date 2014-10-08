@@ -124,7 +124,7 @@ struct method {
     ~method();
 
     std::string full_name() const {
-        return klass->name + "." + name + descriptor;
+        return klass->name + "::" + name + descriptor;
     }
 
     bool is_init() const {

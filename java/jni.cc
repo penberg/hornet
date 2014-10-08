@@ -109,6 +109,10 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
             hornet::verbose_verifier = true;
             continue;
         }
+        if (option_matches(opt, "-XX:+PrintCompilation")) {
+            hornet::verbose_compiler = true;
+            continue;
+        }
         if (!strcmp(opt, "-XX:+DynASM")) {
 #ifdef CONFIG_HAVE_DYNASM
             backend = hornet::backend_type::dynasm;

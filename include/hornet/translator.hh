@@ -74,6 +74,8 @@ public:
     void translate();
 
 protected:
+    void log();
+
     void scan();
 
     void translate(std::shared_ptr<basic_block> bblock);

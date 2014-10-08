@@ -13,8 +13,12 @@ using namespace std;
 
 namespace hornet {
 
+bool verbose_compiler;
+
 void translator::translate()
 {
+    log();
+
     scan();
 
     prologue();
@@ -666,6 +670,13 @@ struct SortFunctor {
         return i->start < j->start;
     }
 };
+
+void translator::log()
+{
+    if (verbose_compiler) {
+        printf("%s %d (bytes)\n", _method->full_name().c_str(), _method->code_length);
+    }
+}
 
 void translator::scan()
 {
