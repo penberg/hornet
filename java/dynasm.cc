@@ -37,6 +37,7 @@ public:
     virtual void op_swap() override;
     virtual void op_binary(type t, binop op) override;
     virtual void op_iinc(uint8_t idx, jint value) override;
+    virtual void op_if(cmpop op, std::shared_ptr<basic_block> target) override;
     virtual void op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock) override;
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
     virtual void op_ret() override;

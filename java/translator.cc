@@ -366,6 +366,36 @@ next_insn:
         op_iinc(idx, value);
         break;
     }
+    case JVM_OPC_ifeq: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(cmpop::op_cmpeq, target);
+        break;
+    }
+    case JVM_OPC_ifne: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(cmpop::op_cmpne, target);
+        break;
+    }
+    case JVM_OPC_iflt: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(cmpop::op_cmplt, target);
+        break;
+    }
+    case JVM_OPC_ifgt: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(cmpop::op_cmpgt, target);
+        break;
+    }
+    case JVM_OPC_ifle: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(cmpop::op_cmple, target);
+        break;
+    }
     case JVM_OPC_if_icmpeq: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
