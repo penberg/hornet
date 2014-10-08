@@ -185,6 +185,23 @@ void op_iinc(frame& frame, uint16_t idx, jint value)
     frame.locals[idx] += value;
 }
 
+void op_lcmp(frame& frame)
+{
+    auto value2 = from_value<jlong>(frame.ostack.top());
+    frame.ostack.pop();
+    auto value1 = from_value<jlong>(frame.ostack.top());
+    frame.ostack.pop();
+    jint result;
+    if (value1 < value2) {
+        result = -1;
+    } else if (value1 > value2) {
+        result = 1;
+    } else {
+        result = 0;
+    }
+    frame.ostack.push(to_value(result));
+}
+
 enum class shiftop {
     op_shl,
     op_shr,
@@ -405,6 +422,8 @@ enum class opc : uint8_t {
 
     iinc,
 
+    lcmp,
+
     ifeq,
     ifne,
     iflt,
@@ -506,6 +525,8 @@ value_t interp(frame& frame, const char *code)
         &&op_lshr,
 
         &&op_iinc,
+
+        &&op_lcmp,
 
         &&op_ifeq,
         &&op_ifne,
@@ -651,14 +672,16 @@ value_t interp(frame& frame, const char *code)
         op_ret_void: {
             return to_value<object*>(nullptr);
         }
-
         op_iinc: {
             auto idx = read_const<uint8_t>(code, frame.pc);
             auto value = read_const<jint>(code, frame.pc);
             op_iinc(frame, idx, value);
             dispatch();
         }
-
+        op_lcmp: {
+            op_lcmp(frame);
+            dispatch();
+        }
         op_ifeq: {
             auto offset = read_const<uint16_t>(code, frame.pc);
             op_if(frame, cmpop::op_cmpeq, offset);
@@ -1046,7 +1069,7 @@ void interp_translator::op_iinc(uint8_t idx, jint value)
 
 void interp_translator::op_lcmp()
 {
-    assert(0);
+    put_opc(opc::lcmp);
 }
 
 void interp_translator::op_if(cmpop op, std::shared_ptr<basic_block> target)
