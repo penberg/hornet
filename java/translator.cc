@@ -366,6 +366,10 @@ next_insn:
         op_iinc(idx, value);
         break;
     }
+    case JVM_OPC_lcmp: {
+        op_lcmp();
+        break;
+    }
     case JVM_OPC_ifeq: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
