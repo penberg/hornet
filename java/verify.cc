@@ -22,6 +22,8 @@ bool verify_method(std::shared_ptr<method> method)
 
         uint8_t opc = method->code[pc];
 
+        assert(opc < JVM_OPC_MAX);
+
         switch (opc) {
         case JVM_OPC_iconst_m1:
         case JVM_OPC_iconst_0:
