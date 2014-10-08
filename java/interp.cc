@@ -225,6 +225,15 @@ bool eval(cmpop op, T a, T b)
     }
 }
 
+void op_if(frame& frame, cmpop op, uint16_t offset)
+{
+    auto value = from_value<jint>(frame.ostack.top());
+    frame.ostack.pop();
+    if (eval(op, value, 0)) {
+        frame.pc = offset;
+    }
+}
+
 template<typename T>
 void op_if_cmp(frame& frame, cmpop op, uint16_t offset)
 {
@@ -396,6 +405,13 @@ enum class opc : uint8_t {
 
     iinc,
 
+    ifeq,
+    ifne,
+    iflt,
+    ifge,
+    ifgt,
+    ifle,
+
     if_icmpeq,
     if_icmpne,
     if_icmplt,
@@ -490,6 +506,13 @@ value_t interp(frame& frame, const char *code)
         &&op_lshr,
 
         &&op_iinc,
+
+        &&op_ifeq,
+        &&op_ifne,
+        &&op_iflt,
+        &&op_ifge,
+        &&op_ifgt,
+        &&op_ifle,
 
         &&op_if_icmpeq,
         &&op_if_icmpne,
@@ -636,6 +659,36 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
 
+        op_ifeq: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if(frame, cmpop::op_cmpeq, offset);
+            dispatch();
+        }
+        op_ifne: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if(frame, cmpop::op_cmpne, offset);
+            dispatch();
+        }
+        op_iflt: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if(frame, cmpop::op_cmplt, offset);
+            dispatch();
+        }
+        op_ifge: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if(frame, cmpop::op_cmpge, offset);
+            dispatch();
+        }
+        op_ifgt: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if(frame, cmpop::op_cmpgt, offset);
+            dispatch();
+        }
+        op_ifle: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if(frame, cmpop::op_cmple, offset);
+            dispatch();
+        }
         op_if_icmpeq: {
             auto offset = read_const<uint16_t>(code, frame.pc);
             op_if_cmp<jint>(frame, cmpop::op_cmpeq, offset);
@@ -987,7 +1040,16 @@ void interp_translator::op_iinc(uint8_t idx, jint value)
 
 void interp_translator::op_if(cmpop op, std::shared_ptr<basic_block> target)
 {
-    assert(0);
+    switch (op) {
+    case cmpop::op_cmpeq: put_opc(opc::ifeq); break;
+    case cmpop::op_cmpne: put_opc(opc::ifne); break;
+    case cmpop::op_cmplt: put_opc(opc::iflt); break;
+    case cmpop::op_cmpge: put_opc(opc::ifge); break;
+    case cmpop::op_cmpgt: put_opc(opc::ifgt); break;
+    case cmpop::op_cmple: put_opc(opc::ifle); break;
+    default:              assert(0);
+    }
+    put_label(target);
 }
 
 void interp_translator::op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock)
