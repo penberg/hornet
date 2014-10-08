@@ -24,6 +24,21 @@ bool verify_method(std::shared_ptr<method> method)
 
         assert(opc < JVM_OPC_MAX);
 
+        if (opc == JVM_OPC_tableswitch) {
+            auto aligned_pc = (pc + 4) & ~0x03;
+            auto low   = read_opc_u4(method->code + aligned_pc + 4);
+            auto high  = read_opc_u4(method->code + aligned_pc + 8);
+            auto count = high - low + 1;
+            pc = aligned_pc + (3 + count) * sizeof(uint32_t);
+            continue;
+        }
+        if (opc == JVM_OPC_lookupswitch) {
+            auto aligned_pc = (pc + 4) & ~0x03;
+            auto npairs = read_opc_u4(method->code + aligned_pc + 4);
+            pc = aligned_pc + (2 + npairs) * sizeof(uint32_t);
+            continue;
+        }
+
         switch (opc) {
         case JVM_OPC_iconst_m1:
         case JVM_OPC_iconst_0:

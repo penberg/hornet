@@ -329,6 +329,11 @@ static inline uint16_t read_opc_u2(char *p)
     return read_opc_u1(p) << 8 | read_opc_u1(p+1);
 }
 
+static inline uint16_t read_opc_u4(char *p)
+{
+    return read_opc_u1(p) << 24 | read_opc_u1(p+1) << 16 | read_opc_u1(p+2) << 8 | read_opc_u1(p+3);
+}
+
 struct frame {
     frame(uint16_t max_locals)
        : locals(max_locals), pc(0) {}
