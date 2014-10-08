@@ -694,31 +694,36 @@ value_t interp(frame& frame, const char *code)
             op_if_cmp<jint>(frame, cmpop::op_cmpeq, offset);
             dispatch();
         }
-
-        op_if_icmpne:
-            assert(0);
-
-        op_if_icmplt:
-            assert(0);
-
+        op_if_icmpne: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<jint>(frame, cmpop::op_cmpne, offset);
+            dispatch();
+        }
+        op_if_icmplt: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<jint>(frame, cmpop::op_cmplt, offset);
+            dispatch();
+        }
         op_if_icmpge: {
             auto offset = read_const<uint16_t>(code, frame.pc);
             op_if_cmp<jint>(frame, cmpop::op_cmpge, offset);
             dispatch();
         }
-
-        op_if_icmpgt:
-            assert(0);
-
-        op_if_icmple:
-            assert(0);
-
+        op_if_icmpgt: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<jint>(frame, cmpop::op_cmpgt, offset);
+            dispatch();
+        }
+        op_if_icmple: {
+            auto offset = read_const<uint16_t>(code, frame.pc);
+            op_if_cmp<jint>(frame, cmpop::op_cmple, offset);
+            dispatch();
+        }
         op_if_acmpeq: {
             auto offset = read_const<uint16_t>(code, frame.pc);
             op_if_cmp<object*>(frame, cmpop::op_cmpeq, offset);
             dispatch();
         }
-
         op_if_acmpne: {
             auto offset = read_const<uint16_t>(code, frame.pc);
             op_if_cmp<object*>(frame, cmpop::op_cmpne, offset);
