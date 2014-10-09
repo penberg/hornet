@@ -7,7 +7,7 @@ namespace hornet {
 object::object(struct klass* klass_)
     : fwd(nullptr)
     , klass(klass_)
-    , instance_values(klass_ ? klass_->nr_fields : 0)
+    , _fields(klass_ ? klass_->nr_fields : 0)
 {
 }
 

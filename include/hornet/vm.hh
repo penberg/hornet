@@ -33,10 +33,18 @@ typedef uint64_t value_t;
 struct object {
     struct object* fwd;
     struct klass*  klass;
-    std::vector<value_t> instance_values;
+    std::vector<value_t> _fields;
 
     object(struct klass* _klass);
     ~object();
+
+    value_t get_field(size_t offset) const {
+        return _fields[offset];
+    }
+
+    void set_field(size_t offset, value_t value) {
+        _fields[offset] = value;
+    }
 };
 
 using method_list_type = std::vector<std::shared_ptr<method>>;

@@ -291,7 +291,7 @@ void op_getfield(field* field, frame& frame)
     field->klass->init();
     auto objectref = from_value<object*>(frame.ostack.top());
     frame.ostack.pop();
-    auto value = objectref->instance_values[field->offset];
+    auto value = objectref->get_field(field->offset);
     frame.ostack.push(value);
 }
 
@@ -303,7 +303,7 @@ void op_putfield(field* field, frame& frame)
     frame.ostack.pop();
     auto value = frame.ostack.top();
     frame.ostack.pop();
-    objectref->instance_values[field->offset] = value;
+    objectref->set_field(field->offset, value);
 }
 
 void op_invokevirtual(method* desc, frame& frame)
