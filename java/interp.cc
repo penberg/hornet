@@ -857,8 +857,10 @@ public:
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
     virtual void op_ret() override;
     virtual void op_ret_void() override;
-    virtual void op_getstatic(field* target) override;
-    virtual void op_putstatic(field* target) override;
+    virtual void op_getstatic(field* field) override;
+    virtual void op_putstatic(field* field) override;
+    virtual void op_getfield(field* field) override;
+    virtual void op_putfield(field* field) override;
     virtual void op_invokevirtual(method* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
@@ -1134,16 +1136,26 @@ void interp_translator::op_ret_void()
     put_opc(opc::ret_void);
 }
 
-void interp_translator::op_getstatic(field* target)
+void interp_translator::op_getstatic(field* field)
 {
     put_opc(opc::getstatic);
-    put_const(target);
+    put_const(field);
 }
 
-void interp_translator::op_putstatic(field* target)
+void interp_translator::op_putstatic(field* field)
 {
     put_opc(opc::putstatic);
-    put_const(target);
+    put_const(field);
+}
+
+void interp_translator::op_getfield(field* field)
+{
+    assert(0);
+}
+
+void interp_translator::op_putfield(field* field)
+{
+    assert(0);
 }
 
 void interp_translator::op_invokevirtual(method* target)

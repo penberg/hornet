@@ -82,11 +82,13 @@ public:
     virtual void op_new(klass* klass) override;
     virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(klass* klass) override;
+    virtual void op_getstatic(field* field) override;
+    virtual void op_putstatic(field* field) override;
+    virtual void op_getfield(field* field) override;
+    virtual void op_putfield(field* field) override;
     virtual void op_invokevirtual(method* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
-    virtual void op_getstatic(field* target) override;
-    virtual void op_putstatic(field* target) override;
     virtual void op_arraylength() override;
 
 private:
@@ -272,12 +274,22 @@ void llvm_translator::op_invokeinterface(method* target)
     assert(0);
 }
 
-void llvm_translator::op_getstatic(field* target)
+void llvm_translator::op_getstatic(field* field)
 {
     assert(0);
 }
 
-void llvm_translator::op_putstatic(field* target)
+void llvm_translator::op_putstatic(field* field)
+{
+    assert(0);
+}
+
+void llvm_translator::op_getfield(field* field)
+{
+    assert(0);
+}
+
+void llvm_translator::op_putfield(field* field)
 {
     assert(0);
 }

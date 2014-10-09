@@ -185,6 +185,26 @@ void dynasm_translator::op_ret_void()
     |  ret
 }
 
+void dynasm_translator::op_getstatic(field* field)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_putstatic(field* field)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_getfield(field* field)
+{
+    assert(0);
+}
+
+void dynasm_translator::op_putfield(field* field)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_invokevirtual(method* method)
 {
     assert(0);
@@ -196,16 +216,6 @@ void dynasm_translator::op_invokestatic(method* method)
 }
 
 void dynasm_translator::op_invokeinterface(method* method)
-{
-    assert(0);
-}
-
-void dynasm_translator::op_getstatic(field* field)
-{
-    assert(0);
-}
-
-void dynasm_translator::op_putstatic(field* field)
 {
     assert(0);
 }

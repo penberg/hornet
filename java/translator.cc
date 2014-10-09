@@ -462,6 +462,28 @@ next_insn:
         op_ret();
         break;
     }
+    case JVM_OPC_getstatic: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto field = _method->klass->resolve_field(idx);
+        op_getstatic(field.get());
+        break;
+    }
+    case JVM_OPC_putstatic: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto field = _method->klass->resolve_field(idx);
+        op_putstatic(field.get());
+        break;
+    }
+    case JVM_OPC_getfield: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto field = _method->klass->resolve_field(idx);
+        op_getfield(field.get());
+    }
+    case JVM_OPC_putfield: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto field = _method->klass->resolve_field(idx);
+        op_putfield(field.get());
+    }
     case JVM_OPC_invokevirtual: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto target = _method->klass->resolve_method(idx);
@@ -527,18 +549,6 @@ next_insn:
     }
     case JVM_OPC_arraylength: {
         op_arraylength();
-        break;
-    }
-    case JVM_OPC_getstatic: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        auto field = _method->klass->resolve_field(idx);
-        op_getstatic(field.get());
-        break;
-    }
-    case JVM_OPC_putstatic: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        auto field = _method->klass->resolve_field(idx);
-        op_putstatic(field.get());
         break;
     }
     default:

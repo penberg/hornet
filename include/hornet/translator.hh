@@ -105,11 +105,13 @@ protected:
     virtual void op_goto(std::shared_ptr<basic_block> target) = 0;
     virtual void op_ret() = 0;
     virtual void op_ret_void() = 0;
+    virtual void op_getstatic(field* field) = 0;
+    virtual void op_putstatic(field* field) = 0;
+    virtual void op_getfield(field* field) = 0;
+    virtual void op_putfield(field* field) = 0;
     virtual void op_invokevirtual(method* target) = 0;
     virtual void op_invokestatic(method* target) = 0;
     virtual void op_invokeinterface(method* target) = 0;
-    virtual void op_getstatic(field* target) = 0;
-    virtual void op_putstatic(field* target) = 0;
     virtual void op_new(klass* klass) = 0;
     virtual void op_newarray(uint8_t atype) = 0;
     virtual void op_anewarray(klass *klass) = 0;
