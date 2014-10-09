@@ -271,15 +271,17 @@ void op_goto(frame& frame, int16_t offset)
 void op_getstatic(field* field, frame& frame)
 {
     assert(field != nullptr);
-    field->klass->init();
-    frame.ostack.push(field->value);
+    auto klass = field->klass;
+    klass->init();
+    frame.ostack.push(klass->static_values[field->offset]);
 }
 
 void op_putstatic(field* field, frame& frame)
 {
     assert(field != nullptr);
-    field->klass->init();
-    field->value = frame.ostack.top();
+    auto klass = field->klass;
+    klass->init();
+    klass->static_values[field->offset] = frame.ostack.top();
     frame.ostack.pop();
 }
 

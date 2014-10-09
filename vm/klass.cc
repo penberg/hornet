@@ -19,7 +19,11 @@ klass::~klass()
 
 void klass::add(std::shared_ptr<field> field)
 {
+    auto offset = static_values.size();
+    static_values.reserve(offset + 1);
+    static_values[offset] = 0;
     _fields.push_back(field);
+    field->offset = offset;
 }
 
 void klass::add(std::shared_ptr<method> method)

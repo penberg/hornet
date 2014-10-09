@@ -54,6 +54,7 @@ struct klass {
     klass*        super;
     uint16_t      access_flags;
     klass_state   state = klass_state::loaded;
+    std::vector<value_t> static_values;
 
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     ~klass();
@@ -96,9 +97,9 @@ private:
 
 struct field {
     struct klass* klass;
-    value_t       value;
     std::string   name;
     std::string   descriptor;
+    uint32_t      offset;
 
     field(struct klass* klass_);
     ~field();

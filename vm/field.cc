@@ -4,7 +4,6 @@ namespace hornet {
 
 field::field(struct klass* klass_)
     : klass(klass_)
-    , value(0)
 {
 }
 
