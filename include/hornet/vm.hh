@@ -33,11 +33,10 @@ typedef uint64_t value_t;
 struct object {
     struct object* fwd;
     struct klass*  klass;
+    std::vector<value_t> instance_values;
 
-    object(struct klass* _klass)
-        : fwd(nullptr)
-        , klass(_klass)
-    { }
+    object(struct klass* _klass);
+    ~object();
 };
 
 using method_list_type = std::vector<std::shared_ptr<method>>;
@@ -54,6 +53,7 @@ struct klass {
     klass*        super;
     uint16_t      access_flags;
     klass_state   state = klass_state::loaded;
+    uint32_t      nr_fields;
     std::vector<value_t> static_values;
 
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
@@ -100,9 +100,14 @@ struct field {
     std::string   name;
     std::string   descriptor;
     uint32_t      offset;
+    bool          isstatic;
 
     field(struct klass* klass_);
     ~field();
+
+    bool is_static() const {
+        return isstatic;
+    }
 
     bool matches(std::string name, std::string descriptor);
 };

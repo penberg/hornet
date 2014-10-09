@@ -8,6 +8,7 @@ namespace hornet {
 
 klass::klass(loader *loader, std::shared_ptr<constant_pool> const_pool)
     : object(nullptr)
+    , nr_fields(0)
     , _const_pool(const_pool)
     , _loader(loader)
 {
@@ -19,11 +20,17 @@ klass::~klass()
 
 void klass::add(std::shared_ptr<field> field)
 {
-    auto offset = static_values.size();
-    static_values.reserve(offset + 1);
-    static_values[offset] = 0;
-    _fields.push_back(field);
-    field->offset = offset;
+    if (field->is_static()) {
+        auto offset = static_values.size();
+        static_values.reserve(offset + 1);
+        static_values[offset] = 0;
+        _fields.push_back(field);
+        field->offset = offset;
+    } else {
+        auto offset = nr_fields;
+        field->offset = offset;
+        nr_fields++;
+    }
 }
 
 void klass::add(std::shared_ptr<method> method)

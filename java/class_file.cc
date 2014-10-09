@@ -278,7 +278,7 @@ void class_file::read_const_invoke_dynamic()
 
 std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &constant_pool)
 {
-    /*auto access_flags = */read_u2();
+    auto access_flags = read_u2();
     auto name_index = read_u2();
 
     auto *cp_name = constant_pool.get_utf8(name_index);
@@ -291,6 +291,7 @@ std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &
 
     f->name         = cp_name->bytes;
     f->descriptor   = cp_descriptor->bytes;
+    f->isstatic     = access_flags & JVM_ACC_STATIC;
 
     auto attr_count = read_u2();
 

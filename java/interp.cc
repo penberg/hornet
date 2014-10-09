@@ -285,6 +285,27 @@ void op_putstatic(field* field, frame& frame)
     frame.ostack.pop();
 }
 
+void op_getfield(field* field, frame& frame)
+{
+    assert(field != nullptr);
+    field->klass->init();
+    auto objectref = from_value<object*>(frame.ostack.top());
+    frame.ostack.pop();
+    auto value = objectref->instance_values[field->offset];
+    frame.ostack.push(value);
+}
+
+void op_putfield(field* field, frame& frame)
+{
+    assert(field != nullptr);
+    field->klass->init();
+    auto objectref = from_value<object*>(frame.ostack.top());
+    frame.ostack.pop();
+    auto value = frame.ostack.top();
+    frame.ostack.pop();
+    objectref->instance_values[field->offset] = value;
+}
+
 void op_invokevirtual(method* desc, frame& frame)
 {
     auto thread = hornet::thread::current();
@@ -449,6 +470,8 @@ enum class opc : uint8_t {
 
     getstatic,
     putstatic,
+    getfield,
+    putfield,
 
     invokevirtual,
     invokestatic,
@@ -553,6 +576,8 @@ value_t interp(frame& frame, const char *code)
 
         &&op_getstatic,
         &&op_putstatic,
+        &&op_getfield,
+        &&op_putfield,
 
         &&op_invokevirtual,
         &&op_invokestatic,
@@ -772,10 +797,19 @@ value_t interp(frame& frame, const char *code)
             op_getstatic(target, frame);
             dispatch();
         }
-
         op_putstatic: {
             auto* target = read_const<field*>(code, frame.pc);
             op_putstatic(target, frame);
+            dispatch();
+        }
+        op_getfield: {
+            auto* target = read_const<field*>(code, frame.pc);
+            op_getfield(target, frame);
+            dispatch();
+        }
+        op_putfield: {
+            auto* target = read_const<field*>(code, frame.pc);
+            op_putfield(target, frame);
             dispatch();
         }
         op_invokevirtual: {
@@ -1150,12 +1184,14 @@ void interp_translator::op_putstatic(field* field)
 
 void interp_translator::op_getfield(field* field)
 {
-    assert(0);
+    put_opc(opc::getfield);
+    put_const(field);
 }
 
 void interp_translator::op_putfield(field* field)
 {
-    assert(0);
+    put_opc(opc::putfield);
+    put_const(field);
 }
 
 void interp_translator::op_invokevirtual(method* target)
