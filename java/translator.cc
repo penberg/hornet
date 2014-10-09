@@ -710,7 +710,7 @@ struct SortFunctor {
 void translator::log()
 {
     if (verbose_compiler) {
-        printf("%s %d (bytes)\n", _method->full_name().c_str(), _method->code_length);
+        printf("%s  (%d bytes)\n", _method->full_name().c_str(), _method->code_length);
     }
 }
 
