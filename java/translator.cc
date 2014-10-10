@@ -478,11 +478,13 @@ next_insn:
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto field = _method->klass->resolve_field(idx);
         op_getfield(field.get());
+        break;
     }
     case JVM_OPC_putfield: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto field = _method->klass->resolve_field(idx);
         op_putfield(field.get());
+        break;
     }
     case JVM_OPC_invokevirtual: {
         uint16_t idx = read_opc_u2(_method->code + pc);
