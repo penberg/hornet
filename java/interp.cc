@@ -309,15 +309,17 @@ void op_putfield(field* field, frame& frame)
 void op_invokevirtual(method* desc, frame& frame)
 {
     auto thread = hornet::thread::current();
-    auto new_frame = thread->make_frame(desc->max_locals);
-    for (int i = 0; i < desc->args_count; i++) {
-        auto arg_idx = desc->args_count - i - 1;
+    auto new_frame = thread->make_frame(desc->max_locals+1);
+    auto args_count = desc->args_count+1;
+    for (int i = 1; i < args_count; i++) {
+        auto arg_idx = args_count - i - 1;
         new_frame->locals[arg_idx] = frame.ostack.top();
         frame.ostack.pop();
     }
     auto objectref = from_value<object*>(frame.ostack.top());
     frame.ostack.pop();
     assert(objectref != nullptr);
+    new_frame->locals[0] = to_value(objectref);
     auto klass = objectref->klass;
     assert(klass != nullptr);
     auto target = klass->lookup_method(desc->name, desc->descriptor);
