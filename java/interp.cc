@@ -299,9 +299,9 @@ void op_putfield(field* field, frame& frame)
 {
     assert(field != nullptr);
     field->klass->init();
-    auto objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
     auto value = frame.ostack.top();
+    frame.ostack.pop();
+    auto objectref = from_value<object*>(frame.ostack.top());
     frame.ostack.pop();
     objectref->set_field(field->offset, value);
 }
