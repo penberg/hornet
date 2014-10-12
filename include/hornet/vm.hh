@@ -63,6 +63,7 @@ struct klass {
     klass_state   state = klass_state::loaded;
     uint32_t      nr_fields;
     std::vector<value_t> static_values;
+    std::vector<std::shared_ptr<klass>> interfaces;
 
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     ~klass();
@@ -70,6 +71,7 @@ struct klass {
     void init();
     bool verify();
 
+    void add(std::shared_ptr<klass> iface);
     void add(std::shared_ptr<method> method);
     void add(std::shared_ptr<field> field);
 

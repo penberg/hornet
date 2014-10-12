@@ -18,6 +18,11 @@ klass::~klass()
 {
 }
 
+void klass::add(std::shared_ptr<klass> iface)
+{
+    interfaces.push_back(iface);
+}
+
 void klass::add(std::shared_ptr<field> field)
 {
     if (field->is_static()) {

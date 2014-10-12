@@ -50,8 +50,13 @@ std::shared_ptr<klass> class_file::parse()
 
     auto interfaces_count = read_u2();
 
-    for (auto i = 0; i < interfaces_count; i++)
-        read_u2();
+    for (auto i = 0; i < interfaces_count; i++) {
+        auto idx = read_u2();
+
+        auto iface = klass->resolve_class(idx);
+
+        klass->add(iface);
+    }
 
     auto fields_count = read_u2();
 
