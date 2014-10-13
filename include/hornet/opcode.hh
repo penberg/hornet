@@ -56,6 +56,17 @@ inline bool is_branch(uint8_t opc)
     }
 }
 
+inline bool is_switch(uint8_t opc)
+{
+    switch (opc) {
+    case JVM_OPC_lookupswitch:
+    case JVM_OPC_tableswitch:
+        return true;
+    default:
+        return false;
+    }
+}
+
 inline bool is_return(uint8_t opc)
 {
     switch (opc) {
@@ -83,7 +94,7 @@ inline bool is_throw(uint8_t opc)
 
 inline bool is_bblock_end(uint8_t opc)
 {
-    return is_branch(opc) || is_return(opc) || is_throw(opc);
+    return is_branch(opc) || is_switch(opc) || is_return(opc) || is_throw(opc);
 }
 
 inline uint16_t branch_target(char* code, uint16_t pos)
@@ -115,6 +126,33 @@ inline uint16_t branch_target(char* code, uint16_t pos)
         assert(0);
     }
 }
+
+inline uint16_t switch_opc_len(char* code, uint16_t pc)
+{
+    uint16_t end;
+
+    uint8_t opc = code[pc];
+    switch (opc) {
+    case JVM_OPC_tableswitch: {
+        auto aligned_pc = (pc + 4) & ~0x03;
+        auto low   = read_opc_u4(code + aligned_pc + 4);
+        auto high  = read_opc_u4(code + aligned_pc + 8);
+        auto count = high - low + 1;
+        end = aligned_pc + (3 + count) * sizeof(uint32_t);
+        break;
+    }
+    case JVM_OPC_lookupswitch: {
+        auto aligned_pc = (pc + 4) & ~0x03;
+        auto npairs = read_opc_u4(code + aligned_pc + 4);
+        end = aligned_pc + (2 + npairs) * sizeof(uint32_t);
+        break;
+    }
+    default:
+        assert(0);
+    }
+    return end - pc;
+}
+
 
 }
 
