@@ -501,10 +501,10 @@ next_insn:
         if (_method->klass->access_flags & JVM_ACC_SUPER
                 && target->klass->is_subclass_of(_method->klass->super)
                 && !target->is_init()) {
-            op_invokevirtual(target.get());
-        } else {
-            op_invokestatic(target.get());
+            target = _method->klass->super->lookup_method(target->name, target->descriptor);
+            assert(target != nullptr);
         }
+        op_invokespecial(target.get());
         break;
     }
     case JVM_OPC_invokestatic: {

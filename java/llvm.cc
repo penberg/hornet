@@ -87,6 +87,7 @@ public:
     virtual void op_getfield(field* field) override;
     virtual void op_putfield(field* field) override;
     virtual void op_invokevirtual(method* target) override;
+    virtual void op_invokespecial(method* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
     virtual void op_arraylength() override;
@@ -260,6 +261,11 @@ void llvm_translator::op_ret_void()
 }
 
 void llvm_translator::op_invokevirtual(method* target)
+{
+    assert(0);
+}
+
+void llvm_translator::op_invokespecial(method* target)
 {
     assert(0);
 }

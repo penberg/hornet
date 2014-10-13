@@ -332,6 +332,30 @@ void op_invokevirtual(method* desc, frame& frame)
     thread->free_frame(new_frame);
 }
 
+void op_invokespecial(method* target, frame& frame)
+{
+    assert(!target->is_native());
+    auto thread = hornet::thread::current();
+    auto new_frame = thread->make_frame(target->max_locals+1);
+    auto args_count = target->args_count+1;
+    for (int i = 1; i < args_count; i++) {
+        auto arg_idx = args_count - i - 1;
+        new_frame->locals[arg_idx] = frame.ostack.top();
+        frame.ostack.pop();
+    }
+    auto objectref = from_value<object*>(frame.ostack.top());
+    frame.ostack.pop();
+    assert(objectref != nullptr);
+    new_frame->locals[0] = to_value(objectref);
+    auto klass = objectref->klass;
+    assert(klass != nullptr);
+    auto result = hornet::_backend->execute(target, *new_frame);
+    if (target->return_type != &jvm_void_klass) {
+        frame.ostack.push(result);
+    }
+    thread->free_frame(new_frame);
+}
+
 void op_invokestatic(method* target, frame& frame)
 {
     value_t result;
@@ -478,6 +502,7 @@ enum class opc : uint8_t {
     putfield,
 
     invokevirtual,
+    invokespecial,
     invokestatic,
     invokeinterface,
 
@@ -584,6 +609,7 @@ value_t interp(frame& frame, const char *code)
         &&op_putfield,
 
         &&op_invokevirtual,
+        &&op_invokespecial,
         &&op_invokestatic,
         &&op_invokeinterface,
 
@@ -821,6 +847,11 @@ value_t interp(frame& frame, const char *code)
             op_invokevirtual(target, frame);
             dispatch();
         }
+        op_invokespecial: {
+            auto* target = read_const<method*>(code, frame.pc);
+            op_invokespecial(target, frame);
+            dispatch();
+        }
         op_invokestatic: {
             auto* target = read_const<method*>(code, frame.pc);
             op_invokestatic(target, frame);
@@ -900,6 +931,7 @@ public:
     virtual void op_getfield(field* field) override;
     virtual void op_putfield(field* field) override;
     virtual void op_invokevirtual(method* target) override;
+    virtual void op_invokespecial(method* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
     virtual void op_new(klass* klass) override;
@@ -1201,6 +1233,12 @@ void interp_translator::op_putfield(field* field)
 void interp_translator::op_invokevirtual(method* target)
 {
     put_opc(opc::invokevirtual);
+    put_const(target);
+}
+
+void interp_translator::op_invokespecial(method* target)
+{
+    put_opc(opc::invokespecial);
     put_const(target);
 }
 

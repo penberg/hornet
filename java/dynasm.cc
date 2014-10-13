@@ -48,6 +48,7 @@ public:
     virtual void op_getfield(field* field) override;
     virtual void op_putfield(field* field) override;
     virtual void op_invokevirtual(method* target) override;
+    virtual void op_invokespecial(method* target) override;
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
     virtual void op_new(klass* klass) override;

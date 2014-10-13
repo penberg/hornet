@@ -110,6 +110,7 @@ protected:
     virtual void op_getfield(field* field) = 0;
     virtual void op_putfield(field* field) = 0;
     virtual void op_invokevirtual(method* target) = 0;
+    virtual void op_invokespecial(method* target) = 0;
     virtual void op_invokestatic(method* target) = 0;
     virtual void op_invokeinterface(method* target) = 0;
     virtual void op_new(klass* klass) = 0;

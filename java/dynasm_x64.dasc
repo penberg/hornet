@@ -210,6 +210,11 @@ void dynasm_translator::op_invokevirtual(method* method)
     assert(0);
 }
 
+void dynasm_translator::op_invokespecial(method* method)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_invokestatic(method* method)
 {
     assert(0);
