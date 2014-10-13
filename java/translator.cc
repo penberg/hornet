@@ -1,5 +1,6 @@
 #include "hornet/translator.hh"
 
+#include "hornet/opcode.hh"
 #include "hornet/java.hh"
 #include "hornet/vm.hh"
 
@@ -616,97 +617,6 @@ std::shared_ptr<basic_block> translator::lookup_contains(uint16_t offset)
         }
     }
     assert(0);
-}
-
-static bool is_branch(uint8_t opc)
-{
-    switch (opc) {
-    case JVM_OPC_goto:
-    case JVM_OPC_goto_w:
-    case JVM_OPC_ifeq:
-    case JVM_OPC_ifge:
-    case JVM_OPC_ifgt:
-    case JVM_OPC_ifle:
-    case JVM_OPC_iflt:
-    case JVM_OPC_ifne:
-    case JVM_OPC_ifnonnull:
-    case JVM_OPC_ifnull:
-    case JVM_OPC_if_acmpeq:
-    case JVM_OPC_if_acmpne:
-    case JVM_OPC_if_icmpeq:
-    case JVM_OPC_if_icmpge:
-    case JVM_OPC_if_icmpgt:
-    case JVM_OPC_if_icmple:
-    case JVM_OPC_if_icmplt:
-    case JVM_OPC_if_icmpne:
-    case JVM_OPC_jsr:
-    case JVM_OPC_jsr_w:
-    case JVM_OPC_lookupswitch:
-    case JVM_OPC_tableswitch:
-        return true;
-    default:
-        return false;
-    }
-}
-
-static bool is_return(uint8_t opc)
-{
-    switch (opc) {
-    case JVM_OPC_ireturn:
-    case JVM_OPC_lreturn:
-    case JVM_OPC_freturn:
-    case JVM_OPC_dreturn:
-    case JVM_OPC_areturn:
-    case JVM_OPC_return:
-        return true;
-    default:
-        return false;
-    }
-}
-
-static bool is_throw(uint8_t opc)
-{
-    switch (opc) {
-    case JVM_OPC_athrow:
-        return true;
-    default:
-        return false;
-    }
-}
-
-static bool is_bblock_end(uint8_t opc)
-{
-    return is_branch(opc) || is_return(opc) || is_throw(opc);
-}
-
-static uint16_t branch_target(char* code, uint16_t pos)
-{
-    uint8_t opc = code[pos];
-    switch (opc) {
-    case JVM_OPC_goto:
-    case JVM_OPC_goto_w:
-    case JVM_OPC_ifeq:
-    case JVM_OPC_ifge:
-    case JVM_OPC_ifgt:
-    case JVM_OPC_ifle:
-    case JVM_OPC_iflt:
-    case JVM_OPC_ifne:
-    case JVM_OPC_ifnonnull:
-    case JVM_OPC_ifnull:
-    case JVM_OPC_if_acmpeq:
-    case JVM_OPC_if_acmpne:
-    case JVM_OPC_if_icmpeq:
-    case JVM_OPC_if_icmpge:
-    case JVM_OPC_if_icmpgt:
-    case JVM_OPC_if_icmple:
-    case JVM_OPC_if_icmplt:
-    case JVM_OPC_if_icmpne: {
-        int16_t offset = read_opc_u2(code + pos);
-        return pos + offset;
-    }
-    default:
-        assert(0);
-    }
 }
 
 // Functor for sorting basic blocks wrapped in shared pointers by start

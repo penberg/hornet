@@ -317,23 +317,6 @@ inline loader *system_loader()
     return system_loader::get();
 }
 
-extern unsigned char opcode_length[];
-
-static inline uint8_t read_opc_u1(char *p)
-{
-    return p[1];
-}
-
-static inline uint16_t read_opc_u2(char *p)
-{
-    return read_opc_u1(p) << 8 | read_opc_u1(p+1);
-}
-
-static inline uint16_t read_opc_u4(char *p)
-{
-    return read_opc_u1(p) << 24 | read_opc_u1(p+1) << 16 | read_opc_u1(p+2) << 8 | read_opc_u1(p+3);
-}
-
 // JVM interpreter frame that has local variables, operand stack, and a program
 // counter. It is constructed at each method invocation and destroyed when an
 // invocation completes.

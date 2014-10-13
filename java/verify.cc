@@ -1,5 +1,6 @@
 #include "hornet/java.hh"
 
+#include "hornet/opcode.hh"
 #include <hornet/vm.hh>
 
 #include <classfile_constants.h>
