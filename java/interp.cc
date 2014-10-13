@@ -383,9 +383,9 @@ void op_invokestatic(method* target, frame& frame)
     }
 }
 
-void op_invokeinterface(method* target, frame& frame)
+void op_invokeinterface(method* desc, frame& frame)
 {
-    assert(0);
+    op_invokevirtual(desc, frame);
 }
 
 void op_new(klass* klass, frame& frame)
