@@ -296,7 +296,7 @@ std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &
 
     f->name         = cp_name->bytes;
     f->descriptor   = cp_descriptor->bytes;
-    f->isstatic     = access_flags & JVM_ACC_STATIC;
+    f->access_flags = access_flags;
 
     auto attr_count = read_u2();
 

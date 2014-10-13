@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 
+#include <classfile_constants.h>
+
 namespace hornet {
 
 class constant_pool;
@@ -110,13 +112,13 @@ struct field {
     std::string   name;
     std::string   descriptor;
     uint32_t      offset;
-    bool          isstatic;
+    uint16_t      access_flags;
 
     field(struct klass* klass_);
     ~field();
 
     bool is_static() const {
-        return isstatic;
+        return access_flags & JVM_ACC_STATIC;
     }
 
     bool matches(std::string name, std::string descriptor);
