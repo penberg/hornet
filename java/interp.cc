@@ -309,8 +309,8 @@ void op_putfield(field* field, frame& frame)
 void op_invokevirtual(method* desc, frame& frame)
 {
     auto thread = hornet::thread::current();
-    auto new_frame = thread->make_frame(desc->max_locals+1);
     auto args_count = desc->args_count+1;
+    auto new_frame = thread->make_frame(args_count);
     for (int i = 1; i < args_count; i++) {
         auto arg_idx = args_count - i - 1;
         new_frame->locals[arg_idx] = frame.ostack.top();
@@ -325,6 +325,7 @@ void op_invokevirtual(method* desc, frame& frame)
     auto target = klass->lookup_method(desc->name, desc->descriptor);
     assert(target != nullptr);
     assert(!target->is_native());
+    new_frame->reserve_more(target->max_locals);
     auto result = hornet::_backend->execute(target.get(), *new_frame);
     if (target->return_type != &jvm_void_klass) {
         frame.ostack.push(result);

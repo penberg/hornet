@@ -334,13 +334,24 @@ static inline uint16_t read_opc_u4(char *p)
     return read_opc_u1(p) << 24 | read_opc_u1(p+1) << 16 | read_opc_u1(p+2) << 8 | read_opc_u1(p+3);
 }
 
+// JVM interpreter frame that has local variables, operand stack, and a program
+// counter. It is constructed at each method invocation and destroyed when an
+// invocation completes.
 struct frame {
-    frame(uint16_t max_locals)
-       : locals(max_locals), pc(0) {}
-
     std::vector<value_t> locals;
-    std::stack<value_t>    ostack;
-    uint16_t               pc;
+    std::stack<value_t>  ostack;
+    uint16_t             pc;
+
+    frame(size_t size)
+       : locals(size), pc(0)
+    { }
+
+    ~frame()
+    { }
+
+    void reserve_more(size_t size) {
+        locals.reserve(locals.size() + size);
+    }
 };
 
 enum class backend_type {
