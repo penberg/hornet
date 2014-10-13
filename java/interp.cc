@@ -323,6 +323,8 @@ void op_invokevirtual(method* desc, frame& frame)
     auto klass = objectref->klass;
     assert(klass != nullptr);
     auto target = klass->lookup_method(desc->name, desc->descriptor);
+    assert(target != nullptr);
+    assert(!target->is_native());
     auto result = hornet::_backend->execute(target.get(), *new_frame);
     if (target->return_type != &jvm_void_klass) {
         frame.ostack.push(result);

@@ -149,6 +149,10 @@ struct method {
         return name[0] == '<';
     }
 
+    bool is_native() const {
+        return access_flags & JVM_ACC_NATIVE;
+    }
+
     bool matches(std::string name, std::string descriptor);
 };
 
