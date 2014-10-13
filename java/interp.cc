@@ -362,6 +362,9 @@ void op_invokestatic(method* target, frame& frame)
     target->klass->init();
     if (target->access_flags & JVM_ACC_NATIVE) {
         fprintf(stderr, "warning: %s: stubbed\n", target->full_name().c_str());
+        for (int i = 0; i < target->args_count; i++) {
+            frame.ostack.pop();
+        }
         result = to_value<object*>(nullptr);
     } else {
        auto thread = hornet::thread::current();
