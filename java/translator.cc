@@ -640,8 +640,7 @@ void translator::scan()
 {
     auto bblock = std::make_shared<basic_block>(0, _method->code_length);
 
-    _bblock_map.insert({0, bblock});
-    _bblock_list.push_back(bblock);
+    insert_bblock(0, bblock);
 
     uint16_t pos = 0;
     while (pos < bblock->end) {
@@ -649,8 +648,7 @@ void translator::scan()
         pos += opcode_length[opc];
         if (is_bblock_end(opc)) {
             bblock = bblock->split_at(pos);
-            _bblock_map.insert({pos, bblock});
-            _bblock_list.push_back(bblock);
+            insert_bblock(pos, bblock);
         }
     }
     pos = 0;
@@ -661,14 +659,19 @@ void translator::scan()
             auto bblock = lookup_contains(target_pc);
             if (bblock->start != target_pc) {
                 auto target = bblock->split_at(target_pc);
-                _bblock_map.insert({target_pc, target});
-                _bblock_list.push_back(target);
+                insert_bblock(target_pc, target);
             }
         }
         pos += opcode_length[opc];
     }
 
     sort(_bblock_list.begin(), _bblock_list.end(), SortFunctor());
+}
+
+void translator::insert_bblock(uint16_t pos, std::shared_ptr<basic_block> bblock)
+{
+    _bblock_map.insert({pos, bblock});
+    _bblock_list.push_back(bblock);
 }
 
 }

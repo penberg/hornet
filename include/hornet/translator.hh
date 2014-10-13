@@ -78,6 +78,8 @@ protected:
 
     void scan();
 
+    void insert_bblock(uint16_t pos, std::shared_ptr<basic_block> bblock);
+
     void translate(std::shared_ptr<basic_block> bblock);
 
     void ldc(uint16_t idx);
