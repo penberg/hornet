@@ -10,7 +10,7 @@ BINDIR=$(PREFIX)/bin
 
 LLVM_CONFIG ?= llvm-config
 
-LLVM_VERSION = $(shell $(LLVM_CONFIG) --version)
+LLVM_VERSION = $(shell $(LLVM_CONFIG) --version 2>/dev/null)
 
 LUAJIT ?= luajit
 
