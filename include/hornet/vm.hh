@@ -40,6 +40,9 @@ struct object {
     object(struct klass* _klass);
     ~object();
 
+    object& operator=(const object&) = delete;
+    object(const object&) = delete;
+
     value_t get_field(size_t offset) const {
         return _fields[offset];
     }
@@ -69,6 +72,9 @@ struct klass {
 
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     ~klass();
+
+    klass& operator=(const klass&) = delete;
+    klass(const klass&) = delete;
 
     void init();
     bool verify();
@@ -117,6 +123,9 @@ struct field {
     field(struct klass* klass_);
     ~field();
 
+    field& operator=(const field&) = delete;
+    field(const field&) = delete;
+
     bool is_static() const {
         return access_flags & JVM_ACC_STATIC;
     }
@@ -141,6 +150,9 @@ struct method {
     method();
     ~method();
 
+    method& operator=(const method&) = delete;
+    method(const method&) = delete;
+
     std::string full_name() const {
         return klass->name + "::" + name + descriptor;
     }
@@ -162,7 +174,14 @@ struct array {
 
     array(klass* klass, uint32_t length)
         : object(klass)
-        , length(length) {}
+        , length(length)
+    { }
+
+    ~array()
+    { }
+
+    array& operator=(const array&) = delete;
+    array(const array&) = delete;
 };
 
 struct string {
@@ -173,6 +192,12 @@ struct string {
         : object(nullptr)
         , data(data_)
     { }
+
+    ~string()
+    { }
+
+    string& operator=(const string&) = delete;
+    string(const string&) = delete;
 };
 
 #define java_lang_NoClassDefFoundError reinterpret_cast<hornet::object *>(0xdeabeef)
