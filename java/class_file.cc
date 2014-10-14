@@ -46,7 +46,7 @@ std::shared_ptr<klass> class_file::parse()
 
     auto super_class = read_u2();
 
-    auto* klass = new hornet::klass(hornet::system_loader(), const_pool);
+    auto klass = std::make_shared<hornet::klass>(hornet::system_loader(), const_pool);
 
     auto interfaces_count = read_u2();
 
@@ -61,7 +61,7 @@ std::shared_ptr<klass> class_file::parse()
     auto fields_count = read_u2();
 
     for (auto i = 0; i < fields_count; i++) {
-        auto field = read_field_info(klass, *const_pool);
+        auto field = read_field_info(klass.get(), *const_pool);
 
         klass->add(field);
     }
@@ -69,7 +69,7 @@ std::shared_ptr<klass> class_file::parse()
     auto methods_count = read_u2();
 
     for (auto i = 0; i < methods_count; i++) {
-        auto method = read_method_info(klass, *const_pool);
+        auto method = read_method_info(klass.get(), *const_pool);
 
         klass->add(method);
     }
@@ -95,7 +95,7 @@ std::shared_ptr<klass> class_file::parse()
 
     klass->name = klass_name->bytes;
 
-    return std::shared_ptr<hornet::klass>(klass);
+    return klass;
 }
 
 std::shared_ptr<constant_pool> class_file::read_constant_pool()
