@@ -84,6 +84,6 @@ usage: hornet [-options] class [args...]
 
 ## License
 
-Copyright © 2013 Pekka Enberg and contributors
+Copyright © 2013-2014 Pekka Enberg and contributors
 
 Hornet is distributed under the 2-clause BSD license.
