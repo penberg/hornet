@@ -42,15 +42,15 @@ inline jstring to_jstring(string *string) {
 }
 
 inline jarray to_jarray(array *array) {
-    return reinterpret_cast<jarray>(&array->object);
+    return reinterpret_cast<jarray>(array);
 }
 
 inline jobjectArray to_jobjectArray(array *array) {
-    return reinterpret_cast<jobjectArray>(&array->object);
+    return reinterpret_cast<jobjectArray>(array);
 }
 
 inline jclass to_jclass(klass *klass) {
-    return reinterpret_cast<jclass>(&klass->object);
+    return reinterpret_cast<jclass>(klass);
 }
 
 inline jfieldID to_jfieldID(field *field) {
