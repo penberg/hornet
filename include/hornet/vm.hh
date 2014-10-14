@@ -70,6 +70,7 @@ struct klass {
     std::vector<value_t> static_values;
     std::vector<std::shared_ptr<klass>> interfaces;
 
+    klass();
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     ~klass();
 
@@ -82,6 +83,16 @@ struct klass {
     void add(std::shared_ptr<klass> iface);
     void add(std::shared_ptr<method> method);
     void add(std::shared_ptr<field> field);
+
+    static klass* primitive_type(uint8_t atype);
+
+    virtual bool is_primitive() const {
+        return false;
+    }
+
+    virtual size_t size() const {
+        return sizeof(void*);
+    }
 
     std::shared_ptr<constant_pool> const_pool() const {
         return _const_pool;

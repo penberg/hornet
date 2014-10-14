@@ -35,7 +35,7 @@ object* gc_new_object(klass* klass)
 
 array* gc_new_object_array(klass* klass, size_t length)
 {
-    size_t size = sizeof(array) + length * sizeof(void*);
+    size_t size = sizeof(array) + length * klass->size();
     mps_addr_t addr;
     do {
         mps_res_t res = mps_reserve(&addr, obj_ap, size);
