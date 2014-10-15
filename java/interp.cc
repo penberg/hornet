@@ -948,6 +948,7 @@ public:
     virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(klass* klass) override;
     virtual void op_arraylength() override;
+    virtual void op_checkcast(klass* klass) override;
 
 private:
     void put_opc(opc x) {
@@ -1285,6 +1286,11 @@ void interp_translator::op_anewarray(klass* klass)
 void interp_translator::op_arraylength()
 {
     put_opc(opc::arraylength);
+}
+
+void interp_translator::op_checkcast(klass* klass)
+{
+    assert(0);
 }
 
 value_t interp_backend::execute(method* method, frame& frame)

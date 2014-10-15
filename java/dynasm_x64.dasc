@@ -246,3 +246,8 @@ void dynasm_translator::op_arraylength()
     |  mov  eax, [rax+offsetof(array, length)]
     |  push rax
 }
+
+void dynasm_translator::op_checkcast(klass* klass)
+{
+    assert(0);
+}

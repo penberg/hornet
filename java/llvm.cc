@@ -91,6 +91,7 @@ public:
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
     virtual void op_arraylength() override;
+    virtual void op_checkcast(klass* klass) override;
 
 private:
     AllocaInst* lookup_local(unsigned int idx, Type* type);
@@ -324,6 +325,11 @@ void llvm_translator::op_arraylength()
     auto addr = _builder.CreateBitCast(gep, PointerType::get(Type::getInt32Ty(getGlobalContext()), 0));
     auto len = _builder.CreateLoad(addr);
     _mimic_stack.push(len);
+}
+
+void llvm_translator::op_checkcast(klass* klass)
+{
+    assert(0);
 }
 
 llvm_backend::llvm_backend()
