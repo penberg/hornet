@@ -10,16 +10,16 @@ uint16_t switch_opc_len(char* code, uint16_t pc)
     switch (opc) {
     case JVM_OPC_tableswitch: {
         auto aligned_pc = (pc + 4) & ~0x03;
-        auto low   = read_opc_u4(code + aligned_pc + 4);
-        auto high  = read_opc_u4(code + aligned_pc + 8);
+        auto low   = read_u4(code + aligned_pc + 4);
+        auto high  = read_u4(code + aligned_pc + 8);
         auto count = high - low + 1;
         end = aligned_pc + (3 + count) * sizeof(uint32_t);
         break;
     }
     case JVM_OPC_lookupswitch: {
         auto aligned_pc = (pc + 4) & ~0x03;
-        auto npairs = read_opc_u4(code + aligned_pc + 4);
-        end = aligned_pc + (2 + npairs) * sizeof(uint32_t);
+        auto npairs = read_u4(code + aligned_pc + 4);
+        end = aligned_pc + 8 + npairs * sizeof(uint64_t);
         break;
     }
     default:
