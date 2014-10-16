@@ -80,6 +80,7 @@ OBJS += java/interp.o
 OBJS += java/jar.o
 OBJS += java/jni.o
 OBJS += java/loader.o
+OBJS += java/opcode.o
 OBJS += java/translator.o
 OBJS += java/verify.o
 OBJS += java/zip.o
