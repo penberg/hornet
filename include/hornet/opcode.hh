@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <vector>
 
 #include <classfile_constants.h>
 
@@ -136,6 +137,7 @@ inline uint16_t branch_target(char* code, uint16_t pos)
 }
 
 uint16_t switch_opc_len(char* code, uint16_t pc);
+std::vector<uint16_t> switch_targets(char* code, uint16_t pc);
 
 }
 

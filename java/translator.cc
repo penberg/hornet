@@ -652,7 +652,12 @@ void translator::scan()
     uint16_t pos = 0;
     while (pos < bblock->end) {
         uint8_t opc = _method->code[pos];
-        pos += opcode_length[opc];
+        if (is_switch(opc)) {
+            auto len = switch_opc_len(_method->code, pos);
+            pos += len;
+        } else {
+            pos += opcode_length[opc];
+        }
         if (is_bblock_end(opc)) {
             bblock = bblock->split_at(pos);
             insert_bblock(pos, bblock);
@@ -661,6 +666,19 @@ void translator::scan()
     pos = 0;
     while (pos < _method->code_length) {
         uint8_t opc = _method->code[pos];
+        if (is_switch(opc)) {
+            auto target_pcs = switch_targets(_method->code, pos);
+            for (auto&& target_pc : target_pcs) {
+                auto bblock = lookup_contains(target_pc);
+                if (bblock->start != target_pc) {
+                    auto target = bblock->split_at(target_pc);
+                    insert_bblock(target_pc, target);
+                }
+            }
+            auto len = switch_opc_len(_method->code, pos);
+            pos += len;
+            continue;
+        }
         if (is_branch(opc)) {
             auto target_pc = branch_target(_method->code, pos);
             auto bblock = lookup_contains(target_pc);
