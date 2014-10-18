@@ -185,8 +185,36 @@ next_insn:
         op_load(type::t_ref, idx);
         break;
     }
+    case JVM_OPC_iaload: {
+        op_arrayload(type::t_int);
+        break;
+    }
+    case JVM_OPC_laload: {
+        op_arrayload(type::t_long);
+        break;
+    }
+    case JVM_OPC_faload: {
+        op_arrayload(type::t_float);
+        break;
+    }
+    case JVM_OPC_daload: {
+        op_arrayload(type::t_double);
+        break;
+    }
     case JVM_OPC_aaload: {
         op_arrayload(type::t_ref);
+        break;
+    }
+    case JVM_OPC_baload: {
+        op_arrayload(type::t_byte);
+        break;
+    }
+    case JVM_OPC_caload: {
+        op_arrayload(type::t_char);
+        break;
+    }
+    case JVM_OPC_saload: {
+        op_arrayload(type::t_short);
         break;
     }
     case JVM_OPC_istore: {
