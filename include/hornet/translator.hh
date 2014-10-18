@@ -95,7 +95,8 @@ protected:
     virtual void op_load  (type t, uint16_t idx) = 0;
     virtual void op_store (type t, uint16_t idx) = 0;
     virtual void op_arrayload(type t) = 0;
-    virtual void op_arraystore(type t, uint16_t ix) = 0;
+    virtual void op_arraystore(type t, uint16_t idx) = 0;
+    virtual void op_convert(type from, type to) = 0;
     virtual void op_pop() = 0;
     virtual void op_dup() = 0;
     virtual void op_dup_x1() = 0;

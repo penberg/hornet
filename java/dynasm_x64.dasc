@@ -44,6 +44,11 @@ void dynasm_translator::op_arraystore(type t, uint16_t)
     assert(0);
 }
 
+void dynasm_translator::op_convert(type from, type to)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_pop()
 {
     assert(0);

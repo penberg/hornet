@@ -924,6 +924,7 @@ public:
     virtual void op_store (type t, uint16_t idx) override;
     virtual void op_arrayload(type t) override;
     virtual void op_arraystore(type t, uint16_t idx) override;
+    virtual void op_convert(type from, type to) override;
     virtual void op_pop() override;
     virtual void op_dup() override;
     virtual void op_dup_x1() override;
@@ -1066,6 +1067,11 @@ void interp_translator::op_arraystore(type t, uint16_t idx)
 {
     put_opc(opc::arraystore);
     put_const(idx);
+}
+
+void interp_translator::op_convert(type from, type to)
+{
+    assert(0);
 }
 
 void interp_translator::op_pop()

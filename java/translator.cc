@@ -400,6 +400,66 @@ next_insn:
         op_iinc(idx, value);
         break;
     }
+    case JVM_OPC_i2l: {
+        op_convert(type::t_int, type::t_long);
+        break;
+    }
+    case JVM_OPC_i2f: {
+        op_convert(type::t_int, type::t_float);
+        break;
+    }
+    case JVM_OPC_i2d: {
+        op_convert(type::t_int, type::t_double);
+        break;
+    }
+    case JVM_OPC_l2i: {
+        op_convert(type::t_long, type::t_int);
+        break;
+    }
+    case JVM_OPC_l2f: {
+        op_convert(type::t_long, type::t_float);
+        break;
+    }
+    case JVM_OPC_l2d: {
+        op_convert(type::t_long, type::t_double);
+        break;
+    }
+    case JVM_OPC_f2i: {
+        op_convert(type::t_float, type::t_int);
+        break;
+    }
+    case JVM_OPC_f2l: {
+        op_convert(type::t_float, type::t_long);
+        break;
+    }
+    case JVM_OPC_f2d: {
+        op_convert(type::t_float, type::t_double);
+        break;
+    }
+    case JVM_OPC_d2i: {
+        op_convert(type::t_double, type::t_int);
+        break;
+    }
+    case JVM_OPC_d2l: {
+        op_convert(type::t_double, type::t_long);
+        break;
+    }
+    case JVM_OPC_d2f: {
+        op_convert(type::t_double, type::t_float);
+        break;
+    }
+    case JVM_OPC_i2b: {
+        op_convert(type::t_int, type::t_byte);
+        break;
+    }
+    case JVM_OPC_i2c: {
+        op_convert(type::t_int, type::t_char);
+        break;
+    }
+    case JVM_OPC_i2s: {
+        op_convert(type::t_int, type::t_short);
+        break;
+    }
     case JVM_OPC_lcmp: {
         op_lcmp();
         break;
