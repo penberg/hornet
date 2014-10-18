@@ -263,6 +263,11 @@ next_insn:
         op_arraystore(type::t_ref, idx);
         break;
     }
+    case JVM_OPC_bastore: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        op_arraystore(type::t_byte, idx);
+        break;
+    }
     case JVM_OPC_castore: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         op_arraystore(type::t_char, idx);
