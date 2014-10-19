@@ -370,6 +370,30 @@ next_insn:
         op_binary(type::t_long, binop::op_rem);
         break;
     }
+    case JVM_OPC_ishl: {
+        op_binary(type::t_int, binop::op_shl);
+        break;
+    }
+    case JVM_OPC_lshl: {
+        op_binary(type::t_long, binop::op_shl);
+        break;
+    }
+    case JVM_OPC_ishr: {
+        op_binary(type::t_int, binop::op_shr);
+        break;
+    }
+    case JVM_OPC_lshr: {
+        op_binary(type::t_long, binop::op_shr);
+        break;
+    }
+    case JVM_OPC_iushr: {
+        op_binary(type::t_int, binop::op_ushr);
+        break;
+    }
+    case JVM_OPC_lushr: {
+        op_binary(type::t_long, binop::op_ushr);
+        break;
+    }
     case JVM_OPC_iand: {
         op_binary(type::t_int, binop::op_and);
         break;

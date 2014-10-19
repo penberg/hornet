@@ -32,6 +32,9 @@ enum class binop {
     op_div,
     op_rem,
     op_and,
+    op_shl,
+    op_shr,
+    op_ushr,
     op_or,
     op_xor,
 };
