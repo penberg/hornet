@@ -378,6 +378,14 @@ next_insn:
         op_binary(type::t_long, binop::op_div);
         break;
     }
+    case JVM_OPC_fdiv: {
+        op_binary(type::t_float, binop::op_div);
+        break;
+    }
+    case JVM_OPC_ddiv: {
+        op_binary(type::t_double, binop::op_div);
+        break;
+    }
     case JVM_OPC_irem: {
         op_binary(type::t_int, binop::op_rem);
         break;
