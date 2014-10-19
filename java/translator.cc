@@ -267,6 +267,14 @@ next_insn:
         op_store(type::t_float, idx);
         break;
     }
+    case JVM_OPC_dstore_0:
+    case JVM_OPC_dstore_1:
+    case JVM_OPC_dstore_2:
+    case JVM_OPC_dstore_3: {
+        uint16_t idx = opc - JVM_OPC_dstore_0;
+        op_store(type::t_double, idx);
+        break;
+    }
     case JVM_OPC_astore_0:
     case JVM_OPC_astore_1:
     case JVM_OPC_astore_2:
