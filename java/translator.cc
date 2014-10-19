@@ -318,6 +318,22 @@ next_insn:
         op_dup_x1();
         break;
     }
+    case JVM_OPC_dup_x2: {
+        op_dup_x2();
+        break;
+    }
+    case JVM_OPC_dup2: {
+        op_dup2();
+        break;
+    }
+    case JVM_OPC_dup2_x1: {
+        op_dup2_x1();
+        break;
+    }
+    case JVM_OPC_dup2_x2: {
+        op_dup2_x2();
+        break;
+    }
     case JVM_OPC_swap: {
         op_swap();
         break;

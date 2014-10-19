@@ -71,6 +71,10 @@ public:
     virtual void op_pop() override;
     virtual void op_dup() override;
     virtual void op_dup_x1() override;
+    virtual void op_dup_x2() override;
+    virtual void op_dup2() override;
+    virtual void op_dup2_x1() override;
+    virtual void op_dup2_x2() override;
     virtual void op_swap() override;
     virtual void op_unary(type t, unaryop op) override;
     virtual void op_binary(type t, binop op) override;
@@ -214,6 +218,26 @@ void llvm_translator::op_dup()
 }
 
 void llvm_translator::op_dup_x1()
+{
+    assert(0);
+}
+
+void llvm_translator::op_dup_x2()
+{
+    assert(0);
+}
+
+void llvm_translator::op_dup2()
+{
+    assert(0);
+}
+
+void llvm_translator::op_dup2_x1()
+{
+    assert(0);
+}
+
+void llvm_translator::op_dup2_x2()
 {
     assert(0);
 }

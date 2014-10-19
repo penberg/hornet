@@ -107,6 +107,10 @@ protected:
     virtual void op_pop() = 0;
     virtual void op_dup() = 0;
     virtual void op_dup_x1() = 0;
+    virtual void op_dup_x2() = 0;
+    virtual void op_dup2() = 0;
+    virtual void op_dup2_x1() = 0;
+    virtual void op_dup2_x2() = 0;
     virtual void op_swap() = 0;
     virtual void op_unary(type t, unaryop op) = 0;
     virtual void op_binary(type t, binop op) = 0;

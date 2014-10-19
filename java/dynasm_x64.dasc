@@ -64,6 +64,26 @@ void dynasm_translator::op_dup_x1()
     assert(0);
 }
 
+void dynasm_translator::op_dup_x2()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_dup2()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_dup2_x1()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_dup2_x2()
+{
+    assert(0);
+}
+
 void dynasm_translator::op_swap()
 {
     assert(0);
