@@ -446,6 +446,9 @@ enum class opc : uint8_t {
     imul,
     idiv,
     irem,
+    ishl,
+    ishr,
+    iushr,
     iand,
     ior,
     ixor,
@@ -455,6 +458,9 @@ enum class opc : uint8_t {
     lmul,
     ldiv,
     lrem,
+    lshl,
+    lshr,
+    lushr,
     land,
     lor,
     lxor,
@@ -472,11 +478,6 @@ enum class opc : uint8_t {
     drem,
 
     ineg,
-
-    ishl,
-    ishr,
-    lshl,
-    lshr,
 
     iinc,
 
@@ -558,6 +559,9 @@ value_t interp(frame& frame, const char *code)
         &&op_imul,
         &&op_idiv,
         &&op_irem,
+        &&op_ishl,
+        &&op_ishr,
+        &&op_iushr,
         &&op_iand,
         &&op_ior,
         &&op_ixor,
@@ -567,6 +571,9 @@ value_t interp(frame& frame, const char *code)
         &&op_lmul,
         &&op_ldiv,
         &&op_lrem,
+        &&op_lshl,
+        &&op_lshr,
+        &&op_lushr,
         &&op_land,
         &&op_lor,
         &&op_lxor,
@@ -584,11 +591,6 @@ value_t interp(frame& frame, const char *code)
         &&op_drem,
 
         &&op_ineg,
-
-        &&op_ishl,
-        &&op_ishr,
-        &&op_lshl,
-        &&op_lshr,
 
         &&op_iinc,
 
@@ -705,6 +707,9 @@ value_t interp(frame& frame, const char *code)
         op_imul: op_binary<jint>   (frame, binop::op_mul); dispatch();
         op_idiv: op_binary<jint>   (frame, binop::op_div); dispatch();
         op_irem: op_binary<jint>   (frame, binop::op_rem); dispatch();
+        op_ishl: op_shift<jint>    (frame, shiftop::op_shl, 0x1f); dispatch();
+        op_ishr: op_shift<jint>    (frame, shiftop::op_shr, 0x1f); dispatch();
+        op_iushr: op_shift<uint32_t>(frame, shiftop::op_shr, 0x1f); dispatch();
         op_iand: op_binary<jint>   (frame, binop::op_and); dispatch();
         op_ior:  op_binary<jint>   (frame, binop::op_or);  dispatch();
         op_ixor: op_binary<jint>   (frame, binop::op_xor); dispatch();
@@ -714,6 +719,9 @@ value_t interp(frame& frame, const char *code)
         op_lmul: op_binary<jlong>  (frame, binop::op_mul); dispatch();
         op_ldiv: op_binary<jlong>  (frame, binop::op_div); dispatch();
         op_lrem: op_binary<jlong>  (frame, binop::op_rem); dispatch();
+        op_lshl: op_shift<jlong>   (frame, shiftop::op_shl, 0x3f); dispatch();
+        op_lshr: op_shift<jlong>   (frame, shiftop::op_shr, 0x3f); dispatch();
+        op_lushr: op_shift<uint64_t>(frame, shiftop::op_shr, 0x3f); dispatch();
         op_land: op_binary<jlong>  (frame, binop::op_and); dispatch();
         op_lor:  op_binary<jlong>  (frame, binop::op_or);  dispatch();
         op_lxor: op_binary<jlong>  (frame, binop::op_xor); dispatch();
@@ -729,12 +737,6 @@ value_t interp(frame& frame, const char *code)
         op_dmul: op_binary<jdouble>(frame, binop::op_mul); dispatch();
         op_ddiv: op_binary<jdouble>(frame, binop::op_div); dispatch();
         op_drem: op_binary<jdouble>(frame, binop::op_rem); dispatch();
-
-        op_ishl: op_shift<jint> (frame, shiftop::op_shl, 0x1f); dispatch();
-        op_lshl: op_shift<jlong>(frame, shiftop::op_shl, 0x3f); dispatch();
-
-        op_ishr: op_shift<jint> (frame, shiftop::op_shr, 0x1f); dispatch();
-        op_lshr: op_shift<jlong>(frame, shiftop::op_shr, 0x3f); dispatch();
 
         op_ineg: op_unary<jint>(frame, unop::op_neg); dispatch();
 
@@ -1099,28 +1101,34 @@ void interp_translator::op_binary(type t, binop op)
     switch (t) {
     case type::t_int: {
         switch (op) {
-        case binop::op_add: put_opc(opc::iadd); break;
-        case binop::op_sub: put_opc(opc::isub); break;
-        case binop::op_mul: put_opc(opc::imul); break;
-        case binop::op_div: put_opc(opc::idiv); break;
-        case binop::op_rem: put_opc(opc::irem); break;
-        case binop::op_and: put_opc(opc::iand); break;
-        case binop::op_or:  put_opc(opc::ior);  break;
-        case binop::op_xor: put_opc(opc::ixor); break;
+        case binop::op_add:  put_opc(opc::iadd);  break;
+        case binop::op_sub:  put_opc(opc::isub);  break;
+        case binop::op_mul:  put_opc(opc::imul);  break;
+        case binop::op_div:  put_opc(opc::idiv);  break;
+        case binop::op_rem:  put_opc(opc::irem);  break;
+        case binop::op_shl:  put_opc(opc::ishl);  break;
+        case binop::op_shr:  put_opc(opc::ishr);  break;
+        case binop::op_ushr: put_opc(opc::iushr); break;
+        case binop::op_and:  put_opc(opc::iand);  break;
+        case binop::op_or:   put_opc(opc::ior);   break;
+        case binop::op_xor:  put_opc(opc::ixor);  break;
         default: assert(0);
         }
         break;
     }
     case type::t_long: {
         switch (op) {
-        case binop::op_add: put_opc(opc::ladd); break;
-        case binop::op_sub: put_opc(opc::lsub); break;
-        case binop::op_mul: put_opc(opc::lmul); break;
-        case binop::op_div: put_opc(opc::ldiv); break;
-        case binop::op_rem: put_opc(opc::lrem); break;
-        case binop::op_and: put_opc(opc::land); break;
-        case binop::op_or:  put_opc(opc::lor);  break;
-        case binop::op_xor: put_opc(opc::lxor); break;
+        case binop::op_add:  put_opc(opc::ladd);  break;
+        case binop::op_sub:  put_opc(opc::lsub);  break;
+        case binop::op_mul:  put_opc(opc::lmul);  break;
+        case binop::op_div:  put_opc(opc::ldiv);  break;
+        case binop::op_rem:  put_opc(opc::lrem);  break;
+        case binop::op_shl:  put_opc(opc::lshl);  break;
+        case binop::op_shr:  put_opc(opc::lshr);  break;
+        case binop::op_ushr: put_opc(opc::lushr); break;
+        case binop::op_and:  put_opc(opc::land);  break;
+        case binop::op_or:   put_opc(opc::lor);   break;
+        case binop::op_xor:  put_opc(opc::lxor);  break;
         default: assert(0);
         }
         break;
