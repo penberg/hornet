@@ -446,6 +446,7 @@ enum class opc : uint8_t {
     imul,
     idiv,
     irem,
+    ineg,
     ishl,
     ishr,
     iushr,
@@ -458,6 +459,7 @@ enum class opc : uint8_t {
     lmul,
     ldiv,
     lrem,
+    lneg,
     lshl,
     lshr,
     lushr,
@@ -476,8 +478,6 @@ enum class opc : uint8_t {
     dmul,
     ddiv,
     drem,
-
-    ineg,
 
     iinc,
 
@@ -559,6 +559,7 @@ value_t interp(frame& frame, const char *code)
         &&op_imul,
         &&op_idiv,
         &&op_irem,
+        &&op_ineg,
         &&op_ishl,
         &&op_ishr,
         &&op_iushr,
@@ -571,6 +572,7 @@ value_t interp(frame& frame, const char *code)
         &&op_lmul,
         &&op_ldiv,
         &&op_lrem,
+        &&op_lneg,
         &&op_lshl,
         &&op_lshr,
         &&op_lushr,
@@ -589,8 +591,6 @@ value_t interp(frame& frame, const char *code)
         &&op_dmul,
         &&op_ddiv,
         &&op_drem,
-
-        &&op_ineg,
 
         &&op_iinc,
 
@@ -707,6 +707,7 @@ value_t interp(frame& frame, const char *code)
         op_imul: op_binary<jint>   (frame, binop::op_mul); dispatch();
         op_idiv: op_binary<jint>   (frame, binop::op_div); dispatch();
         op_irem: op_binary<jint>   (frame, binop::op_rem); dispatch();
+        op_ineg: op_unary<jint>    (frame, unop::op_neg); dispatch();
         op_ishl: op_shift<jint>    (frame, shiftop::op_shl, 0x1f); dispatch();
         op_ishr: op_shift<jint>    (frame, shiftop::op_shr, 0x1f); dispatch();
         op_iushr: op_shift<uint32_t>(frame, shiftop::op_shr, 0x1f); dispatch();
@@ -719,6 +720,7 @@ value_t interp(frame& frame, const char *code)
         op_lmul: op_binary<jlong>  (frame, binop::op_mul); dispatch();
         op_ldiv: op_binary<jlong>  (frame, binop::op_div); dispatch();
         op_lrem: op_binary<jlong>  (frame, binop::op_rem); dispatch();
+        op_lneg: op_unary<jlong>   (frame, unop::op_neg);  dispatch();
         op_lshl: op_shift<jlong>   (frame, shiftop::op_shl, 0x3f); dispatch();
         op_lshr: op_shift<jlong>   (frame, shiftop::op_shr, 0x3f); dispatch();
         op_lushr: op_shift<uint64_t>(frame, shiftop::op_shr, 0x3f); dispatch();
@@ -737,8 +739,6 @@ value_t interp(frame& frame, const char *code)
         op_dmul: op_binary<jdouble>(frame, binop::op_mul); dispatch();
         op_ddiv: op_binary<jdouble>(frame, binop::op_div); dispatch();
         op_drem: op_binary<jdouble>(frame, binop::op_rem); dispatch();
-
-        op_ineg: op_unary<jint>(frame, unop::op_neg); dispatch();
 
         op_ret_void: {
             return to_value<object*>(nullptr);
