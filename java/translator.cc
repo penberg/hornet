@@ -68,7 +68,8 @@ next_insn:
         break;
     }
     case JVM_OPC_fconst_0:
-    case JVM_OPC_fconst_1: {
+    case JVM_OPC_fconst_1:
+    case JVM_OPC_fconst_2: {
         jfloat value = opc - JVM_OPC_fconst_0;
         op_const(type::t_float, value);
         break;
