@@ -394,6 +394,14 @@ next_insn:
         op_binary(type::t_long, binop::op_rem);
         break;
     }
+    case JVM_OPC_frem: {
+        op_binary(type::t_float, binop::op_rem);
+        break;
+    }
+    case JVM_OPC_drem: {
+        op_binary(type::t_double, binop::op_rem);
+        break;
+    }
     case JVM_OPC_ineg: {
         op_unary(type::t_int, unaryop::op_neg);
         break;
