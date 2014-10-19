@@ -410,6 +410,14 @@ next_insn:
         op_unary(type::t_long, unaryop::op_neg);
         break;
     }
+    case JVM_OPC_fneg: {
+        op_unary(type::t_float, unaryop::op_neg);
+        break;
+    }
+    case JVM_OPC_dneg: {
+        op_unary(type::t_double, unaryop::op_neg);
+        break;
+    }
     case JVM_OPC_ishl: {
         op_binary(type::t_int, binop::op_shl);
         break;
