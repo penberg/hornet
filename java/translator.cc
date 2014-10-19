@@ -654,6 +654,10 @@ next_insn:
         op_ret();
         break;
     }
+    case JVM_OPC_return: {
+        op_ret_void();
+        break;
+    }
     case JVM_OPC_getstatic: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto field = _method->klass->resolve_field(idx);
@@ -716,10 +720,6 @@ next_insn:
         auto target = _method->klass->resolve_interface_method(idx);
         assert(target != nullptr);
         op_invokeinterface(target.get());
-        break;
-    }
-    case JVM_OPC_return: {
-        op_ret_void();
         break;
     }
     case JVM_OPC_new: {
