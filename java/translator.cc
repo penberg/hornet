@@ -482,6 +482,12 @@ next_insn:
         op_if(cmpop::op_cmplt, target);
         break;
     }
+    case JVM_OPC_ifge: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(cmpop::op_cmpge, target);
+        break;
+    }
     case JVM_OPC_ifgt: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
