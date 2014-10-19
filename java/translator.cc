@@ -310,6 +310,10 @@ next_insn:
         op_pop();
         break;
     }
+    case JVM_OPC_pop2: {
+        op_pop2();
+        break;
+    }
     case JVM_OPC_dup: {
         op_dup();
         break;

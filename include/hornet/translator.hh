@@ -105,6 +105,7 @@ protected:
     virtual void op_arraystore(type t, uint16_t idx) = 0;
     virtual void op_convert(type from, type to) = 0;
     virtual void op_pop() = 0;
+    virtual void op_pop2() = 0;
     virtual void op_dup() = 0;
     virtual void op_dup_x1() = 0;
     virtual void op_dup_x2() = 0;

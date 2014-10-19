@@ -54,6 +54,11 @@ void dynasm_translator::op_pop()
     assert(0);
 }
 
+void dynasm_translator::op_pop2()
+{
+    assert(0);
+}
+
 void dynasm_translator::op_dup()
 {
     assert(0);
