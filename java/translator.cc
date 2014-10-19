@@ -330,6 +330,14 @@ next_insn:
         op_binary(type::t_long, binop::op_add);
         break;
     }
+    case JVM_OPC_fadd: {
+        op_binary(type::t_float, binop::op_add);
+        break;
+    }
+    case JVM_OPC_dadd: {
+        op_binary(type::t_double, binop::op_add);
+        break;
+    }
     case JVM_OPC_isub: {
         op_binary(type::t_int, binop::op_sub);
         break;
