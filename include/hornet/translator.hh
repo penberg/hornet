@@ -25,6 +25,10 @@ enum class type {
     t_ref,
 };
 
+enum class unaryop {
+    op_neg,
+};
+
 enum class binop {
     op_add,
     op_sub,
@@ -104,6 +108,7 @@ protected:
     virtual void op_dup() = 0;
     virtual void op_dup_x1() = 0;
     virtual void op_swap() = 0;
+    virtual void op_unary(type t, unaryop op) = 0;
     virtual void op_binary(type t, binop op) = 0;
     virtual void op_iinc(uint8_t idx, jint value) = 0;
     virtual void op_lcmp() = 0;

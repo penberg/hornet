@@ -69,6 +69,11 @@ void dynasm_translator::op_swap()
     assert(0);
 }
 
+void dynasm_translator::op_unary(type t, unaryop op)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_binary(type t, binop op)
 {
     |  pop rdx

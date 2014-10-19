@@ -370,6 +370,14 @@ next_insn:
         op_binary(type::t_long, binop::op_rem);
         break;
     }
+    case JVM_OPC_ineg: {
+        op_unary(type::t_int, unaryop::op_neg);
+        break;
+    }
+    case JVM_OPC_lneg: {
+        op_unary(type::t_long, unaryop::op_neg);
+        break;
+    }
     case JVM_OPC_ishl: {
         op_binary(type::t_int, binop::op_shl);
         break;

@@ -931,6 +931,7 @@ public:
     virtual void op_dup() override;
     virtual void op_dup_x1() override;
     virtual void op_swap() override;
+    virtual void op_unary(type t, unaryop op) override;
     virtual void op_binary(type t, binop op) override;
     virtual void op_iinc(uint8_t idx, jint value) override;
     virtual void op_lcmp() override;
@@ -1094,6 +1095,27 @@ void interp_translator::op_dup_x1()
 void interp_translator::op_swap()
 {
     put_opc(opc::swap);
+}
+
+void interp_translator::op_unary(type t, unaryop op)
+{
+    switch (t) {
+    case type::t_int: {
+        switch (op) {
+        case unaryop::op_neg: put_opc(opc::ineg); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_long: {
+        switch (op) {
+        case unaryop::op_neg: put_opc(opc::ineg); break;
+        default: assert(0);
+        }
+        break;
+    }
+    default: assert(0);
+    }
 }
 
 void interp_translator::op_binary(type t, binop op)
