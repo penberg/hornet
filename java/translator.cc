@@ -346,6 +346,14 @@ next_insn:
         op_binary(type::t_long, binop::op_sub);
         break;
     }
+    case JVM_OPC_fsub: {
+        op_binary(type::t_float, binop::op_sub);
+        break;
+    }
+    case JVM_OPC_dsub: {
+        op_binary(type::t_double, binop::op_sub);
+        break;
+    }
     case JVM_OPC_imul: {
         op_binary(type::t_int, binop::op_mul);
         break;
