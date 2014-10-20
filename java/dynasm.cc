@@ -65,6 +65,8 @@ public:
     virtual void op_arraylength() override;
     virtual void op_checkcast(klass* klass) override;
     virtual void op_instanceof(klass* klass) override;
+    virtual void op_monitorenter() override;
+    virtual void op_monitorexit() override;
 
 private:
     dynasm_backend* ctx;

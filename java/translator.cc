@@ -792,6 +792,14 @@ next_insn:
         op_instanceof(klass.get());
         break;
     }
+    case JVM_OPC_monitorenter: {
+        op_monitorenter();
+        break;
+    }
+    case JVM_OPC_monitorexit: {
+        op_monitorexit();
+        break;
+    }
     case JVM_OPC_goto_w: {
         int32_t offset = read_opc_u4(_method->code + pc);
         auto target = lookup(pc + offset);

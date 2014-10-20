@@ -101,6 +101,8 @@ public:
     virtual void op_arraylength() override;
     virtual void op_checkcast(klass* klass) override;
     virtual void op_instanceof(klass* klass) override;
+    virtual void op_monitorenter() override;
+    virtual void op_monitorexit() override;
 
 private:
     AllocaInst* lookup_local(unsigned int idx, Type* type);
@@ -382,6 +384,16 @@ void llvm_translator::op_checkcast(klass* klass)
 }
 
 void llvm_translator::op_instanceof(klass* klass)
+{
+    assert(0);
+}
+
+void llvm_translator::op_monitorenter()
+{
+    assert(0);
+}
+
+void llvm_translator::op_monitorexit()
 {
     assert(0);
 }

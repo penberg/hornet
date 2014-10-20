@@ -296,3 +296,13 @@ void dynasm_translator::op_instanceof(klass* klass)
 {
     assert(0);
 }
+
+void dynasm_translator::op_monitorenter()
+{
+    assert(0);
+}
+
+void dynasm_translator::op_monitorexit()
+{
+    assert(0);
+}

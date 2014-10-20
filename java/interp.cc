@@ -960,6 +960,8 @@ public:
     virtual void op_arraylength() override;
     virtual void op_checkcast(klass* klass) override;
     virtual void op_instanceof(klass* klass) override;
+    virtual void op_monitorenter() override;
+    virtual void op_monitorexit() override;
 
 private:
     void put_opc(opc x) {
@@ -1367,6 +1369,16 @@ void interp_translator::op_checkcast(klass* klass)
 }
 
 void interp_translator::op_instanceof(klass* klass)
+{
+    assert(0);
+}
+
+void interp_translator::op_monitorenter()
+{
+    assert(0);
+}
+
+void interp_translator::op_monitorexit()
 {
     assert(0);
 }

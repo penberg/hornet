@@ -137,6 +137,8 @@ protected:
     virtual void op_arraylength() = 0;
     virtual void op_checkcast(klass* klass) = 0;
     virtual void op_instanceof(klass* klass) = 0;
+    virtual void op_monitorenter() = 0;
+    virtual void op_monitorexit() = 0;
 
     method* _method;
     std::map<uint16_t, std::shared_ptr<basic_block>> _bblock_map;
