@@ -39,7 +39,7 @@ void dynasm_translator::op_arrayload(type t)
     assert(0);
 }
 
-void dynasm_translator::op_arraystore(type t, uint16_t)
+void dynasm_translator::op_arraystore(type t)
 {
     assert(0);
 }

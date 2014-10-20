@@ -66,7 +66,7 @@ public:
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
     virtual void op_arrayload(type t) override;
-    virtual void op_arraystore(type t, uint16_t) override;
+    virtual void op_arraystore(type t) override;
     virtual void op_convert(type from, type to) override;
     virtual void op_pop() override;
     virtual void op_pop2() override;
@@ -202,7 +202,7 @@ void llvm_translator::op_arrayload(type t)
     assert(0);
 }
 
-void llvm_translator::op_arraystore(type t, uint16_t)
+void llvm_translator::op_arraystore(type t)
 {
     assert(0);
 }

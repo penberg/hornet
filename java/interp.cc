@@ -69,7 +69,7 @@ void op_arrayload(frame& frame)
     assert(0);
 }
 
-void op_arraystore(uint16_t idx, frame& frame)
+void op_arraystore(frame& frame)
 {
     assert(0);
 }
@@ -681,8 +681,7 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
         op_arraystore: {
-            auto idx = read_const<uint16_t>(code, frame.pc);
-            op_arraystore(idx, frame);
+            op_arraystore(frame);
             dispatch();
         }
         op_pop: {
@@ -925,7 +924,7 @@ public:
     virtual void op_load  (type t, uint16_t idx) override;
     virtual void op_store (type t, uint16_t idx) override;
     virtual void op_arrayload(type t) override;
-    virtual void op_arraystore(type t, uint16_t idx) override;
+    virtual void op_arraystore(type t) override;
     virtual void op_convert(type from, type to) override;
     virtual void op_pop() override;
     virtual void op_pop2() override;
@@ -1075,10 +1074,9 @@ void interp_translator::op_arrayload(type t)
     put_opc(opc::arrayload);
 }
 
-void interp_translator::op_arraystore(type t, uint16_t idx)
+void interp_translator::op_arraystore(type t)
 {
     put_opc(opc::arraystore);
-    put_const(idx);
 }
 
 void interp_translator::op_convert(type from, type to)

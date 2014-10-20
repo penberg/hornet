@@ -284,43 +284,35 @@ next_insn:
         break;
     }
     case JVM_OPC_iastore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_int, idx);
+        op_arraystore(type::t_int);
         break;
     }
     case JVM_OPC_lastore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_long, idx);
+        op_arraystore(type::t_long);
         break;
     }
     case JVM_OPC_fastore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_float, idx);
+        op_arraystore(type::t_float);
         break;
     }
     case JVM_OPC_dastore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_double, idx);
+        op_arraystore(type::t_double);
         break;
     }
     case JVM_OPC_aastore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_ref, idx);
+        op_arraystore(type::t_ref);
         break;
     }
     case JVM_OPC_bastore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_byte, idx);
+        op_arraystore(type::t_byte);
         break;
     }
     case JVM_OPC_castore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_char, idx);
+        op_arraystore(type::t_char);
         break;
     }
     case JVM_OPC_sastore: {
-        uint16_t idx = read_opc_u2(_method->code + pc);
-        op_arraystore(type::t_short, idx);
+        op_arraystore(type::t_short);
         break;
     }
     case JVM_OPC_pop: {
