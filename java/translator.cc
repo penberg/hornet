@@ -769,6 +769,13 @@ next_insn:
         op_checkcast(klass.get());
         break;
     }
+    case JVM_OPC_instanceof: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        auto klass = _method->klass->resolve_class(idx);
+        assert(klass != nullptr);
+        op_instanceof(klass.get());
+        break;
+    }
     default:
         fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
         abort();

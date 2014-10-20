@@ -99,6 +99,7 @@ public:
     virtual void op_invokeinterface(method* target) override;
     virtual void op_arraylength() override;
     virtual void op_checkcast(klass* klass) override;
+    virtual void op_instanceof(klass* klass) override;
 
 private:
     AllocaInst* lookup_local(unsigned int idx, Type* type);
@@ -370,6 +371,11 @@ void llvm_translator::op_arraylength()
 }
 
 void llvm_translator::op_checkcast(klass* klass)
+{
+    assert(0);
+}
+
+void llvm_translator::op_instanceof(klass* klass)
 {
     assert(0);
 }

@@ -286,3 +286,8 @@ void dynasm_translator::op_checkcast(klass* klass)
 {
     assert(0);
 }
+
+void dynasm_translator::op_instanceof(klass* klass)
+{
+    assert(0);
+}

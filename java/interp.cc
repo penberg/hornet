@@ -958,6 +958,7 @@ public:
     virtual void op_anewarray(klass* klass) override;
     virtual void op_arraylength() override;
     virtual void op_checkcast(klass* klass) override;
+    virtual void op_instanceof(klass* klass) override;
 
 private:
     void put_opc(opc x) {
@@ -1355,6 +1356,11 @@ void interp_translator::op_arraylength()
 }
 
 void interp_translator::op_checkcast(klass* klass)
+{
+    assert(0);
+}
+
+void interp_translator::op_instanceof(klass* klass)
 {
     assert(0);
 }
