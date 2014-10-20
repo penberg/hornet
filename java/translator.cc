@@ -592,37 +592,37 @@ next_insn:
     case JVM_OPC_ifeq: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
-        op_if(cmpop::op_cmpeq, target);
+        op_if(type::t_int, cmpop::op_cmpeq, target);
         break;
     }
     case JVM_OPC_ifne: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
-        op_if(cmpop::op_cmpne, target);
+        op_if(type::t_int, cmpop::op_cmpne, target);
         break;
     }
     case JVM_OPC_iflt: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
-        op_if(cmpop::op_cmplt, target);
+        op_if(type::t_int, cmpop::op_cmplt, target);
         break;
     }
     case JVM_OPC_ifge: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
-        op_if(cmpop::op_cmpge, target);
+        op_if(type::t_int, cmpop::op_cmpge, target);
         break;
     }
     case JVM_OPC_ifgt: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
-        op_if(cmpop::op_cmpgt, target);
+        op_if(type::t_int, cmpop::op_cmpgt, target);
         break;
     }
     case JVM_OPC_ifle: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);
-        op_if(cmpop::op_cmple, target);
+        op_if(type::t_int, cmpop::op_cmple, target);
         break;
     }
     case JVM_OPC_if_icmpeq: {
@@ -798,6 +798,18 @@ next_insn:
     }
     case JVM_OPC_monitorexit: {
         op_monitorexit();
+        break;
+    }
+    case JVM_OPC_ifnull: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(type::t_ref, cmpop::op_cmpeq, target);
+        break;
+    }
+    case JVM_OPC_ifnonnull: {
+        int16_t offset = read_opc_u2(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_if(type::t_ref, cmpop::op_cmpne, target);
         break;
     }
     case JVM_OPC_goto_w: {

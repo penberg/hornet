@@ -198,7 +198,7 @@ void dynasm_translator::op_cmp(type t, cmpop op)
     assert(0);
 }
 
-void dynasm_translator::op_if(cmpop op, std::shared_ptr<basic_block> target)
+void dynasm_translator::op_if(type t, cmpop op, std::shared_ptr<basic_block> target)
 {
     assert(0);
 }

@@ -941,7 +941,7 @@ public:
     virtual void op_iinc(uint8_t idx, jint value) override;
     virtual void op_lcmp() override;
     virtual void op_cmp(type t, cmpop op) override;
-    virtual void op_if(cmpop op, std::shared_ptr<basic_block> target) override;
+    virtual void op_if(type t, cmpop op, std::shared_ptr<basic_block> target) override;
     virtual void op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock) override;
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
     virtual void op_ret() override;
@@ -1232,17 +1232,24 @@ void interp_translator::op_cmp(type t, cmpop op)
     assert(0);
 }
 
-void interp_translator::op_if(cmpop op, std::shared_ptr<basic_block> target)
+void interp_translator::op_if(type t, cmpop op, std::shared_ptr<basic_block> target)
 {
-    switch (op) {
-    case cmpop::op_cmpeq: put_opc(opc::ifeq); break;
-    case cmpop::op_cmpne: put_opc(opc::ifne); break;
-    case cmpop::op_cmplt: put_opc(opc::iflt); break;
-    case cmpop::op_cmpge: put_opc(opc::ifge); break;
-    case cmpop::op_cmpgt: put_opc(opc::ifgt); break;
-    case cmpop::op_cmple: put_opc(opc::ifle); break;
-    default:              assert(0);
+    switch (t) {
+    case type::t_int: {
+        switch (op) {
+        case cmpop::op_cmpeq: put_opc(opc::ifeq); break;
+        case cmpop::op_cmpne: put_opc(opc::ifne); break;
+        case cmpop::op_cmplt: put_opc(opc::iflt); break;
+        case cmpop::op_cmpge: put_opc(opc::ifge); break;
+        case cmpop::op_cmpgt: put_opc(opc::ifgt); break;
+        case cmpop::op_cmple: put_opc(opc::ifle); break;
+        default:              assert(0);
+        }
+        break;
     }
+    default: assert(0);
+    }
+
     put_label(target);
 }
 
