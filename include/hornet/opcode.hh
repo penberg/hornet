@@ -21,6 +21,14 @@ inline uint16_t read_opc_u2(char *p)
     return read_opc_u1(p) << 8 | read_opc_u1(p+1);
 }
 
+inline uint32_t read_opc_u4(char *p)
+{
+    return static_cast<uint32_t>(read_opc_u1(p+0)) << 24
+         | static_cast<uint32_t>(read_opc_u1(p+1)) << 16
+         | static_cast<uint32_t>(read_opc_u1(p+2)) << 8
+         | static_cast<uint32_t>(read_opc_u1(p+3));
+}
+
 inline uint8_t read_u1(char *p)
 {
     return *p;

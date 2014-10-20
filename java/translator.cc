@@ -776,6 +776,12 @@ next_insn:
         op_instanceof(klass.get());
         break;
     }
+    case JVM_OPC_goto_w: {
+        int32_t offset = read_opc_u4(_method->code + pc);
+        auto target = lookup(pc + offset);
+        op_goto(target);
+        break;
+    }
     default:
         fprintf(stderr, "error: unsupported bytecode: %u\n", opc);
         abort();
