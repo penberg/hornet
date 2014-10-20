@@ -81,6 +81,7 @@ public:
     virtual void op_binary(type t, binop op) override;
     virtual void op_iinc(uint8_t idx, jint value) override;
     virtual void op_lcmp() override;
+    virtual void op_cmp(type t, cmpop op) override;
     virtual void op_if(cmpop op, std::shared_ptr<basic_block> target) override;
     virtual void op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock) override;
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
@@ -275,6 +276,11 @@ void llvm_translator::op_iinc(uint8_t idx, jint value)
 }
 
 void llvm_translator::op_lcmp()
+{
+    assert(0);
+}
+
+void llvm_translator::op_cmp(type t, cmpop op)
 {
     assert(0);
 }

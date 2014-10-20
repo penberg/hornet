@@ -573,6 +573,22 @@ next_insn:
         op_lcmp();
         break;
     }
+    case JVM_OPC_fcmpl: {
+        op_cmp(type::t_float, cmpop::op_cmplt);
+        break;
+    }
+    case JVM_OPC_fcmpg: {
+        op_cmp(type::t_float, cmpop::op_cmpgt);
+        break;
+    }
+    case JVM_OPC_dcmpl: {
+        op_cmp(type::t_double, cmpop::op_cmplt);
+        break;
+    }
+    case JVM_OPC_dcmpg: {
+        op_cmp(type::t_double, cmpop::op_cmpgt);
+        break;
+    }
     case JVM_OPC_ifeq: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);

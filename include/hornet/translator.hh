@@ -117,6 +117,7 @@ protected:
     virtual void op_binary(type t, binop op) = 0;
     virtual void op_iinc(uint8_t idx, jint value) = 0;
     virtual void op_lcmp() = 0;
+    virtual void op_cmp(type t, cmpop op) = 0;
     virtual void op_if(cmpop op, std::shared_ptr<basic_block> target) = 0;
     virtual void op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> target) = 0;
     virtual void op_goto(std::shared_ptr<basic_block> target) = 0;
