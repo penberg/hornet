@@ -182,6 +182,7 @@ struct method {
 struct array {
     struct object object;
     uint32_t length;
+    char data[];
 
     array(klass* klass, uint32_t length)
         : object(klass)
@@ -193,6 +194,18 @@ struct array {
 
     array& operator=(const array&) = delete;
     array(const array&) = delete;
+
+    template<typename T>
+    void set(size_t idx, T value) {
+        T* p = reinterpret_cast<T*>(data);
+        p[idx] = value;
+    }
+
+    template<typename T>
+    T get(size_t idx) const {
+        auto* p = reinterpret_cast<const T*>(data);
+        return p[idx];
+    }
 };
 
 struct string {

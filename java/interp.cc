@@ -64,14 +64,27 @@ void op_store(frame& frame, uint16_t idx)
     frame.ostack.pop();
 }
 
+template<typename T>
 void op_arrayload(frame& frame)
 {
-    assert(0);
+    auto index = from_value<jint>(frame.ostack.top());
+    frame.ostack.pop();
+    auto arrayref = from_value<array*>(frame.ostack.top());
+    frame.ostack.pop();
+    auto value = to_value<T>(arrayref->get<T>(index));
+    frame.ostack.push(value);
 }
 
+template<typename T>
 void op_arraystore(frame& frame)
 {
-    assert(0);
+    auto value = from_value<T>(frame.ostack.top());
+    frame.ostack.pop();
+    auto index = from_value<jint>(frame.ostack.top());
+    frame.ostack.pop();
+    auto arrayref = from_value<array*>(frame.ostack.top());
+    frame.ostack.pop();
+    arrayref->set<T>(index, value);
 }
 
 void op_pop(frame& frame)
@@ -433,8 +446,22 @@ enum class opc : uint8_t {
     load,
     store,
 
-    arrayload,
-    arraystore,
+    barrayload,
+    sarrayload,
+    iarrayload,
+    larrayload,
+    carrayload,
+    farrayload,
+    darrayload,
+    aarrayload,
+    barraystore,
+    sarraystore,
+    iarraystore,
+    larraystore,
+    carraystore,
+    farraystore,
+    darraystore,
+    aarraystore,
 
     pop,
     dup,
@@ -546,8 +573,22 @@ value_t interp(frame& frame, const char *code)
         &&op_load,
         &&op_store,
 
-        &&op_arrayload,
-        &&op_arraystore,
+        &&op_barrayload,
+        &&op_sarrayload,
+        &&op_iarrayload,
+        &&op_larrayload,
+        &&op_carrayload,
+        &&op_farrayload,
+        &&op_darrayload,
+        &&op_aarrayload,
+        &&op_barraystore,
+        &&op_sarraystore,
+        &&op_iarraystore,
+        &&op_larraystore,
+        &&op_carraystore,
+        &&op_farraystore,
+        &&op_darraystore,
+        &&op_aarraystore,
 
         &&op_pop,
         &&op_dup,
@@ -676,12 +717,68 @@ value_t interp(frame& frame, const char *code)
             op_store(frame, idx);
             dispatch();
         }
-        op_arrayload: {
-            op_arrayload(frame);
+        op_barrayload: {
+            op_arrayload<jbyte>(frame);
             dispatch();
         }
-        op_arraystore: {
-            op_arraystore(frame);
+        op_sarrayload: {
+            op_arrayload<jshort>(frame);
+            dispatch();
+        }
+        op_iarrayload: {
+            op_arrayload<jint>(frame);
+            dispatch();
+        }
+        op_larrayload: {
+            op_arrayload<jlong>(frame);
+            dispatch();
+        }
+        op_carrayload: {
+            op_arrayload<jchar>(frame);
+            dispatch();
+        }
+        op_farrayload: {
+            op_arrayload<jfloat>(frame);
+            dispatch();
+        }
+        op_darrayload: {
+            op_arrayload<jdouble>(frame);
+            dispatch();
+        }
+        op_aarrayload: {
+            op_arrayload<object*>(frame);
+            dispatch();
+        }
+        op_barraystore: {
+            op_arraystore<jbyte>(frame);
+            dispatch();
+        }
+        op_sarraystore: {
+            op_arraystore<jshort>(frame);
+            dispatch();
+        }
+        op_iarraystore: {
+            op_arraystore<jint>(frame);
+            dispatch();
+        }
+        op_larraystore: {
+            op_arraystore<jlong>(frame);
+            dispatch();
+        }
+        op_carraystore: {
+            op_arraystore<jchar>(frame);
+            dispatch();
+        }
+        op_farraystore: {
+            op_arraystore<jfloat>(frame);
+            dispatch();
+        }
+        op_darraystore: {
+            op_arraystore<jdouble>(frame);
+            dispatch();
+        }
+        op_aarraystore: {
+            op_arraystore<object*>(frame);
             dispatch();
         }
         op_pop: {
@@ -1071,12 +1168,64 @@ void interp_translator::op_store(type t, uint16_t idx)
 
 void interp_translator::op_arrayload(type t)
 {
-    put_opc(opc::arrayload);
+    switch (t) {
+    case type::t_byte:
+        put_opc(opc::barrayload);
+        break;
+    case type::t_short:
+        put_opc(opc::sarrayload);
+        break;
+    case type::t_int:
+        put_opc(opc::iarrayload);
+        break;
+    case type::t_long:
+        put_opc(opc::larrayload);
+        break;
+    case type::t_char:
+        put_opc(opc::carrayload);
+        break;
+    case type::t_float:
+        put_opc(opc::farrayload);
+        break;
+    case type::t_double:
+        put_opc(opc::darrayload);
+        break;
+    case type::t_ref:
+        put_opc(opc::aarrayload);
+        break;
+    default: assert(0);
+    }
 }
 
 void interp_translator::op_arraystore(type t)
 {
-    put_opc(opc::arraystore);
+    switch (t) {
+    case type::t_byte:
+        put_opc(opc::barraystore);
+        break;
+    case type::t_short:
+        put_opc(opc::sarraystore);
+        break;
+    case type::t_int:
+        put_opc(opc::iarraystore);
+        break;
+    case type::t_long:
+        put_opc(opc::iarraystore);
+        break;
+    case type::t_char:
+        put_opc(opc::carraystore);
+        break;
+    case type::t_float:
+        put_opc(opc::farraystore);
+        break;
+    case type::t_double:
+        put_opc(opc::darraystore);
+        break;
+    case type::t_ref:
+        put_opc(opc::aarraystore);
+        break;
+    default: assert(0);
+    }
 }
 
 void interp_translator::op_convert(type from, type to)
