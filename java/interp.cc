@@ -198,6 +198,14 @@ void op_iinc(frame& frame, uint16_t idx, jint value)
     frame.locals[idx] += value;
 }
 
+template<typename From, typename To>
+void op_convert(frame& frame)
+{
+    auto value = from_value<From>(frame.ostack.top());
+    frame.ostack.pop();
+    frame.ostack.push(to_value<To>(value));
+}
+
 void op_lcmp(frame& frame)
 {
     auto value2 = from_value<jlong>(frame.ostack.top());
@@ -508,6 +516,22 @@ enum class opc : uint8_t {
 
     iinc,
 
+    i2l,
+    i2f,
+    i2d,
+    l2i,
+    l2f,
+    l2d,
+    f2i,
+    f2l,
+    f2d,
+    d2i,
+    d2l,
+    d2f,
+    i2b,
+    i2c,
+    i2s,
+
     lcmp,
 
     ifeq,
@@ -634,6 +658,22 @@ value_t interp(frame& frame, const char *code)
         &&op_drem,
 
         &&op_iinc,
+
+        &&op_i2l,
+        &&op_i2f,
+        &&op_i2d,
+        &&op_l2i,
+        &&op_l2f,
+        &&op_l2d,
+        &&op_f2i,
+        &&op_f2l,
+        &&op_f2d,
+        &&op_d2i,
+        &&op_d2l,
+        &&op_d2f,
+        &&op_i2b,
+        &&op_i2c,
+        &&op_i2s,
 
         &&op_lcmp,
 
@@ -843,6 +883,66 @@ value_t interp(frame& frame, const char *code)
             auto idx = read_const<uint8_t>(code, frame.pc);
             auto value = read_const<jint>(code, frame.pc);
             op_iinc(frame, idx, value);
+            dispatch();
+        }
+        op_i2l: {
+            op_convert<jint, jlong>(frame);
+            dispatch();
+        }
+        op_i2f: {
+            op_convert<jint, jfloat>(frame);
+            dispatch();
+        }
+        op_i2d: {
+            op_convert<jint, jdouble>(frame);
+            dispatch();
+        }
+        op_l2i: {
+            op_convert<jlong, jint>(frame);
+            dispatch();
+        }
+        op_l2f: {
+            op_convert<jlong, jfloat>(frame);
+            dispatch();
+        }
+        op_l2d: {
+            op_convert<jlong, jdouble>(frame);
+            dispatch();
+        }
+        op_f2i: {
+            op_convert<jfloat, jint>(frame);
+            dispatch();
+        }
+        op_f2l: {
+            op_convert<jfloat, jlong>(frame);
+            dispatch();
+        }
+        op_f2d: {
+            op_convert<jfloat, jdouble>(frame);
+            dispatch();
+        }
+        op_d2i: {
+            op_convert<jdouble, jint>(frame);
+            dispatch();
+        }
+        op_d2l: {
+            op_convert<jdouble, jlong>(frame);
+            dispatch();
+        }
+        op_d2f: {
+            op_convert<jdouble, jfloat>(frame);
+            dispatch();
+        }
+        op_i2b: {
+            op_convert<jint, jbyte>(frame);
+            dispatch();
+        }
+        op_i2c: {
+            op_convert<jint, jchar>(frame);
+            dispatch();
+        }
+        op_i2s: {
+            op_convert<jint, jshort>(frame);
             dispatch();
         }
         op_lcmp: {
@@ -1230,7 +1330,48 @@ void interp_translator::op_arraystore(type t)
 
 void interp_translator::op_convert(type from, type to)
 {
-    assert(0);
+    switch (from) {
+    case type::t_int: {
+        switch (to) {
+        case type::t_long:   put_opc(opc::i2l); break;
+        case type::t_float:  put_opc(opc::i2f); break;
+        case type::t_double: put_opc(opc::i2d); break;
+        case type::t_byte:   put_opc(opc::i2b); break;
+        case type::t_char:   put_opc(opc::i2c); break;
+        case type::t_short:  put_opc(opc::i2s); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_long: {
+        switch (to) {
+        case type::t_int:    put_opc(opc::l2i); break;
+        case type::t_float:  put_opc(opc::l2f); break;
+        case type::t_double: put_opc(opc::l2d); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_float: {
+        switch (to) {
+        case type::t_int:    put_opc(opc::f2i); break;
+        case type::t_long:   put_opc(opc::f2l); break;
+        case type::t_double: put_opc(opc::f2d); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_double: {
+        switch (to) {
+        case type::t_int:    put_opc(opc::d2i); break;
+        case type::t_long:   put_opc(opc::d2l); break;
+        case type::t_float:  put_opc(opc::d2f); break;
+        default: assert(0);
+        }
+        break;
+    }
+    default: assert(0);
+    }
 }
 
 void interp_translator::op_pop()

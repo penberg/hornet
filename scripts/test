@@ -4,5 +4,6 @@ javac tests/*.java
 #./hornet $* -cp tests NoMainTest
 ./hornet $* -cp tests StartupTest
 ./hornet $* -cp tests ArithmeticTest
+./hornet $* -cp tests ConvertTest
 ./hornet $* -cp tests ForStmtTest
 #./hornet $* -cp tests GcLatencyTest
