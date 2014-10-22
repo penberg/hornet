@@ -84,6 +84,14 @@ usage: hornet [-options] class [args...]
 
 ## License
 
+Hornet is:
+
 Copyright © 2013-2014 Pekka Enberg and contributors
 
 Hornet is distributed under the 2-clause BSD license.
+
+Memory Pool System is:
+
+Copyright © 2001–2013 Ravenbrook Limited. All rights reserved.
+
+MPS is distributed under the [Sleepycat License](http://www.ravenbrook.com/project/mps/master/license?format=rst).
