@@ -280,6 +280,11 @@ void dynasm_translator::op_anewarray(klass* klass)
     assert(0);
 }
 
+void dynasm_translator::op_multianewarray(klass* klass, uint8_t dimensions)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_arraylength()
 {
     |  pop  rax

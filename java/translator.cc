@@ -796,6 +796,14 @@ next_insn:
         op_monitorexit();
         break;
     }
+    case JVM_OPC_multianewarray: {
+        uint16_t idx = read_opc_u2(_method->code + pc);
+        uint8_t dimensions = read_opc_u2(_method->code + pc + sizeof(uint16_t));
+        auto klass = _method->klass->resolve_class(idx);
+        assert(klass != nullptr);
+        op_multianewarray(klass.get(), dimensions);
+        break;
+    }
     case JVM_OPC_ifnull: {
         int16_t offset = read_opc_u2(_method->code + pc);
         auto target = lookup(pc + offset);

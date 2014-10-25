@@ -90,6 +90,7 @@ public:
     virtual void op_new(klass* klass) override;
     virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(klass* klass) override;
+    virtual void op_multianewarray(klass* klass, uint8_t dimensions) override;
     virtual void op_getstatic(field* field) override;
     virtual void op_putstatic(field* field) override;
     virtual void op_getfield(field* field) override;
@@ -364,6 +365,11 @@ void llvm_translator::op_newarray(uint8_t atype)
 }
 
 void llvm_translator::op_anewarray(klass* klass)
+{
+    assert(0);
+}
+
+void llvm_translator::op_multianewarray(klass* klass, uint8_t dimensions)
 {
     assert(0);
 }

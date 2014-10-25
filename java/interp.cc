@@ -1153,6 +1153,7 @@ public:
     virtual void op_new(klass* klass) override;
     virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(klass* klass) override;
+    virtual void op_multianewarray(klass* klass, uint8_t) override;
     virtual void op_arraylength() override;
     virtual void op_athrow() override;
     virtual void op_checkcast(klass* klass) override;
@@ -1652,6 +1653,11 @@ void interp_translator::op_anewarray(klass* klass)
 {
     put_opc(opc::anewarray);
     put_const(klass);
+}
+
+void interp_translator::op_multianewarray(klass* klass, uint8_t dimensions)
+{
+    assert(0);
 }
 
 void interp_translator::op_arraylength()

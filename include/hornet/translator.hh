@@ -134,6 +134,7 @@ protected:
     virtual void op_new(klass* klass) = 0;
     virtual void op_newarray(uint8_t atype) = 0;
     virtual void op_anewarray(klass *klass) = 0;
+    virtual void op_multianewarray(klass *klass, uint8_t dimensions) = 0;
     virtual void op_arraylength() = 0;
     virtual void op_athrow() = 0;
     virtual void op_checkcast(klass* klass) = 0;

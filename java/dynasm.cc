@@ -62,6 +62,7 @@ public:
     virtual void op_new(klass* klass) override;
     virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(klass* klass) override;
+    virtual void op_multianewarray(klass* klass, uint8_t dimensions) override;
     virtual void op_arraylength() override;
     virtual void op_athrow() override;
     virtual void op_checkcast(klass* klass) override;
