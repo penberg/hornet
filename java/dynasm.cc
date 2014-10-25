@@ -63,6 +63,7 @@ public:
     virtual void op_newarray(uint8_t atype) override;
     virtual void op_anewarray(klass* klass) override;
     virtual void op_arraylength() override;
+    virtual void op_athrow() override;
     virtual void op_checkcast(klass* klass) override;
     virtual void op_instanceof(klass* klass) override;
     virtual void op_monitorenter() override;

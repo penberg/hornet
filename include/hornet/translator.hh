@@ -135,6 +135,7 @@ protected:
     virtual void op_newarray(uint8_t atype) = 0;
     virtual void op_anewarray(klass *klass) = 0;
     virtual void op_arraylength() = 0;
+    virtual void op_athrow() = 0;
     virtual void op_checkcast(klass* klass) = 0;
     virtual void op_instanceof(klass* klass) = 0;
     virtual void op_monitorenter() = 0;

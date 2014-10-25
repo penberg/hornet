@@ -770,6 +770,10 @@ next_insn:
         op_arraylength();
         break;
     }
+    case JVM_OPC_athrow: {
+        op_athrow();
+        break;
+    }
     case JVM_OPC_checkcast: {
         uint16_t idx = read_opc_u2(_method->code + pc);
         auto klass = _method->klass->resolve_class(idx);

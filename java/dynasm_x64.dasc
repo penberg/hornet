@@ -287,6 +287,11 @@ void dynasm_translator::op_arraylength()
     |  push rax
 }
 
+void dynasm_translator::op_athrow()
+{
+    assert(0);
+}
+
 void dynasm_translator::op_checkcast(klass* klass)
 {
     assert(0);

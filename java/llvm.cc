@@ -99,6 +99,7 @@ public:
     virtual void op_invokestatic(method* target) override;
     virtual void op_invokeinterface(method* target) override;
     virtual void op_arraylength() override;
+    virtual void op_athrow() override;
     virtual void op_checkcast(klass* klass) override;
     virtual void op_instanceof(klass* klass) override;
     virtual void op_monitorenter() override;
@@ -376,6 +377,11 @@ void llvm_translator::op_arraylength()
     auto addr = _builder.CreateBitCast(gep, PointerType::get(Type::getInt32Ty(getGlobalContext()), 0));
     auto len = _builder.CreateLoad(addr);
     _mimic_stack.push(len);
+}
+
+void llvm_translator::op_athrow()
+{
+    assert(0);
 }
 
 void llvm_translator::op_checkcast(klass* klass)
