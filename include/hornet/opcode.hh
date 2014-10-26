@@ -2,7 +2,9 @@
 #define HORNET_OPCODE_HH
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include <classfile_constants.h>
@@ -143,6 +145,75 @@ inline uint16_t branch_target(char* code, uint16_t pos)
         assert(0);
     }
 }
+
+class tableswitch_insn {
+public:
+    int32_t off_default;
+    int32_t off_high;
+    int32_t off_low;
+
+    tableswitch_insn(size_t count, size_t padding)
+        : _offsets(count)
+        , _padding(padding)
+    { }
+
+    static std::shared_ptr<tableswitch_insn> decode(char* code, uint16_t pc);
+
+    size_t length() const {
+        return _padding + (3 + _offsets.size()) * sizeof(uint32_t);
+    }
+
+    std::vector<uint16_t> targets(uint16_t pc) {
+        auto result = std::vector<uint16_t>();
+
+        result.push_back(pc + off_default);
+
+        for (uint16_t idx = 0; idx < _offsets.size(); idx++) {
+            result.push_back(pc + _offsets[idx]);
+        }
+        return result;
+    }
+
+private:
+    std::vector<int32_t> _offsets;
+    size_t _padding;
+};
+
+struct lookupswitch_insn {
+public:
+    struct pair {
+        int32_t match;
+        int32_t offset;
+    };
+
+    int32_t off_default;
+
+    lookupswitch_insn(size_t count, size_t padding)
+        : _pairs(count)
+        , _padding(padding)
+    { }
+
+    static std::shared_ptr<lookupswitch_insn> decode(char* code, uint16_t pc);
+
+    size_t length() const {
+        return _padding + 8 + _pairs.size() * sizeof(uint64_t);
+    }
+
+    std::vector<uint16_t> targets(uint16_t pc) {
+        auto result = std::vector<uint16_t>();
+
+        result.push_back(pc + off_default);
+
+        for (uint16_t idx = 0; idx < _pairs.size(); idx++) {
+            result.push_back(pc + _pairs[idx].offset);
+        }
+        return result;
+    }
+
+private:
+    std::vector<pair> _pairs;
+    size_t _padding;
+};
 
 uint16_t switch_opc_len(char* code, uint16_t pc);
 std::vector<uint16_t> switch_targets(char* code, uint16_t pc);

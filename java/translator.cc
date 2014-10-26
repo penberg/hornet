@@ -671,6 +671,20 @@ next_insn:
         op_goto(target);
         break;
     }
+    case JVM_OPC_tableswitch: {
+        auto insn = tableswitch_insn::decode(_method->code, pc);
+        auto def = lookup(pc + insn->off_default);
+        assert(def != nullptr);
+        auto targets = insn->targets(pc);
+        std::vector<std::shared_ptr<basic_block>> table;
+        for (auto&& target : targets) {
+            auto bblock = lookup(target);
+            assert(bblock != nullptr);
+            table.push_back(bblock);
+        }
+        op_tableswitch(insn->off_high, insn->off_low, def, table);
+        break;
+    }
     case JVM_OPC_ireturn:
     case JVM_OPC_lreturn:
     case JVM_OPC_freturn:

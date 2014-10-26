@@ -121,6 +121,7 @@ protected:
     virtual void op_if(type t, cmpop op, std::shared_ptr<basic_block> target) = 0;
     virtual void op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> target) = 0;
     virtual void op_goto(std::shared_ptr<basic_block> target) = 0;
+    virtual void op_tableswitch(uint32_t high, uint32_t low, std::shared_ptr<basic_block> def, const std::vector<std::shared_ptr<basic_block>>& table) = 0;
     virtual void op_ret() = 0;
     virtual void op_ret_void() = 0;
     virtual void op_getstatic(field* field) = 0;

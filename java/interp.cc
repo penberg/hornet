@@ -1140,6 +1140,7 @@ public:
     virtual void op_if(type t, cmpop op, std::shared_ptr<basic_block> target) override;
     virtual void op_if_cmp(type t, cmpop op, std::shared_ptr<basic_block> bblock) override;
     virtual void op_goto(std::shared_ptr<basic_block> bblock) override;
+    virtual void op_tableswitch(uint32_t high, uint32_t low, std::shared_ptr<basic_block> def, const std::vector<std::shared_ptr<basic_block>>& table) override;
     virtual void op_ret() override;
     virtual void op_ret_void() override;
     virtual void op_getstatic(field* field) override;
@@ -1577,6 +1578,11 @@ void interp_translator::op_goto(std::shared_ptr<basic_block> bblock)
     put_opc(opc::goto_);
 
     put_label(bblock);
+}
+
+void interp_translator::op_tableswitch(uint32_t high, uint32_t low, std::shared_ptr<basic_block> def, const std::vector<std::shared_ptr<basic_block>>& table)
+{
+    assert(0);
 }
 
 void interp_translator::op_ret()

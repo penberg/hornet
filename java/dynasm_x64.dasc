@@ -213,6 +213,11 @@ void dynasm_translator::op_goto(std::shared_ptr<basic_block> bblock)
     assert(0);
 }
 
+void dynasm_translator::op_tableswitch(uint32_t high, uint32_t low, std::shared_ptr<basic_block> def, const std::vector<std::shared_ptr<basic_block>>& table)
+{
+    assert(0);
+}
+
 void dynasm_translator::op_ret()
 {
     assert(0);
