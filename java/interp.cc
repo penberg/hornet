@@ -289,6 +289,18 @@ void op_goto(frame& frame, int16_t offset)
     frame.pc += offset;
 }
 
+void op_tableswitch(frame& frame, int32_t high, int32_t low, uint16_t def, const uint16_t* table)
+{
+    auto index = from_value<jint>(frame.ostack.top());
+    frame.ostack.pop();
+    if (index < low || index > high) {
+        frame.pc = def;
+    } else {
+        auto idx = index - low;
+        frame.pc = table[idx];
+    }
+}
+
 void op_getstatic(field* field, frame& frame)
 {
     assert(field != nullptr);
@@ -552,6 +564,8 @@ enum class opc : uint8_t {
 
     goto_,
 
+    tableswitch,
+
     ret,
     ret_void,
 
@@ -694,6 +708,8 @@ value_t interp(frame& frame, const char *code)
         &&op_if_acmpne,
 
         &&op_goto,
+
+        &&op_tableswitch,
 
         &&op_ret,
         &&op_ret_void,
@@ -1022,6 +1038,16 @@ value_t interp(frame& frame, const char *code)
         op_goto: {
             auto offset = read_label(code, frame.pc);
             frame.pc = offset;
+            dispatch();
+        }
+        op_tableswitch: {
+            auto high  = read_const<int32_t>(code, frame.pc);
+            auto low   = read_const<int32_t>(code, frame.pc);
+            auto def   = read_label(code, frame.pc);
+            auto size  = read_const<uint32_t>(code, frame.pc);
+            auto table = reinterpret_cast<const uint16_t*>(code + frame.pc);
+            frame.pc += size * sizeof(uint16_t);
+            op_tableswitch(frame, high, low, def, table);
             dispatch();
         }
         op_ret: {
@@ -1582,7 +1608,14 @@ void interp_translator::op_goto(std::shared_ptr<basic_block> bblock)
 
 void interp_translator::op_tableswitch(uint32_t high, uint32_t low, std::shared_ptr<basic_block> def, const std::vector<std::shared_ptr<basic_block>>& table)
 {
-    assert(0);
+    put_opc(opc::tableswitch);
+    put_const(high);
+    put_const(low);
+    put_label(def);
+    put_const<uint32_t>(table.size());
+    for (auto&& bblock : table) {
+        put_label(bblock);
+    }
 }
 
 void interp_translator::op_ret()
