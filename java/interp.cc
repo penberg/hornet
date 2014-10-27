@@ -451,6 +451,18 @@ void op_arraylength(frame& frame)
     frame.ostack.push(arrayref->length);
 }
 
+void op_checkcast(frame& frame, klass* type)
+{
+    auto* objectref = from_value<object*>(frame.ostack.top());
+
+    if (objectref) {
+        if (!objectref->klass->is_subclass_of(type)) {
+            // TODO: Throw ClassCastException
+            assert(0);
+        }
+    }
+}
+
 //
 // Instruction opcodes of the interpreter.
 //
@@ -584,6 +596,8 @@ enum class opc : uint8_t {
     anewarray,
 
     arraylength,
+
+    checkcast,
 };
 
 template<typename T>
@@ -729,6 +743,8 @@ value_t interp(frame& frame, const char *code)
         &&op_anewarray,
 
         &&op_arraylength,
+
+        &&op_checkcast,
     };
 
     #define dispatch() goto *dispatch_table[(int)code[frame.pc++]]
@@ -1111,9 +1127,15 @@ value_t interp(frame& frame, const char *code)
             op_anewarray(type, frame);
             dispatch();
         }
-        op_arraylength:
+        op_arraylength: {
             op_arraylength(frame);
             dispatch();
+        }
+        op_checkcast: {
+            auto* type = read_const<klass*>(code, frame.pc);
+            op_checkcast(frame, type);
+            dispatch();
+        }
     }
 }
 
@@ -1711,7 +1733,8 @@ void interp_translator::op_athrow()
 
 void interp_translator::op_checkcast(klass* klass)
 {
-    assert(0);
+    put_opc(opc::checkcast);
+    put_const(klass);
 }
 
 void interp_translator::op_instanceof(klass* klass)
