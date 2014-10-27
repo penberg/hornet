@@ -463,6 +463,18 @@ void op_checkcast(frame& frame, klass* type)
     }
 }
 
+void op_instanceof(frame& frame, klass* type)
+{
+    auto* objectref = from_value<object*>(frame.ostack.top());
+    frame.ostack.pop();
+
+    if (objectref) {
+        frame.ostack.push(to_value<jint>(!objectref->klass->is_subclass_of(type)));
+    } else {
+        frame.ostack.push(to_value<jint>(0));
+    }
+}
+
 //
 // Instruction opcodes of the interpreter.
 //
@@ -598,6 +610,7 @@ enum class opc : uint8_t {
     arraylength,
 
     checkcast,
+    instanceof,
 };
 
 template<typename T>
@@ -745,6 +758,7 @@ value_t interp(frame& frame, const char *code)
         &&op_arraylength,
 
         &&op_checkcast,
+        &&op_instanceof,
     };
 
     #define dispatch() goto *dispatch_table[(int)code[frame.pc++]]
@@ -1134,6 +1148,11 @@ value_t interp(frame& frame, const char *code)
         op_checkcast: {
             auto* type = read_const<klass*>(code, frame.pc);
             op_checkcast(frame, type);
+            dispatch();
+        }
+        op_instanceof: {
+            auto* type = read_const<klass*>(code, frame.pc);
+            op_instanceof(frame, type);
             dispatch();
         }
     }
@@ -1739,7 +1758,8 @@ void interp_translator::op_checkcast(klass* klass)
 
 void interp_translator::op_instanceof(klass* klass)
 {
-    assert(0);
+    put_opc(opc::instanceof);
+    put_const(klass);
 }
 
 void interp_translator::op_monitorenter()
