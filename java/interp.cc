@@ -914,47 +914,150 @@ value_t interp(frame& frame, const char *code)
             op_swap(frame);
             dispatch();
         }
-
-        op_iadd: op_binary<jint>   (frame, binop::op_add); dispatch();
-        op_isub: op_binary<jint>   (frame, binop::op_sub); dispatch();
-        op_imul: op_binary<jint>   (frame, binop::op_mul); dispatch();
-        op_idiv: op_binary<jint>   (frame, binop::op_div); dispatch();
-        op_irem: op_binary<jint>   (frame, binop::op_rem); dispatch();
-        op_ineg: op_unary<jint>    (frame, unop::op_neg); dispatch();
-        op_ishl: op_shift<jint>    (frame, shiftop::op_shl, 0x1f); dispatch();
-        op_ishr: op_shift<jint>    (frame, shiftop::op_shr, 0x1f); dispatch();
-        op_iushr: op_shift<uint32_t>(frame, shiftop::op_shr, 0x1f); dispatch();
-        op_iand: op_binary<jint>   (frame, binop::op_and); dispatch();
-        op_ior:  op_binary<jint>   (frame, binop::op_or);  dispatch();
-        op_ixor: op_binary<jint>   (frame, binop::op_xor); dispatch();
-
-        op_ladd: op_binary<jlong>  (frame, binop::op_add); dispatch();
-        op_lsub: op_binary<jlong>  (frame, binop::op_sub); dispatch();
-        op_lmul: op_binary<jlong>  (frame, binop::op_mul); dispatch();
-        op_ldiv: op_binary<jlong>  (frame, binop::op_div); dispatch();
-        op_lrem: op_binary<jlong>  (frame, binop::op_rem); dispatch();
-        op_lneg: op_unary<jlong>   (frame, unop::op_neg);  dispatch();
-        op_lshl: op_shift<jlong>   (frame, shiftop::op_shl, 0x3f); dispatch();
-        op_lshr: op_shift<jlong>   (frame, shiftop::op_shr, 0x3f); dispatch();
-        op_lushr: op_shift<uint64_t>(frame, shiftop::op_shr, 0x3f); dispatch();
-        op_land: op_binary<jlong>  (frame, binop::op_and); dispatch();
-        op_lor:  op_binary<jlong>  (frame, binop::op_or);  dispatch();
-        op_lxor: op_binary<jlong>  (frame, binop::op_xor); dispatch();
-
-        op_fadd: op_binary<jfloat> (frame, binop::op_add); dispatch();
-        op_fsub: op_binary<jfloat> (frame, binop::op_sub); dispatch();
-        op_fmul: op_binary<jfloat> (frame, binop::op_mul); dispatch();
-        op_fdiv: op_binary<jfloat> (frame, binop::op_div); dispatch();
-        op_frem: op_binary<jfloat> (frame, binop::op_rem); dispatch();
-        op_fneg: op_unary<jfloat> (frame, unop::op_neg); dispatch();
-
-        op_dadd: op_binary<jdouble>(frame, binop::op_add); dispatch();
-        op_dsub: op_binary<jdouble>(frame, binop::op_sub); dispatch();
-        op_dmul: op_binary<jdouble>(frame, binop::op_mul); dispatch();
-        op_ddiv: op_binary<jdouble>(frame, binop::op_div); dispatch();
-        op_drem: op_binary<jdouble>(frame, binop::op_rem); dispatch();
-        op_dneg: op_unary<jdouble> (frame, unop::op_neg); dispatch();
-
+        op_iadd: {
+            op_binary<jint>(frame, binop::op_add);
+            dispatch();
+        }
+        op_isub: {
+            op_binary<jint>(frame, binop::op_sub);
+            dispatch();
+        }
+        op_imul: {
+            op_binary<jint>(frame, binop::op_mul);
+            dispatch();
+        }
+        op_idiv: {
+            op_binary<jint>(frame, binop::op_div);
+            dispatch();
+        }
+        op_irem: {
+            op_binary<jint>(frame, binop::op_rem);
+            dispatch();
+        }
+        op_ineg: {
+            op_unary<jint>(frame, unop::op_neg);
+            dispatch();
+        }
+        op_ishl: {
+            op_shift<jint>(frame, shiftop::op_shl, 0x1f);
+            dispatch();
+        }
+        op_ishr: {
+            op_shift<jint>(frame, shiftop::op_shr, 0x1f);
+            dispatch();
+        }
+        op_iushr: {
+            op_shift<uint32_t>(frame, shiftop::op_shr, 0x1f);
+            dispatch();
+        }
+        op_iand: {
+            op_binary<jint>(frame, binop::op_and);
+            dispatch();
+        }
+        op_ior: {
+            op_binary<jint>(frame, binop::op_or); 
+            dispatch();
+        }
+        op_ixor: {
+            op_binary<jint>(frame, binop::op_xor);
+            dispatch();
+        }
+        op_ladd: {
+            op_binary<jlong>(frame, binop::op_add);
+            dispatch();
+        }
+        op_lsub: {
+            op_binary<jlong>(frame, binop::op_sub);
+            dispatch();
+        }
+        op_lmul: {
+            op_binary<jlong>(frame, binop::op_mul);
+            dispatch();
+        }
+        op_ldiv: {
+            op_binary<jlong>(frame, binop::op_div);
+            dispatch();
+        }
+        op_lrem: {
+            op_binary<jlong>(frame, binop::op_rem);
+            dispatch();
+        }
+        op_lneg: {
+            op_unary<jlong>(frame, unop::op_neg); 
+            dispatch();
+        }
+        op_lshl: {
+            op_shift<jlong>(frame, shiftop::op_shl, 0x3f);
+            dispatch();
+        }
+        op_lshr: {
+            op_shift<jlong>(frame, shiftop::op_shr, 0x3f);
+            dispatch();
+        }
+        op_lushr: {
+            op_shift<uint64_t>(frame, shiftop::op_shr, 0x3f);
+            dispatch();
+        }
+        op_land: {
+            op_binary<jlong>(frame, binop::op_and);
+            dispatch();
+        }
+        op_lor: {
+             op_binary<jlong>(frame, binop::op_or); 
+            dispatch();
+        }
+        op_lxor: {
+            op_binary<jlong>(frame, binop::op_xor);
+            dispatch();
+        }
+        op_fadd: {
+            op_binary<jfloat>(frame, binop::op_add);
+            dispatch();
+        }
+        op_fsub: {
+            op_binary<jfloat>(frame, binop::op_sub);
+            dispatch();
+        }
+        op_fmul: {
+            op_binary<jfloat>(frame, binop::op_mul);
+            dispatch();
+        }
+        op_fdiv: {
+            op_binary<jfloat>(frame, binop::op_div);
+            dispatch();
+        }
+        op_frem: {
+            op_binary<jfloat>(frame, binop::op_rem);
+            dispatch();
+        }
+        op_fneg: {
+            op_unary<jfloat>(frame, unop::op_neg);
+            dispatch();
+        }
+        op_dadd: {
+            op_binary<jdouble>(frame, binop::op_add);
+            dispatch();
+        }
+        op_dsub: {
+            op_binary<jdouble>(frame, binop::op_sub);
+            dispatch();
+        }
+        op_dmul: {
+            op_binary<jdouble>(frame, binop::op_mul);
+            dispatch();
+        }
+        op_ddiv: {
+            op_binary<jdouble>(frame, binop::op_div);
+            dispatch();
+        }
+        op_drem: {
+            op_binary<jdouble>(frame, binop::op_rem);
+            dispatch();
+        }
+        op_dneg: {
+            op_unary<jdouble>(frame, unop::op_neg);
+            dispatch();
+        }
         op_ret_void: {
             return to_value<object*>(nullptr);
         }
@@ -1118,7 +1221,6 @@ value_t interp(frame& frame, const char *code)
             frame.ostack.pop();
             return value;
         }
-
         op_getstatic: {
             auto* target = read_const<field*>(code, frame.pc);
             op_getstatic(target, frame);
