@@ -291,9 +291,9 @@ private:
 class loader {
 public:
     void register_entry(std::string path);
-    std::shared_ptr<klass> load_class(const char *class_name);
+    std::shared_ptr<klass> load_class(std::string class_name);
 private:
-    std::shared_ptr<klass> try_to_load_class(const char *class_name);
+    std::shared_ptr<klass> try_to_load_class(std::string class_name);
     std::vector<std::shared_ptr<classpath_entry>> _entries;
 };
 

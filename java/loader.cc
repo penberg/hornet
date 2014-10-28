@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <unistd.h>
+
+#include <algorithm>
 #include <cassert>
 #include <climits>
 #include <cstring>
@@ -30,8 +32,10 @@ void loader::register_entry(std::string path)
     }
 }
 
-std::shared_ptr<klass> loader::load_class(const char *class_name)
+std::shared_ptr<klass> loader::load_class(std::string class_name)
 {
+    std::replace(class_name.begin(), class_name.end(), '.', '/');
+
     if (is_array_type_name(class_name)) {
         // TODO: array types
         assert(0);
@@ -60,7 +64,7 @@ std::shared_ptr<klass> loader::load_class(const char *class_name)
     return klass;
 }
 
-std::shared_ptr<klass> loader::try_to_load_class(const char *class_name)
+std::shared_ptr<klass> loader::try_to_load_class(std::string class_name)
 {
     for (auto entry : _entries) {
         auto klass = entry->load_class(class_name);
