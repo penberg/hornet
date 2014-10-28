@@ -851,14 +851,19 @@ void translator::ldc(uint16_t idx)
     auto const_pool = _method->klass->const_pool();
     auto cp_info = const_pool->get(idx);
     switch (cp_info->tag) {
+    case cp_tag::const_class: {
+        auto klass = _method->klass->resolve_class(idx);
+        op_const(type::t_ref, reinterpret_cast<int64_t>(&klass->object));
+        break;
+    }
+    case cp_tag::const_string: {
+        auto value = const_pool->get_string(idx);
+        op_const(type::t_ref, reinterpret_cast<int64_t>(value));
+        break;
+    }
     case cp_tag::const_integer: {
         auto value = const_pool->get_integer(idx);
         op_const(type::t_int, value);
-        break;
-    }
-    case cp_tag::const_long: {
-        auto value = const_pool->get_long(idx);
-        op_const(type::t_long, value);
         break;
     }
     case cp_tag::const_float: {
@@ -866,14 +871,14 @@ void translator::ldc(uint16_t idx)
         op_const(type::t_float, value);
         break;
     }
+    case cp_tag::const_long: {
+        auto value = const_pool->get_long(idx);
+        op_const(type::t_long, value);
+        break;
+    }
     case cp_tag::const_double: {
         auto value = const_pool->get_double(idx);
         op_const(type::t_double, value);
-        break;
-    }
-    case cp_tag::const_string: {
-        auto value = const_pool->get_string(idx);
-        op_const(type::t_ref, reinterpret_cast<int64_t>(value));
         break;
     }
     default:
