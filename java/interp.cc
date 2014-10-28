@@ -476,6 +476,20 @@ void op_instanceof(frame& frame, klass* type)
     }
 }
 
+void op_monitorenter(frame& frame)
+{
+    auto* objectref = from_value<object*>(frame.ostack.top());
+    frame.ostack.pop();
+    objectref->lock();
+}
+
+void op_monitorexit(frame& frame)
+{
+    auto* objectref = from_value<object*>(frame.ostack.top());
+    frame.ostack.pop();
+    objectref->unlock();
+}
+
 //
 // Instruction opcodes of the interpreter.
 //
@@ -612,6 +626,9 @@ enum class opc : uint8_t {
 
     checkcast,
     instanceof,
+
+    monitorenter,
+    monitorexit,
 
     ifnull,
     ifnonnull,
@@ -763,6 +780,9 @@ value_t interp(frame& frame, const char *code)
 
         &&op_checkcast,
         &&op_instanceof,
+
+        &&op_monitorenter,
+        &&op_monitorexit,
 
         &&op_ifnull,
         &&op_ifnonnull,
@@ -1160,6 +1180,14 @@ value_t interp(frame& frame, const char *code)
         op_instanceof: {
             auto* type = read_const<klass*>(code, frame.pc);
             op_instanceof(frame, type);
+            dispatch();
+        }
+        op_monitorenter: {
+            op_monitorenter(frame);
+            dispatch();
+        }
+        op_monitorexit: {
+            op_monitorexit(frame);
             dispatch();
         }
         op_ifnull: {
@@ -1789,12 +1817,12 @@ void interp_translator::op_instanceof(klass* klass)
 
 void interp_translator::op_monitorenter()
 {
-    assert(0);
+    put_opc(opc::monitorenter);
 }
 
 void interp_translator::op_monitorexit()
 {
-    assert(0);
+    put_opc(opc::monitorexit);
 }
 
 value_t interp_backend::execute(method* method, frame& frame)

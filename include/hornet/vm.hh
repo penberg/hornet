@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <mutex>
 #include <map>
 
 #include <classfile_constants.h>
@@ -36,6 +37,7 @@ struct object {
     struct object* fwd;
     struct klass*  klass;
     std::vector<value_t> _fields;
+    std::mutex _mutex;
 
     object(struct klass* _klass);
     ~object();
@@ -49,6 +51,14 @@ struct object {
 
     void set_field(size_t offset, value_t value) {
         _fields[offset] = value;
+    }
+
+    void lock() {
+        _mutex.lock();
+    }
+
+    void unlock() {
+        _mutex.unlock();
     }
 };
 
