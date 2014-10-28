@@ -234,6 +234,10 @@ struct string {
     string(const string&) = delete;
 };
 
+inline bool is_array_type_name(std::string name) {
+    return !name.empty() && name[0] == '[';
+}
+
 #define java_lang_NoClassDefFoundError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)

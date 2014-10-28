@@ -32,6 +32,11 @@ void loader::register_entry(std::string path)
 
 std::shared_ptr<klass> loader::load_class(const char *class_name)
 {
+    if (is_array_type_name(class_name)) {
+        // TODO: array types
+        assert(0);
+    }
+
     auto klass = hornet::_jvm->lookup_class(class_name);
 
     if (klass) {
