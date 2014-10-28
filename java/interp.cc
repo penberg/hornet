@@ -558,12 +558,14 @@ enum class opc : uint8_t {
     fmul,
     fdiv,
     frem,
+    fneg,
 
     dadd,
     dsub,
     dmul,
     ddiv,
     drem,
+    dneg,
 
     iinc,
 
@@ -712,12 +714,14 @@ value_t interp(frame& frame, const char *code)
         &&op_fmul,
         &&op_fdiv,
         &&op_frem,
+        &&op_fneg,
 
         &&op_dadd,
         &&op_dsub,
         &&op_dmul,
         &&op_ddiv,
         &&op_drem,
+        &&op_dneg,
 
         &&op_iinc,
 
@@ -942,12 +946,14 @@ value_t interp(frame& frame, const char *code)
         op_fmul: op_binary<jfloat> (frame, binop::op_mul); dispatch();
         op_fdiv: op_binary<jfloat> (frame, binop::op_div); dispatch();
         op_frem: op_binary<jfloat> (frame, binop::op_rem); dispatch();
+        op_fneg: op_unary<jfloat> (frame, unop::op_neg); dispatch();
 
         op_dadd: op_binary<jdouble>(frame, binop::op_add); dispatch();
         op_dsub: op_binary<jdouble>(frame, binop::op_sub); dispatch();
         op_dmul: op_binary<jdouble>(frame, binop::op_mul); dispatch();
         op_ddiv: op_binary<jdouble>(frame, binop::op_div); dispatch();
         op_drem: op_binary<jdouble>(frame, binop::op_rem); dispatch();
+        op_dneg: op_unary<jdouble> (frame, unop::op_neg); dispatch();
 
         op_ret_void: {
             return to_value<object*>(nullptr);
@@ -1547,6 +1553,20 @@ void interp_translator::op_unary(type t, unaryop op)
     case type::t_long: {
         switch (op) {
         case unaryop::op_neg: put_opc(opc::ineg); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_float: {
+        switch (op) {
+        case unaryop::op_neg: put_opc(opc::fneg); break;
+        default: assert(0);
+        }
+        break;
+    }
+    case type::t_double: {
+        switch (op) {
+        case unaryop::op_neg: put_opc(opc::dneg); break;
         default: assert(0);
         }
         break;
