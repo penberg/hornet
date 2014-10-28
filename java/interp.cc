@@ -263,11 +263,12 @@ bool eval(cmpop op, T a, T b)
     }
 }
 
+template<typename T>
 void op_if(frame& frame, cmpop op, uint16_t offset)
 {
-    auto value = from_value<jint>(frame.ostack.top());
+    auto value = from_value<T>(frame.ostack.top());
     frame.ostack.pop();
-    if (eval(op, value, 0)) {
+    if (eval(op, value, static_cast<T>(0))) {
         frame.pc = offset;
     }
 }
@@ -611,6 +612,9 @@ enum class opc : uint8_t {
 
     checkcast,
     instanceof,
+
+    ifnull,
+    ifnonnull,
 };
 
 template<typename T>
@@ -759,6 +763,9 @@ value_t interp(frame& frame, const char *code)
 
         &&op_checkcast,
         &&op_instanceof,
+
+        &&op_ifnull,
+        &&op_ifnonnull,
     };
 
     #define dispatch() goto *dispatch_table[(int)code[frame.pc++]]
@@ -997,32 +1004,32 @@ value_t interp(frame& frame, const char *code)
         }
         op_ifeq: {
             auto offset = read_label(code, frame.pc);
-            op_if(frame, cmpop::op_cmpeq, offset);
+            op_if<jint>(frame, cmpop::op_cmpeq, offset);
             dispatch();
         }
         op_ifne: {
             auto offset = read_label(code, frame.pc);
-            op_if(frame, cmpop::op_cmpne, offset);
+            op_if<jint>(frame, cmpop::op_cmpne, offset);
             dispatch();
         }
         op_iflt: {
             auto offset = read_label(code, frame.pc);
-            op_if(frame, cmpop::op_cmplt, offset);
+            op_if<jint>(frame, cmpop::op_cmplt, offset);
             dispatch();
         }
         op_ifge: {
             auto offset = read_label(code, frame.pc);
-            op_if(frame, cmpop::op_cmpge, offset);
+            op_if<jint>(frame, cmpop::op_cmpge, offset);
             dispatch();
         }
         op_ifgt: {
             auto offset = read_label(code, frame.pc);
-            op_if(frame, cmpop::op_cmpgt, offset);
+            op_if<jint>(frame, cmpop::op_cmpgt, offset);
             dispatch();
         }
         op_ifle: {
             auto offset = read_label(code, frame.pc);
-            op_if(frame, cmpop::op_cmple, offset);
+            op_if<jint>(frame, cmpop::op_cmple, offset);
             dispatch();
         }
         op_if_icmpeq: {
@@ -1153,6 +1160,16 @@ value_t interp(frame& frame, const char *code)
         op_instanceof: {
             auto* type = read_const<klass*>(code, frame.pc);
             op_instanceof(frame, type);
+            dispatch();
+        }
+        op_ifnull: {
+            auto offset = read_label(code, frame.pc);
+            op_if<object*>(frame, cmpop::op_cmpeq, offset);
+            dispatch();
+        }
+        op_ifnonnull: {
+            auto offset = read_label(code, frame.pc);
+            op_if<object*>(frame, cmpop::op_cmpne, offset);
             dispatch();
         }
     }
@@ -1601,6 +1618,14 @@ void interp_translator::op_if(type t, cmpop op, std::shared_ptr<basic_block> tar
         case cmpop::op_cmpge: put_opc(opc::ifge); break;
         case cmpop::op_cmpgt: put_opc(opc::ifgt); break;
         case cmpop::op_cmple: put_opc(opc::ifle); break;
+        default:              assert(0);
+        }
+        break;
+    }
+    case type::t_ref: {
+        switch (op) {
+        case cmpop::op_cmpeq: put_opc(opc::ifnull);    break;
+        case cmpop::op_cmpne: put_opc(opc::ifnonnull); break;
         default:              assert(0);
         }
         break;
