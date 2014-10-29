@@ -101,11 +101,11 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
     for (auto i = 0; i < vm_args->nOptions; i++) {
         const char *opt = vm_args->options[i].optionString;
 
-        if (!strcmp(opt, "-cp") || !strcmp(opt, "-classpath")) {
+        if (option_matches(opt, "-cp") || option_matches(opt, "-classpath")) {
             classpath = std::string{vm_args->options[++i].optionString};
             continue;
         }
-        if (!strcmp(opt, "-verbose:verifier")) {
+        if (option_matches(opt, "-verbose:verifier")) {
             hornet::verbose_verifier = true;
             continue;
         }
@@ -113,7 +113,7 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
             hornet::verbose_compiler = true;
             continue;
         }
-        if (!strcmp(opt, "-XX:+DynASM")) {
+        if (option_matches(opt, "-XX:+DynASM")) {
 #ifdef CONFIG_HAVE_DYNASM
             backend = hornet::backend_type::dynasm;
             continue;
