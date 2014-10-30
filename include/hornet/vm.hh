@@ -167,6 +167,7 @@ struct method {
     uint16_t    max_locals;
     char*       code;
     uint32_t    code_length;
+    std::vector<uint8_t> trampoline;
 
     method();
     ~method();

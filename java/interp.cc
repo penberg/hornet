@@ -1331,8 +1331,7 @@ public:
     interp_translator(method* method);
     ~interp_translator();
 
-    template<typename T>
-    T trampoline();
+    std::vector<uint8_t> trampoline();
 
     virtual void prologue() override;
     virtual void epilogue() override;
@@ -1431,9 +1430,9 @@ interp_translator::~interp_translator()
 {
 }
 
-template<typename T> T interp_translator::trampoline()
+std::vector<uint8_t> interp_translator::trampoline()
 {
-    return reinterpret_cast<T>(_code.data());
+    return _code;
 }
 
 void interp_translator::prologue()
@@ -1949,13 +1948,14 @@ void interp_translator::op_monitorexit()
 
 value_t interp_backend::execute(method* method, frame& frame)
 {
-    interp_translator translator(method);
+    if (method->trampoline.empty()) {
+        interp_translator translator(method);
 
-    translator.translate();
+        translator.translate();
 
-    const char* code = translator.trampoline<const char*>();
-
-    return interp(frame, code);
+        method->trampoline = translator.trampoline();
+    }
+    return interp(frame, reinterpret_cast<const char*>(method->trampoline.data()));
 }
 
 }
