@@ -163,6 +163,7 @@ struct method {
     std::string name;
     std::string descriptor;
     struct klass* return_type;
+    std::vector<struct klass*> arg_types;
     uint16_t    args_count;
     uint16_t    max_locals;
     char*       code;
