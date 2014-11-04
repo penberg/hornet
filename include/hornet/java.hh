@@ -322,7 +322,7 @@ inline loader *system_loader()
 // invocation completes.
 struct frame {
     std::vector<value_t> locals;
-    std::stack<value_t>  ostack;
+    std::vector<value_t> ostack;
     uint16_t             pc;
 
     frame(size_t size)
@@ -337,15 +337,15 @@ struct frame {
     }
 
     void ostack_push(value_t value) {
-        ostack.push(value);
+        ostack.push_back(value);
     }
 
     void ostack_pop() {
-        ostack.pop();
+        ostack.pop_back();
     }
 
     value_t ostack_top() const {
-        return ostack.top();
+        return ostack.back();
     }
 };
 
