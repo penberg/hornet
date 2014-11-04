@@ -50,74 +50,74 @@ object* from_value<object*>(value_t value)
 template<typename T>
 void op_const(frame& frame, T value)
 {
-    frame.ostack.push(to_value<T>(value));
+    frame.ostack_push(to_value<T>(value));
 }
 
 void op_load(frame& frame, uint16_t idx)
 {
-    frame.ostack.push(frame.locals[idx]);
+    frame.ostack_push(frame.locals[idx]);
 }
 
 void op_store(frame& frame, uint16_t idx)
 {
-    frame.locals[idx] = frame.ostack.top();
-    frame.ostack.pop();
+    frame.locals[idx] = frame.ostack_top();
+    frame.ostack_pop();
 }
 
 template<typename T>
 void op_arrayload(frame& frame)
 {
-    auto index = from_value<jint>(frame.ostack.top());
-    frame.ostack.pop();
-    auto arrayref = from_value<array*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto index = from_value<jint>(frame.ostack_top());
+    frame.ostack_pop();
+    auto arrayref = from_value<array*>(frame.ostack_top());
+    frame.ostack_pop();
     auto value = to_value<T>(arrayref->get<T>(index));
-    frame.ostack.push(value);
+    frame.ostack_push(value);
 }
 
 template<typename T>
 void op_arraystore(frame& frame)
 {
-    auto value = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
-    auto index = from_value<jint>(frame.ostack.top());
-    frame.ostack.pop();
-    auto arrayref = from_value<array*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
+    auto index = from_value<jint>(frame.ostack_top());
+    frame.ostack_pop();
+    auto arrayref = from_value<array*>(frame.ostack_top());
+    frame.ostack_pop();
     arrayref->set<T>(index, value);
 }
 
 void op_pop(frame& frame)
 {
-    frame.ostack.pop();
+    frame.ostack_pop();
 }
 
 void op_dup(frame& frame)
 {
-    auto value = frame.ostack.top();
-    frame.ostack.push(value);
+    auto value = frame.ostack_top();
+    frame.ostack_push(value);
 }
 
 void op_dup_x1(frame& frame)
 {
-    auto value1 = frame.ostack.top();
-    frame.ostack.pop();
-    auto value2 = frame.ostack.top();
-    frame.ostack.pop();
+    auto value1 = frame.ostack_top();
+    frame.ostack_pop();
+    auto value2 = frame.ostack_top();
+    frame.ostack_pop();
 
-    frame.ostack.push(value1);
-    frame.ostack.push(value2);
-    frame.ostack.push(value1);
+    frame.ostack_push(value1);
+    frame.ostack_push(value2);
+    frame.ostack_push(value1);
 }
 
 void op_swap(frame& frame)
 {
-    auto value1 = frame.ostack.top();
-    frame.ostack.pop();
-    auto value2 = frame.ostack.top();
-    frame.ostack.pop();
-    frame.ostack.push(value1);
-    frame.ostack.push(value2);
+    auto value1 = frame.ostack_top();
+    frame.ostack_pop();
+    auto value2 = frame.ostack_top();
+    frame.ostack_pop();
+    frame.ostack_push(value1);
+    frame.ostack_push(value2);
 }
 
 enum class unop {
@@ -136,10 +136,10 @@ T eval(unop op, T a)
 template<typename T>
 void op_unary(frame& frame, unop op)
 {
-    auto value = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
     auto result = eval(op, value);
-    frame.ostack.push(to_value<T>(result));
+    frame.ostack_push(to_value<T>(result));
 }
 
 template<typename T>
@@ -185,12 +185,12 @@ jdouble eval(binop op, jdouble a, jdouble b)
 template<typename T>
 void op_binary(frame& frame, binop op)
 {
-    auto value2 = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
-    auto value1 = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value2 = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
+    auto value1 = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
     auto result = eval(op, value1, value2);
-    frame.ostack.push(to_value<T>(result));
+    frame.ostack_push(to_value<T>(result));
 }
 
 void op_iinc(frame& frame, uint16_t idx, jint value)
@@ -201,17 +201,17 @@ void op_iinc(frame& frame, uint16_t idx, jint value)
 template<typename From, typename To>
 void op_convert(frame& frame)
 {
-    auto value = from_value<From>(frame.ostack.top());
-    frame.ostack.pop();
-    frame.ostack.push(to_value<To>(value));
+    auto value = from_value<From>(frame.ostack_top());
+    frame.ostack_pop();
+    frame.ostack_push(to_value<To>(value));
 }
 
 void op_lcmp(frame& frame)
 {
-    auto value2 = from_value<jlong>(frame.ostack.top());
-    frame.ostack.pop();
-    auto value1 = from_value<jlong>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value2 = from_value<jlong>(frame.ostack_top());
+    frame.ostack_pop();
+    auto value1 = from_value<jlong>(frame.ostack_top());
+    frame.ostack_pop();
     jint result;
     if (value1 < value2) {
         result = -1;
@@ -220,7 +220,7 @@ void op_lcmp(frame& frame)
     } else {
         result = 0;
     }
-    frame.ostack.push(to_value(result));
+    frame.ostack_push(to_value(result));
 }
 
 enum class shiftop {
@@ -241,12 +241,12 @@ T eval(shiftop op, T a, jint b)
 template<typename T>
 void op_shift(frame& frame, shiftop op, jint mask)
 {
-    auto value2 = from_value<jint>(frame.ostack.top());
-    frame.ostack.pop();
-    auto value1 = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value2 = from_value<jint>(frame.ostack_top());
+    frame.ostack_pop();
+    auto value1 = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
     auto result = eval(op, value1, value2 & mask);
-    frame.ostack.push(to_value<T>(result));
+    frame.ostack_push(to_value<T>(result));
 }
 
 template<typename T>
@@ -266,8 +266,8 @@ bool eval(cmpop op, T a, T b)
 template<typename T>
 void op_if(frame& frame, cmpop op, uint16_t offset)
 {
-    auto value = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
     if (eval(op, value, static_cast<T>(0))) {
         frame.pc = offset;
     }
@@ -276,10 +276,10 @@ void op_if(frame& frame, cmpop op, uint16_t offset)
 template<typename T>
 void op_if_cmp(frame& frame, cmpop op, uint16_t offset)
 {
-    auto value2 = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
-    auto value1 = from_value<T>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value2 = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
+    auto value1 = from_value<T>(frame.ostack_top());
+    frame.ostack_pop();
     if (eval(op, value1, value2)) {
         frame.pc = offset;
     }
@@ -292,8 +292,8 @@ void op_goto(frame& frame, int16_t offset)
 
 void op_tableswitch(frame& frame, int32_t high, int32_t low, uint16_t def, const uint16_t* table)
 {
-    auto index = from_value<jint>(frame.ostack.top());
-    frame.ostack.pop();
+    auto index = from_value<jint>(frame.ostack_top());
+    frame.ostack_pop();
     if (index < low || index > high) {
         frame.pc = def;
     } else {
@@ -307,7 +307,7 @@ void op_getstatic(field* field, frame& frame)
     assert(field != nullptr);
     auto klass = field->klass;
     klass->init();
-    frame.ostack.push(klass->static_values[field->offset]);
+    frame.ostack_push(klass->static_values[field->offset]);
 }
 
 void op_putstatic(field* field, frame& frame)
@@ -315,28 +315,28 @@ void op_putstatic(field* field, frame& frame)
     assert(field != nullptr);
     auto klass = field->klass;
     klass->init();
-    klass->static_values[field->offset] = frame.ostack.top();
-    frame.ostack.pop();
+    klass->static_values[field->offset] = frame.ostack_top();
+    frame.ostack_pop();
 }
 
 void op_getfield(field* field, frame& frame)
 {
     assert(field != nullptr);
     field->klass->init();
-    auto objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto objectref = from_value<object*>(frame.ostack_top());
+    frame.ostack_pop();
     auto value = objectref->get_field(field->offset);
-    frame.ostack.push(value);
+    frame.ostack_push(value);
 }
 
 void op_putfield(field* field, frame& frame)
 {
     assert(field != nullptr);
     field->klass->init();
-    auto value = frame.ostack.top();
-    frame.ostack.pop();
-    auto objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto value = frame.ostack_top();
+    frame.ostack_pop();
+    auto objectref = from_value<object*>(frame.ostack_top());
+    frame.ostack_pop();
     objectref->set_field(field->offset, value);
 }
 
@@ -347,11 +347,11 @@ void op_invokevirtual(method* desc, frame& frame)
     auto new_frame = thread->make_frame(args_count);
     for (int i = 1; i < args_count; i++) {
         auto arg_idx = args_count - i - 1;
-        new_frame->locals[arg_idx] = frame.ostack.top();
-        frame.ostack.pop();
+        new_frame->locals[arg_idx] = frame.ostack_top();
+        frame.ostack_pop();
     }
-    auto objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto objectref = from_value<object*>(frame.ostack_top());
+    frame.ostack_pop();
     assert(objectref != nullptr);
     new_frame->locals[0] = to_value(objectref);
     auto klass = objectref->klass;
@@ -362,7 +362,7 @@ void op_invokevirtual(method* desc, frame& frame)
     new_frame->reserve_more(target->max_locals);
     auto result = hornet::_backend->execute(target.get(), *new_frame);
     if (target->return_type != &jvm_void_klass) {
-        frame.ostack.push(result);
+        frame.ostack_push(result);
     }
     thread->free_frame(new_frame);
 }
@@ -375,18 +375,18 @@ void op_invokespecial(method* target, frame& frame)
     auto args_count = target->args_count+1;
     for (int i = 1; i < args_count; i++) {
         auto arg_idx = args_count - i - 1;
-        new_frame->locals[arg_idx] = frame.ostack.top();
-        frame.ostack.pop();
+        new_frame->locals[arg_idx] = frame.ostack_top();
+        frame.ostack_pop();
     }
-    auto objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto objectref = from_value<object*>(frame.ostack_top());
+    frame.ostack_pop();
     assert(objectref != nullptr);
     new_frame->locals[0] = to_value(objectref);
     auto klass = objectref->klass;
     assert(klass != nullptr);
     auto result = hornet::_backend->execute(target, *new_frame);
     if (target->return_type != &jvm_void_klass) {
-        frame.ostack.push(result);
+        frame.ostack_push(result);
     }
     thread->free_frame(new_frame);
 }
@@ -398,7 +398,7 @@ void op_invokestatic(method* target, frame& frame)
     if (target->access_flags & JVM_ACC_NATIVE) {
         fprintf(stderr, "warning: %s: stubbed\n", target->full_name().c_str());
         for (int i = 0; i < target->args_count; i++) {
-            frame.ostack.pop();
+            frame.ostack_pop();
         }
         result = to_value<object*>(nullptr);
     } else {
@@ -406,14 +406,14 @@ void op_invokestatic(method* target, frame& frame)
        auto new_frame = thread->make_frame(target->max_locals);
        for (int i = 0; i < target->args_count; i++) {
            auto arg_idx = target->args_count - i - 1;
-           new_frame->locals[arg_idx] = frame.ostack.top();
-           frame.ostack.pop();
+           new_frame->locals[arg_idx] = frame.ostack_top();
+           frame.ostack_pop();
        }
        result = hornet::_backend->execute(target, *new_frame);
        thread->free_frame(new_frame);
     }
     if (target->return_type != &jvm_void_klass) {
-        frame.ostack.push(result);
+        frame.ostack_push(result);
     }
 }
 
@@ -426,35 +426,35 @@ void op_new(klass* klass, frame& frame)
 {
     klass->init();
     object* obj = gc_new_object(klass);
-    frame.ostack.push(to_value<object*>(obj));
+    frame.ostack_push(to_value<object*>(obj));
 }
 
 void op_newarray(uint8_t atype, frame& frame)
 {
-    auto count = from_value<jint>(frame.ostack.top());
+    auto count = from_value<jint>(frame.ostack_top());
     auto klass = klass::primitive_type(atype);
     auto* arrayref = gc_new_object_array(klass, count);
-    frame.ostack.push(to_value(arrayref));
+    frame.ostack_push(to_value(arrayref));
 }
 
 void op_anewarray(klass* klass, frame& frame)
 {
-    auto count = from_value<jint>(frame.ostack.top());
+    auto count = from_value<jint>(frame.ostack_top());
     auto* arrayref = gc_new_object_array(klass, count);
-    frame.ostack.push(to_value(arrayref));
+    frame.ostack_push(to_value(arrayref));
 }
 
 void op_arraylength(frame& frame)
 {
-    auto* arrayref = from_value<array*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto* arrayref = from_value<array*>(frame.ostack_top());
+    frame.ostack_pop();
     assert(arrayref != nullptr);
-    frame.ostack.push(arrayref->length);
+    frame.ostack_push(arrayref->length);
 }
 
 void op_checkcast(frame& frame, klass* type)
 {
-    auto* objectref = from_value<object*>(frame.ostack.top());
+    auto* objectref = from_value<object*>(frame.ostack_top());
 
     if (objectref) {
         if (!objectref->klass->is_subclass_of(type)) {
@@ -466,27 +466,27 @@ void op_checkcast(frame& frame, klass* type)
 
 void op_instanceof(frame& frame, klass* type)
 {
-    auto* objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto* objectref = from_value<object*>(frame.ostack_top());
+    frame.ostack_pop();
 
     if (objectref) {
-        frame.ostack.push(to_value<jint>(!objectref->klass->is_subclass_of(type)));
+        frame.ostack_push(to_value<jint>(!objectref->klass->is_subclass_of(type)));
     } else {
-        frame.ostack.push(to_value<jint>(0));
+        frame.ostack_push(to_value<jint>(0));
     }
 }
 
 void op_monitorenter(frame& frame)
 {
-    auto* objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto* objectref = from_value<object*>(frame.ostack_top());
+    frame.ostack_pop();
     objectref->lock();
 }
 
 void op_monitorexit(frame& frame)
 {
-    auto* objectref = from_value<object*>(frame.ostack.top());
-    frame.ostack.pop();
+    auto* objectref = from_value<object*>(frame.ostack_top());
+    frame.ostack_pop();
     objectref->unlock();
 }
 
@@ -1217,8 +1217,8 @@ value_t interp(frame& frame, const char *code)
             dispatch();
         }
         op_ret: {
-            auto value = frame.ostack.top();
-            frame.ostack.pop();
+            auto value = frame.ostack_top();
+            frame.ostack_pop();
             return value;
         }
         op_getstatic: {

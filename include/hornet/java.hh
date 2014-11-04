@@ -335,6 +335,18 @@ struct frame {
     void reserve_more(size_t size) {
         locals.reserve(locals.size() + size);
     }
+
+    void ostack_push(value_t value) {
+        ostack.push(value);
+    }
+
+    void ostack_pop() {
+        ostack.pop();
+    }
+
+    value_t ostack_top() const {
+        return ostack.top();
+    }
 };
 
 enum class backend_type {
