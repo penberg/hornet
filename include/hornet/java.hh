@@ -397,18 +397,24 @@ public:
 
     template<typename... Args>
     frame* make_frame(Args&&... args) {
-        auto f = new frame(std::forward<Args>(args)...);
-        _frames.push_back(std::unique_ptr<frame>(f));
-        return f;
+        char* raw_frame = _stack + _stack_pos;
+        _stack_pos += sizeof(struct frame);
+        assert(_stack_pos < _stack_max);
+        return new (raw_frame) frame(std::forward<Args>(args)...);
     }
 
     void free_frame(frame* frame) {
-        assert(frame == _frames.back().get());
-        _frames.pop_back();
+        frame->~frame();
+        _stack_pos -= sizeof(struct frame);
     }
 
 private:
-    std::vector<std::unique_ptr<frame>> _frames;
+    static char* mmap_stack(size_t size);
+    static void munmap_stack(char* p, size_t size);
+
+    static constexpr size_t _stack_max = 1024*1024; /* 1 MB */
+    size_t _stack_pos;
+    char* _stack;
 };
 
 inline void throw_exception(struct object *exception)
