@@ -675,10 +675,9 @@ next_insn:
         auto insn = tableswitch_insn::decode(_method->code, pc);
         auto def = lookup(pc + insn->off_default);
         assert(def != nullptr);
-        auto targets = insn->targets(pc);
         std::vector<std::shared_ptr<basic_block>> table;
-        for (auto&& target : targets) {
-            auto bblock = lookup(target);
+        for (auto&& offset : insn->offsets()) {
+            auto bblock = lookup(pc + offset);
             assert(bblock != nullptr);
             table.push_back(bblock);
         }

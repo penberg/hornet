@@ -163,6 +163,10 @@ public:
         return _padding + (3 + _offsets.size()) * sizeof(uint32_t);
     }
 
+    std::vector<int32_t> offsets() const {
+        return _offsets;
+    }
+
     std::vector<uint16_t> targets(uint16_t pc) {
         auto result = std::vector<uint16_t>();
 
