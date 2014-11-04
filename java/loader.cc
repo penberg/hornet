@@ -102,12 +102,12 @@ std::shared_ptr<klass> classpath_dir::load_file(const char *pathname)
 
     struct stat st;
     if (fstat(fd, &st) < 0) {
-        THROW_ERRNO("fstat");
+        throw_system_error("fstat");
     }
 
     auto data = mmap(0, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (data == MAP_FAILED) {
-        THROW_ERRNO("mmap");
+        throw_system_error("mmap");
     }
 
     auto file = class_file{data, static_cast<size_t>(st.st_size)};
@@ -115,11 +115,11 @@ std::shared_ptr<klass> classpath_dir::load_file(const char *pathname)
     auto klass = file.parse();
 
     if (munmap(data, st.st_size) < 0) {
-        THROW_ERRNO("munmap");
+        throw_system_error("munmap");
     }
 
     if (close(fd) < 0) {
-        THROW_ERRNO("close");
+        throw_system_error("close");
     }
 
     return klass;

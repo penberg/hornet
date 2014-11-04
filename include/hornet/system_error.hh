@@ -3,9 +3,9 @@
 
 #include <system_error>
 
-#define THROW_ERRNO(what)							\
-	do {									\
-		throw std::system_error(errno, std::system_category(), what);	\
-	} while (0)
+inline void throw_system_error(std::string what)
+{
+    throw std::system_error(errno, std::system_category(), what);
+}
 
 #endif
