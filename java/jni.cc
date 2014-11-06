@@ -8,6 +8,11 @@
 #include <sstream>
 #include <jni.h>
 
+#define WARN_STUB() \
+    do { \
+        fprintf(stderr, "warning: JNI API function %s is stubbed\n", __func__); \
+    } while (0);
+
 static void jni_api_stub()
 {
     assert(0);
@@ -256,6 +261,13 @@ HORNET_JNI(NewObjectArray)(JNIEnv* env, jsize len, jclass clazz, jobject init)
     return hornet::to_jobjectArray(array);
 }
 
+static jint HORNET_JNI(RegisterNatives)(JNIEnv* env, jclass clazz, const JNINativeMethod* methods, jint count)
+{
+    WARN_STUB();
+
+    return 0;
+}
+
 static jboolean HORNET_JNI(ExceptionCheck)(JNIEnv *env)
 {
     hornet::thread *current = hornet::thread::current();
@@ -484,7 +496,7 @@ const struct JNINativeInterface_ HORNET_JNI(JNINativeInterface) = {
     HORNET_DEFINE_JNI_STUB(SetLongArrayRegion),
     HORNET_DEFINE_JNI_STUB(SetFloatArrayRegion),
     HORNET_DEFINE_JNI_STUB(SetDoubleArrayRegion),
-    HORNET_DEFINE_JNI_STUB(RegisterNatives),
+    HORNET_DEFINE_JNI(RegisterNatives),
     HORNET_DEFINE_JNI_STUB(UnregisterNatives),
     HORNET_DEFINE_JNI_STUB(MonitorEnter),
     HORNET_DEFINE_JNI_STUB(MonitorExit),
