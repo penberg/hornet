@@ -238,7 +238,34 @@ private:
     char *_data;
 };
 
-extern klass jvm_void_klass;
+template<typename T>
+struct primitive_klass : public klass {
+    primitive_klass() {
+    }
+
+    ~primitive_klass() {
+    }
+
+    virtual bool is_primitive() const override {
+        return true;
+    }
+
+    virtual size_t size() const override {
+        return sizeof(T);
+    }
+};
+
+extern klass                     jvm_void_klass;
+extern primitive_klass<jboolean> jvm_jboolean_klass;
+extern primitive_klass<jchar>    jvm_jchar_klass;
+extern primitive_klass<jfloat>   jvm_jfloat_klass;
+extern primitive_klass<jdouble>  jvm_jdouble_klass;
+extern primitive_klass<jbyte>    jvm_jbyte_klass;
+extern primitive_klass<jshort>   jvm_jshort_klass;
+extern primitive_klass<jint>     jvm_jint_klass;
+extern primitive_klass<jlong>    jvm_jlong_klass;
+
+klass* atype_to_klass(uint8_t atype);
 
 extern bool verbose_compiler;
 

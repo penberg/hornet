@@ -432,7 +432,7 @@ void op_new(klass* klass, frame& frame)
 void op_newarray(uint8_t atype, frame& frame)
 {
     auto count = from_value<jint>(frame.ostack_top());
-    auto klass = klass::primitive_type(atype);
+    auto klass = atype_to_klass(atype);
     auto* arrayref = gc_new_object_array(klass, count);
     frame.ostack_push(to_value(arrayref));
 }

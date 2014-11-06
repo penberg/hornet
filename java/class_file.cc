@@ -314,14 +314,21 @@ static klass* parse_type(std::string descriptor, int& pos)
     auto ch = descriptor[pos++];
     switch (ch) {
     case 'B':
+        return &jvm_jbyte_klass;
     case 'C':
+        return &jvm_jchar_klass;
     case 'D':
+        return &jvm_jdouble_klass;
     case 'F':
+        return &jvm_jfloat_klass;
     case 'I':
+        return &jvm_jint_klass;
     case 'J':
+        return &jvm_jlong_klass;
     case 'S':
+        return &jvm_jshort_klass;
     case 'Z':
-        break;
+        return &jvm_jboolean_klass;
     case 'L':
         while (descriptor[pos++] != ';')
             ;;

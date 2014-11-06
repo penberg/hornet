@@ -94,8 +94,6 @@ struct klass {
     void add(std::shared_ptr<method> method);
     void add(std::shared_ptr<field> field);
 
-    static klass* primitive_type(uint8_t atype);
-
     virtual bool is_primitive() const {
         return false;
     }

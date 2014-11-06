@@ -150,45 +150,4 @@ bool klass::verify()
     return true;
 }
 
-template<typename T>
-struct primitive_klass : public klass {
-    primitive_klass() {
-    }
-
-    ~primitive_klass() {
-    }
-
-    virtual bool is_primitive() const override {
-        return true;
-    }
-
-    virtual size_t size() const override {
-        return sizeof(T);
-    }
-};
-
-static primitive_klass<jboolean> jboolean_klass;
-static primitive_klass<jchar>    jchar_klass;
-static primitive_klass<jfloat>   jfloat_klass;
-static primitive_klass<jdouble>  jdouble_klass;
-static primitive_klass<jbyte>    jbyte_klass;
-static primitive_klass<jshort>   jshort_klass;
-static primitive_klass<jint>     jint_klass;
-static primitive_klass<jlong>    jlong_klass;
-
-klass* klass::primitive_type(uint8_t atype)
-{
-    switch (atype) {
-    case JVM_T_BOOLEAN: return &jboolean_klass;
-    case JVM_T_CHAR:    return &jchar_klass;
-    case JVM_T_FLOAT:   return &jfloat_klass;
-    case JVM_T_DOUBLE:  return &jdouble_klass;
-    case JVM_T_BYTE:    return &jbyte_klass;
-    case JVM_T_SHORT:   return &jshort_klass;
-    case JVM_T_INT:     return &jint_klass;
-    case JVM_T_LONG:    return &jlong_klass;
-    default:            assert(0);
-    }
 }
-
-};
