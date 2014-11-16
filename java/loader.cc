@@ -59,8 +59,6 @@ std::shared_ptr<klass> loader::load_class(std::string class_name)
         return nullptr;
     }
 
-    hornet::_jvm->register_class(klass);
-
     return klass;
 }
 

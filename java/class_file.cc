@@ -48,6 +48,14 @@ std::shared_ptr<klass> class_file::parse()
 
     auto klass = std::make_shared<hornet::klass>(hornet::system_loader(), const_pool);
 
+    auto klassref = const_pool->get_class(this_class);
+
+    auto klass_name = const_pool->get_utf8(klassref->name_index);
+
+    klass->name = klass_name->bytes;
+
+    hornet::_jvm->register_class(klass);
+
     auto interfaces_count = read_u2();
 
     for (auto i = 0; i < interfaces_count; i++) {
@@ -88,12 +96,6 @@ std::shared_ptr<klass> class_file::parse()
     } else {
         klass->super = nullptr;
     }
-
-    auto klassref = const_pool->get_class(this_class);
-
-    auto klass_name = const_pool->get_utf8(klassref->name_index);
-
-    klass->name = klass_name->bytes;
 
     return klass;
 }
