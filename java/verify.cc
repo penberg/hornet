@@ -31,6 +31,16 @@ bool verify_method(std::shared_ptr<method> method)
             continue;
         }
 
+        auto wide = false;
+
+        if (opc == JVM_OPC_wide) {
+            opc = method->code[++pc];
+
+            assert(opc < JVM_OPC_MAX);
+
+            wide = true;
+        }
+
         switch (opc) {
         case JVM_OPC_iconst_m1:
         case JVM_OPC_iconst_0:
@@ -143,6 +153,13 @@ bool verify_method(std::shared_ptr<method> method)
             assert(0);
         }
         pc += opcode_length[opc];
+        if (wide) {
+            if (opc == JVM_OPC_iinc) {
+                pc += 2;
+            } else {
+                pc += 1;
+            }
+        }
     }
 
     return true;
