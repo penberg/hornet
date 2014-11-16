@@ -138,7 +138,10 @@ bool verify_method(std::shared_ptr<method> method)
             unsupported_opcode[opc]++;
             break;
         }
-
+        if (opcode_length[opc] <= 0) {
+            fprintf(stderr, "opcode %u length is %d\n", opc, opcode_length[opc]);
+            assert(0);
+        }
         pc += opcode_length[opc];
     }
 
