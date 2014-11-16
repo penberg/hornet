@@ -117,6 +117,8 @@ struct klass {
         return false;
     }
 
+    std::shared_ptr<klass> load_class(std::string name);
+
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
     std::shared_ptr<field> lookup_field(std::string name, std::string desciptor);
 

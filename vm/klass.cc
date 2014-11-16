@@ -50,6 +50,11 @@ void klass::add(std::shared_ptr<method> method)
     _methods.push_back(method);
 }
 
+std::shared_ptr<klass> klass::load_class(std::string name)
+{
+    return _loader->load_class(name);
+}
+
 std::shared_ptr<field> klass::lookup_field(std::string name, std::string descriptor)
 {
     klass* klass = this;

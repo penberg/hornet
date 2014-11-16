@@ -311,7 +311,7 @@ std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &
 
 klass jvm_void_klass(nullptr, nullptr);
 
-static klass* parse_type(std::string descriptor, int& pos)
+static klass* parse_type(klass* klass, std::string descriptor, int& pos)
 {
     auto ch = descriptor[pos++];
     switch (ch) {
@@ -331,12 +331,21 @@ static klass* parse_type(std::string descriptor, int& pos)
         return &jvm_jshort_klass;
     case 'Z':
         return &jvm_jboolean_klass;
-    case 'L':
+    case 'L': {
+        auto start = pos;
         while (descriptor[pos++] != ';')
             ;;
-        break;
+        auto len = pos-start-1;
+        assert(len > 0);
+        auto name = descriptor.substr(start, len);
+        auto result = klass->load_class(name);
+        if (!result) {
+            return nullptr;
+        }
+        return result.get();
+    }
     case '[':
-        parse_type(descriptor, pos);
+        parse_type(klass, descriptor, pos);
         break;
     case 'V':
         return &jvm_void_klass;
@@ -357,12 +366,12 @@ static void parse_method_descriptor(std::shared_ptr<method> m)
     auto idx = 0;
     while (m->descriptor[pos] != ')') {
         m->arg_types.reserve(idx + 1);
-        m->arg_types[idx] = parse_type(m->descriptor, pos);
+        m->arg_types[idx] = parse_type(m->klass, m->descriptor, pos);
         idx++;
     }
     m->args_count = idx;
 
-    m->return_type = parse_type(m->descriptor, ++pos);
+    m->return_type = parse_type(m->klass, m->descriptor, ++pos);
 }
 
 std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool &constant_pool)
