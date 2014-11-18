@@ -309,8 +309,6 @@ std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &
     return f;
 }
 
-klass jvm_void_klass(nullptr, nullptr);
-
 static klass* parse_type(klass* klass, std::string descriptor, int& pos)
 {
     auto ch = descriptor[pos++];
