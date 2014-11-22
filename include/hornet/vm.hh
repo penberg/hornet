@@ -192,7 +192,7 @@ struct method {
         return access_flags & JVM_ACC_NATIVE;
     }
 
-    bool matches(std::string n, std::string d)
+    bool matches(const std::string& n, const std::string d) const
     {
        return name == n && descriptor == d;
     }
