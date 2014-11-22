@@ -170,8 +170,12 @@ struct method {
     uint32_t    code_length;
     std::vector<uint8_t> trampoline;
 
-    method();
-    ~method();
+    method() {
+    }
+
+    ~method() {
+        delete[] code;
+    }
 
     method& operator=(const method&) = delete;
     method(const method&) = delete;
@@ -188,7 +192,10 @@ struct method {
         return access_flags & JVM_ACC_NATIVE;
     }
 
-    bool matches(std::string name, std::string descriptor);
+    bool matches(std::string n, std::string d)
+    {
+       return name == n && descriptor == d;
+    }
 };
 
 struct array {

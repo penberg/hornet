@@ -91,7 +91,6 @@ OBJS += vm/field.o
 OBJS += vm/jvm.o
 OBJS += vm/object.o
 OBJS += vm/klass.o
-OBJS += vm/method.o
 OBJS += vm/thread.o
 
 DEPS = $(OBJS:.o=.d)
