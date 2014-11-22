@@ -87,7 +87,6 @@ OBJS += java/verify.o
 OBJS += java/zip.o
 OBJS += mps/mps.o
 OBJS += vm/alloc.o
-OBJS += vm/field.o
 OBJS += vm/jvm.o
 OBJS += vm/object.o
 OBJS += vm/klass.o

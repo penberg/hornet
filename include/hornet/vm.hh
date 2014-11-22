@@ -141,8 +141,12 @@ struct field {
     uint32_t      offset;
     uint16_t      access_flags;
 
-    field(struct klass* klass_);
-    ~field();
+    field(struct klass* klass_)
+        : klass(klass_)
+    { }
+
+    ~field() {
+    }
 
     field& operator=(const field&) = delete;
     field(const field&) = delete;
@@ -151,7 +155,9 @@ struct field {
         return access_flags & JVM_ACC_STATIC;
     }
 
-    bool matches(std::string name, std::string descriptor);
+    bool matches(std::string n, std::string d) {
+        return name == n && descriptor == d;
+    }
 };
 
 struct method {
