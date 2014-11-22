@@ -155,7 +155,7 @@ struct field {
         return access_flags & JVM_ACC_STATIC;
     }
 
-    bool matches(std::string n, std::string d) {
+    bool matches(const std::string& n, const std::string& d) const {
         return name == n && descriptor == d;
     }
 };
