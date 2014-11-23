@@ -238,23 +238,6 @@ private:
     char *_data;
 };
 
-template<typename T>
-struct primitive_klass : public klass {
-    primitive_klass() {
-    }
-
-    ~primitive_klass() {
-    }
-
-    virtual bool is_primitive() const override {
-        return true;
-    }
-
-    virtual size_t size() const override {
-        return sizeof(T);
-    }
-};
-
 extern klass                     jvm_void_klass;
 extern primitive_klass<jboolean> jvm_jboolean_klass;
 extern primitive_klass<jchar>    jvm_jchar_klass;

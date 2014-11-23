@@ -134,6 +134,23 @@ private:
     loader* _loader;
 };
 
+template<typename T>
+struct primitive_klass : public klass {
+    primitive_klass() {
+    }
+
+    ~primitive_klass() {
+    }
+
+    virtual bool is_primitive() const override {
+        return true;
+    }
+
+    virtual size_t size() const override {
+        return sizeof(T);
+    }
+};
+
 struct field {
     struct klass* klass;
     std::string   name;
