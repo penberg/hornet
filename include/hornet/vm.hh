@@ -82,7 +82,7 @@ struct klass {
 
     klass();
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
-    ~klass();
+    virtual ~klass();
 
     klass& operator=(const klass&) = delete;
     klass(const klass&) = delete;
