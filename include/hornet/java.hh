@@ -250,6 +250,9 @@ extern primitive_klass<jlong>    jvm_jlong_klass;
 
 klass* atype_to_klass(uint8_t atype);
 
+// Return a klass instance for primitive signature string.
+klass* prim_sig_to_klass(const std::string& name);
+
 extern bool verbose_compiler;
 
 extern bool verbose_verifier;

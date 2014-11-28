@@ -27,4 +27,20 @@ klass* atype_to_klass(uint8_t atype)
     }
 }
 
+klass* prim_sig_to_klass(const std::string& name)
+{
+    switch (name[0]) {
+    case 'B': return &jvm_jbyte_klass;
+    case 'C': return &jvm_jchar_klass;
+    case 'F': return &jvm_jfloat_klass;
+    case 'D': return &jvm_jdouble_klass;
+    case 'I': return &jvm_jint_klass;
+    case 'J': return &jvm_jlong_klass;
+    case 'S': return &jvm_jshort_klass;
+    case 'V': return &jvm_void_klass;
+    case 'Z': return &jvm_jboolean_klass;
+    default:  assert(0);
+    }
+}
+
 }

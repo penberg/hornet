@@ -268,8 +268,25 @@ struct string {
     string(const string&) = delete;
 };
 
-inline bool is_array_type_name(std::string name) {
-    return !name.empty() && name[0] == '[';
+inline bool is_prim_type_name(const std::string& name) {
+    switch (name[0]) {
+    case 'B':
+    case 'C':
+    case 'F':
+    case 'D':
+    case 'I':
+    case 'J':
+    case 'S':
+    case 'V':
+    case 'Z':
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool is_array_type_name(const std::string& name) {
+    return name[0] == '[';
 }
 
 #define java_lang_NoClassDefFoundError reinterpret_cast<hornet::object *>(0xdeabeef)

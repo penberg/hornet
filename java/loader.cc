@@ -36,29 +36,34 @@ std::shared_ptr<klass> loader::load_class(std::string class_name)
 {
     std::replace(class_name.begin(), class_name.end(), '.', '/');
 
+    auto klass = hornet::_jvm->lookup_class(class_name);
+    if (klass) {
+        return klass;
+    }
+    if (is_prim_type_name(class_name)) {
+        auto prim_klass = prim_sig_to_klass(class_name);
+        if (!prim_klass) {
+            hornet::throw_exception(java_lang_NoClassDefFoundError);
+            return nullptr;
+        }
+        klass = std::shared_ptr<hornet::klass>(prim_klass);
+        hornet::_jvm->register_class(klass);
+        return klass;
+    }
     if (is_array_type_name(class_name)) {
         // TODO: array types
         assert(0);
     }
-
-    auto klass = hornet::_jvm->lookup_class(class_name);
-
-    if (klass) {
-        return klass;
-    }
-
     klass = try_to_load_class(class_name);
 
     if (!klass) {
         hornet::throw_exception(java_lang_NoClassDefFoundError);
         return nullptr;
     }
-
     if (!klass->verify()) {
         throw_exception(java_lang_VerifyError);
         return nullptr;
     }
-
     return klass;
 }
 
