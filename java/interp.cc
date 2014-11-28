@@ -444,6 +444,11 @@ void op_anewarray(klass* klass, frame& frame)
     frame.ostack_push(to_value(arrayref));
 }
 
+void op_multianewarray(klass* klass, uint8_t dimensions, frame& frame)
+{
+    assert(0);
+}
+
 void op_arraylength(frame& frame)
 {
     auto* arrayref = from_value<array*>(frame.ostack_top());
@@ -623,6 +628,7 @@ enum class opc : uint8_t {
     new_,
     newarray,
     anewarray,
+    multianewarray,
 
     arraylength,
 
@@ -779,6 +785,7 @@ value_t interp(frame& frame, const char *code)
         &&op_new,
         &&op_newarray,
         &&op_anewarray,
+        &&op_multianewarray,
 
         &&op_arraylength,
 
@@ -1274,6 +1281,12 @@ value_t interp(frame& frame, const char *code)
         op_anewarray: {
             auto* type = read_const<klass*>(code, frame.pc);
             op_anewarray(type, frame);
+            dispatch();
+        }
+        op_multianewarray: {
+            auto* type = read_const<klass*>(code, frame.pc);
+            auto dimensions = read_const<uint8_t>(code, frame.pc);
+            op_multianewarray(type, dimensions, frame);
             dispatch();
         }
         op_arraylength: {
@@ -1911,7 +1924,9 @@ void interp_translator::op_anewarray(klass* klass)
 
 void interp_translator::op_multianewarray(klass* klass, uint8_t dimensions)
 {
-    assert(0);
+    put_opc(opc::multianewarray);
+    put_const(klass);
+    put_const(dimensions);
 }
 
 void interp_translator::op_arraylength()
