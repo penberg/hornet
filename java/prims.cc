@@ -2,15 +2,15 @@
 
 namespace hornet {
 
-primitive_klass<jboolean> jvm_jboolean_klass;
-primitive_klass<jchar>    jvm_jchar_klass;
-primitive_klass<jfloat>   jvm_jfloat_klass;
-primitive_klass<jdouble>  jvm_jdouble_klass;
-primitive_klass<jbyte>    jvm_jbyte_klass;
-primitive_klass<jshort>   jvm_jshort_klass;
-primitive_klass<jint>     jvm_jint_klass;
-primitive_klass<jlong>    jvm_jlong_klass;
-klass                     jvm_void_klass{nullptr, nullptr};
+primitive_klass<jboolean> jvm_jboolean_klass{"boolean"};
+primitive_klass<jchar>    jvm_jchar_klass{"char"};
+primitive_klass<jfloat>   jvm_jfloat_klass{"float"};
+primitive_klass<jdouble>  jvm_jdouble_klass{"double"};
+primitive_klass<jbyte>    jvm_jbyte_klass{"byte"};
+primitive_klass<jshort>   jvm_jshort_klass{"short"};
+primitive_klass<jint>     jvm_jint_klass{"int"};
+primitive_klass<jlong>    jvm_jlong_klass{"long"};
+klass                     jvm_void_klass{"void"};
 
 klass* atype_to_klass(uint8_t atype)
 {

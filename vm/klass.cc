@@ -13,6 +13,12 @@ klass::klass()
 {
 }
 
+klass::klass(const std::string& name_)
+    : object(nullptr)
+    , name(name_)
+{
+}
+
 klass::klass(loader *loader, std::shared_ptr<constant_pool> const_pool)
     : object(nullptr)
     , nr_fields(0)

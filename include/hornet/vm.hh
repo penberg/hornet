@@ -81,6 +81,7 @@ struct klass {
     std::vector<std::shared_ptr<klass>> interfaces;
 
     klass();
+    klass(const std::string&);
     klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
     virtual ~klass();
 
@@ -136,8 +137,9 @@ private:
 
 template<typename T>
 struct primitive_klass : public klass {
-    primitive_klass() {
-    }
+    primitive_klass(const std::string& name)
+        : klass(name)
+    { }
 
     ~primitive_klass() {
     }
