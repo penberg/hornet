@@ -153,6 +153,24 @@ struct primitive_klass : public klass {
     }
 };
 
+class array_klass : public klass {
+public:
+    array_klass(const std::string& name, klass* elem_type)
+        : klass(name)
+        , _elem_type(elem_type)
+    { }
+
+    ~array_klass() {
+    }
+
+    virtual size_t size() const override {
+        return _elem_type->size();
+    }
+
+private:
+    klass* _elem_type;
+};
+
 struct field {
     struct klass* klass;
     std::string   name;

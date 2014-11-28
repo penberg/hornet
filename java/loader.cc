@@ -51,8 +51,15 @@ std::shared_ptr<klass> loader::load_class(std::string class_name)
         return klass;
     }
     if (is_array_type_name(class_name)) {
-        // TODO: array types
-        assert(0);
+        auto elem_type_name = class_name.substr(1, std::string::npos);
+        auto elem_type = load_class(elem_type_name);
+        if (!elem_type) {
+            hornet::throw_exception(java_lang_NoClassDefFoundError);
+            return nullptr;
+        }
+        auto klass = std::make_shared<array_klass>(class_name, elem_type.get());
+        hornet::_jvm->register_class(klass);
+        return klass;
     }
     klass = try_to_load_class(class_name);
 
