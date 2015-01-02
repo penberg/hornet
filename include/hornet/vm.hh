@@ -31,7 +31,7 @@ private:
 
 extern jvm *_jvm;
 
-typedef uint64_t value_t;
+using value_t = uint64_t;
 
 struct object {
     struct object* fwd;
