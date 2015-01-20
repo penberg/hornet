@@ -238,7 +238,7 @@ private:
     char *_data;
 };
 
-extern klass                     jvm_void_klass;
+extern void_klass                jvm_void_klass;
 extern primitive_klass<jboolean> jvm_jboolean_klass;
 extern primitive_klass<jchar>    jvm_jchar_klass;
 extern primitive_klass<jfloat>   jvm_jfloat_klass;

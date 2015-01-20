@@ -153,6 +153,23 @@ struct primitive_klass : public klass {
     }
 };
 
+struct void_klass : public klass {
+    void_klass(const std::string& name)
+        : klass(name)
+    { }
+
+    ~void_klass() {
+    }
+
+    virtual bool is_primitive() const override {
+        return true;
+    }
+
+    virtual size_t size() const override {
+        throw std::logic_error("void class has no size");
+    }
+};
+
 class array_klass : public klass {
 public:
     array_klass(const std::string& name, klass* elem_type)

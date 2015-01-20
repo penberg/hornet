@@ -10,7 +10,7 @@ primitive_klass<jbyte>    jvm_jbyte_klass{"byte"};
 primitive_klass<jshort>   jvm_jshort_klass{"short"};
 primitive_klass<jint>     jvm_jint_klass{"int"};
 primitive_klass<jlong>    jvm_jlong_klass{"long"};
-klass                     jvm_void_klass{"void"};
+void_klass                jvm_void_klass{"void"};
 
 klass* atype_to_klass(uint8_t atype)
 {
