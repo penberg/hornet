@@ -238,16 +238,7 @@ private:
     char *_data;
 };
 
-extern void_klass                jvm_void_klass;
-extern primitive_klass<jboolean> jvm_jboolean_klass;
-extern primitive_klass<jchar>    jvm_jchar_klass;
-extern primitive_klass<jfloat>   jvm_jfloat_klass;
-extern primitive_klass<jdouble>  jvm_jdouble_klass;
-extern primitive_klass<jbyte>    jvm_jbyte_klass;
-extern primitive_klass<jshort>   jvm_jshort_klass;
-extern primitive_klass<jint>     jvm_jint_klass;
-extern primitive_klass<jlong>    jvm_jlong_klass;
-
+klass* prim_sig_to_klass(char sig);
 klass* atype_to_klass(uint8_t atype);
 
 extern bool verbose_compiler;

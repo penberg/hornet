@@ -12,6 +12,22 @@ primitive_klass<jint>     jvm_jint_klass{"int"};
 primitive_klass<jlong>    jvm_jlong_klass{"long"};
 void_klass                jvm_void_klass{"void"};
 
+klass* prim_sig_to_klass(char sig)
+{
+    switch (sig) {
+    case 'B': return &jvm_jbyte_klass;
+    case 'C': return &jvm_jchar_klass;
+    case 'D': return &jvm_jdouble_klass;
+    case 'F': return &jvm_jfloat_klass;
+    case 'I': return &jvm_jint_klass;
+    case 'J': return &jvm_jlong_klass;
+    case 'S': return &jvm_jshort_klass;
+    case 'Z': return &jvm_jboolean_klass;
+    case 'V': return &jvm_void_klass;
+    default:  assert(0);
+    }
+}
+
 klass* atype_to_klass(uint8_t atype)
 {
     switch (atype) {

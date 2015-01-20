@@ -314,21 +314,15 @@ static klass* parse_type(klass* klass, std::string descriptor, int& pos)
     auto ch = descriptor[pos++];
     switch (ch) {
     case 'B':
-        return &jvm_jbyte_klass;
     case 'C':
-        return &jvm_jchar_klass;
     case 'D':
-        return &jvm_jdouble_klass;
     case 'F':
-        return &jvm_jfloat_klass;
     case 'I':
-        return &jvm_jint_klass;
     case 'J':
-        return &jvm_jlong_klass;
     case 'S':
-        return &jvm_jshort_klass;
     case 'Z':
-        return &jvm_jboolean_klass;
+    case 'V':
+        return prim_sig_to_klass(ch);
     case 'L': {
         auto start = pos;
         while (descriptor[pos++] != ';')
@@ -345,8 +339,6 @@ static klass* parse_type(klass* klass, std::string descriptor, int& pos)
     case '[':
         parse_type(klass, descriptor, pos);
         break;
-    case 'V':
-        return &jvm_void_klass;
     default:
         fprintf(stderr, "%s '%c'\n", descriptor.c_str(), ch);
         assert(0);
