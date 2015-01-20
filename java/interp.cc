@@ -361,7 +361,7 @@ void op_invokevirtual(method* desc, frame& frame)
     assert(!target->is_native());
     new_frame->reserve_more(target->max_locals);
     auto result = hornet::_backend->execute(target.get(), *new_frame);
-    if (target->return_type != &jvm_void_klass) {
+    if (target->return_type && !target->return_type->is_void()) {
         frame.ostack_push(result);
     }
     thread->free_frame(new_frame);
@@ -385,7 +385,7 @@ void op_invokespecial(method* target, frame& frame)
     auto klass = objectref->klass;
     assert(klass != nullptr);
     auto result = hornet::_backend->execute(target, *new_frame);
-    if (target->return_type != &jvm_void_klass) {
+    if (target->return_type && !target->return_type->is_void()) {
         frame.ostack_push(result);
     }
     thread->free_frame(new_frame);
@@ -412,7 +412,7 @@ void op_invokestatic(method* target, frame& frame)
        result = hornet::_backend->execute(target, *new_frame);
        thread->free_frame(new_frame);
     }
-    if (target->return_type != &jvm_void_klass) {
+    if (target->return_type && !target->return_type->is_void()) {
         frame.ostack_push(result);
     }
 }

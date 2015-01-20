@@ -99,6 +99,10 @@ struct klass {
         return false;
     }
 
+    virtual bool is_void() const {
+        return false;
+    }
+
     virtual size_t size() const {
         return sizeof(void*);
     }
@@ -162,6 +166,10 @@ struct void_klass : public klass {
     }
 
     virtual bool is_primitive() const override {
+        return true;
+    }
+
+    virtual bool is_void() const {
         return true;
     }
 
