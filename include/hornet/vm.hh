@@ -230,16 +230,17 @@ struct method {
     uint16_t    access_flags;
     std::string name;
     std::string descriptor;
-    struct klass* return_type;
-    std::vector<struct klass*> arg_types;
+    std::shared_ptr<struct klass> return_type;
+    std::vector<std::shared_ptr<struct klass>> arg_types;
     uint16_t    args_count;
     uint16_t    max_locals;
     char*       code;
     uint32_t    code_length;
     std::vector<uint8_t> trampoline;
 
-    method() {
-    }
+    method()
+        : return_type{nullptr}
+    { }
 
     ~method() {
         delete[] code;
