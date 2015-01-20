@@ -238,8 +238,8 @@ private:
     char *_data;
 };
 
-klass* prim_sig_to_klass(char sig);
-klass* atype_to_klass(uint8_t atype);
+std::shared_ptr<klass> prim_sig_to_klass(char sig);
+std::shared_ptr<klass> atype_to_klass(uint8_t atype);
 
 extern bool verbose_compiler;
 

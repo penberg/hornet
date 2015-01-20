@@ -321,8 +321,13 @@ static klass* parse_type(klass* klass, std::string descriptor, int& pos)
     case 'J':
     case 'S':
     case 'Z':
-    case 'V':
-        return prim_sig_to_klass(ch);
+    case 'V': {
+        auto klass = prim_sig_to_klass(ch);
+        if (!klass) {
+            return nullptr;
+        }
+        return klass.get();
+    }
     case 'L': {
         auto start = pos;
         while (descriptor[pos++] != ';')
