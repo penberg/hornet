@@ -243,6 +243,8 @@ std::shared_ptr<klass> atype_to_klass(uint8_t atype);
 
 extern bool verbose_compiler;
 
+extern bool verbose_class;
+
 extern bool verbose_verifier;
 
 bool verify_method(std::shared_ptr<method> method);
@@ -286,6 +288,7 @@ public:
     std::shared_ptr<klass> load_class(std::string class_name) override;
 
 private:
+    std::string  _filename;
     hornet::zip* _zip;
 };
 

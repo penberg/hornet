@@ -110,6 +110,10 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
             classpath = std::string{vm_args->options[++i].optionString};
             continue;
         }
+        if (option_matches(opt, "-verbose:class")) {
+            hornet::verbose_class = true;
+            continue;
+        }
         if (option_matches(opt, "-verbose:verifier")) {
             hornet::verbose_verifier = true;
             continue;

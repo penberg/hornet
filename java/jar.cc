@@ -7,12 +7,19 @@
 namespace hornet {
 
 jar::jar(std::string filename)
-    : _zip(zip_open(filename.c_str()))
+    : _filename{filename}
+    , _zip{zip_open(filename.c_str())}
 {
+    if (verbose_class) {
+        printf("[Opened %s]\n", _filename.c_str());
+    }
 }
 
 jar::~jar()
 {
+    if (verbose_class) {
+        printf("[Closed %s]\n", _filename.c_str());
+    }
     zip_close(_zip);
 }
 
@@ -32,6 +39,10 @@ std::shared_ptr<klass> jar::load_class(std::string class_name)
     auto klass = file.parse();
 
     free(data);
+
+    if (verbose_class && klass) {
+        printf("[Loaded %s from %s]\n", class_name.c_str(), _filename.c_str());
+    }
 
     return klass;
 }

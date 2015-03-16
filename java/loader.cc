@@ -17,6 +17,8 @@
 
 namespace hornet {
 
+bool verbose_class;
+
 void loader::register_entry(std::string path)
 {
     struct stat st;
@@ -95,7 +97,12 @@ std::shared_ptr<klass> classpath_dir::load_class(std::string class_name)
 
     snprintf(pathname, sizeof(pathname), "%s/%s.class", _path.c_str(), class_name.c_str());
 
-    return load_file(pathname);
+    auto klass = load_file(pathname);
+
+    if (verbose_class && klass) {
+        printf("[Loaded %s from file:%s]\n", class_name.c_str(), _path.c_str());
+    }
+    return klass;
 }
 
 std::shared_ptr<klass> classpath_dir::load_file(const char *pathname)
