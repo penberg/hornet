@@ -15,14 +15,14 @@ using jshort_klass   = primitive_klass<jshort>;
 using jint_klass     = primitive_klass<jint>;
 using jlong_klass    = primitive_klass<jlong>;
 
-shared_ptr<jboolean_klass> jvm_jboolean_klass = make_shared<jboolean_klass>("boolean");
-shared_ptr<jchar_klass>    jvm_jchar_klass    = make_shared<jchar_klass>("char");
-shared_ptr<jfloat_klass>   jvm_jfloat_klass   = make_shared<jfloat_klass>("float");
-shared_ptr<jdouble_klass>  jvm_jdouble_klass  = make_shared<jdouble_klass>("double");
-shared_ptr<jbyte_klass>    jvm_jbyte_klass    = make_shared<jbyte_klass>("byte");
-shared_ptr<jshort_klass>   jvm_jshort_klass   = make_shared<jshort_klass>("short");
-shared_ptr<jint_klass>     jvm_jint_klass     = make_shared<jint_klass>("int");
-shared_ptr<jlong_klass>    jvm_jlong_klass    = make_shared<jlong_klass>("long");
+shared_ptr<jboolean_klass> jvm_jboolean_klass = make_shared<jboolean_klass>("boolean", type::t_boolean);
+shared_ptr<jchar_klass>    jvm_jchar_klass    = make_shared<jchar_klass>("char", type::t_char);
+shared_ptr<jfloat_klass>   jvm_jfloat_klass   = make_shared<jfloat_klass>("float", type::t_float);
+shared_ptr<jdouble_klass>  jvm_jdouble_klass  = make_shared<jdouble_klass>("double", type::t_double);
+shared_ptr<jbyte_klass>    jvm_jbyte_klass    = make_shared<jbyte_klass>("byte", type::t_byte);
+shared_ptr<jshort_klass>   jvm_jshort_klass   = make_shared<jshort_klass>("short", type::t_short);
+shared_ptr<jint_klass>     jvm_jint_klass     = make_shared<jint_klass>("int", type::t_int);
+shared_ptr<jlong_klass>    jvm_jlong_klass    = make_shared<jlong_klass>("long", type::t_long);
 shared_ptr<void_klass>     jvm_void_klass     = make_shared<void_klass>("void");
 
 shared_ptr<klass> prim_sig_to_klass(char sig)

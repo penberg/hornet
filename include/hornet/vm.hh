@@ -11,6 +11,8 @@
 
 #include <classfile_constants.h>
 
+#include "hornet/types.hh"
+
 namespace hornet {
 
 class constant_pool;
@@ -99,6 +101,10 @@ struct klass {
         return false;
     }
 
+    virtual type get_type() const {
+        return type::t_ref;
+    }
+
     virtual bool is_void() const {
         return false;
     }
@@ -140,9 +146,12 @@ private:
 };
 
 template<typename T>
-struct primitive_klass : public klass {
-    primitive_klass(const std::string& name)
-        : klass(name)
+class primitive_klass : public klass {
+    type _type;
+public:
+    primitive_klass(const std::string& name, type type_)
+        : klass{name}
+        , _type{type_}
     { }
 
     ~primitive_klass() {
@@ -150,6 +159,10 @@ struct primitive_klass : public klass {
 
     virtual bool is_primitive() const override {
         return true;
+    }
+
+    virtual type get_type() const override {
+        return _type;
     }
 
     virtual size_t size() const override {
@@ -167,6 +180,10 @@ struct void_klass : public klass {
 
     virtual bool is_primitive() const override {
         return true;
+    }
+
+    virtual type get_type() const override {
+        return type::t_void;
     }
 
     virtual bool is_void() const {

@@ -6,6 +6,7 @@ namespace hornet {
 // Virtual machine core types:
 //
 enum class type {
+    t_boolean,
     t_byte,
     t_char,
     t_short,
@@ -14,6 +15,7 @@ enum class type {
     t_float,
     t_double,
     t_ref,
+    t_void,
 };
 
 }
