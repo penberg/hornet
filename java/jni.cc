@@ -254,6 +254,19 @@ static jstring HORNET_JNI(NewStringUTF)(JNIEnv* env, const char* bytes)
     return hornet::to_jstring(string);
 }
 
+static const char* HORNET_JNI(GetStringUTFChars)(JNIEnv* env, jstring string, jboolean* isCopy)
+{
+    if (!string) {
+        return nullptr;
+    }
+    auto str = hornet::from_jstring(string);
+    return str->data;
+}
+
+static void HORNET_JNI(ReleaseStringUTFChars)(JNIEnv *env, jstring string, const char *utf)
+{
+}
+
 static jobjectArray
 HORNET_JNI(NewObjectArray)(JNIEnv* env, jsize len, jclass clazz, jobject init)
 {
@@ -455,8 +468,8 @@ const struct JNINativeInterface_ HORNET_JNI(JNINativeInterface) = {
     HORNET_DEFINE_JNI_STUB(ReleaseStringChars),
     HORNET_DEFINE_JNI(NewStringUTF),
     HORNET_DEFINE_JNI_STUB(GetStringUTFLength),
-    HORNET_DEFINE_JNI_STUB(GetStringUTFChars),
-    HORNET_DEFINE_JNI_STUB(ReleaseStringUTFChars),
+    HORNET_DEFINE_JNI(GetStringUTFChars),
+    HORNET_DEFINE_JNI(ReleaseStringUTFChars),
     HORNET_DEFINE_JNI_STUB(GetArrayLength),
     HORNET_DEFINE_JNI(NewObjectArray),
     HORNET_DEFINE_JNI_STUB(GetObjectArrayElement),

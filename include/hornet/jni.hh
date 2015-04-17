@@ -21,6 +21,10 @@ inline hornet::array *from_jarray(jarray array) {
     return reinterpret_cast<hornet::array*>(array);
 }
 
+inline hornet::string *from_jstring(jstring string) {
+    return reinterpret_cast<hornet::string*>(string);
+}
+
 inline hornet::klass *from_jclass(jclass klass) {
     return reinterpret_cast<hornet::klass*>(klass);
 }
