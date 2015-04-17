@@ -30,7 +30,7 @@ CXXFLAGS = $(OPTIMIZATIONS) $(CONFIGURATIONS) $(WARNINGS) $(INCLUDES) -g -std=c+
 # LLVM
 #
 
-ifeq ($(LLVM_VERSION),3.4)
+ifeq ($(LLVM_VERSION),3.5.0)
 	LLVM_LDFLAGS = $(shell $(LLVM_CONFIG) --ldflags)
 	LLVM_LIBS = $(shell $(LLVM_CONFIG) --libs)
 

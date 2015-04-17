@@ -11,8 +11,8 @@
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/ExecutionEngine/JIT.h"
-#include "llvm/Analysis/Verifier.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Verifier.h"
 #include "llvm/IR/Module.h"
 
 using namespace std;
@@ -146,7 +146,7 @@ llvm_translator::~llvm_translator()
 
 template<typename T> T llvm_translator::trampoline()
 {
-    verifyFunction(*_func, PrintMessageAction);
+    verifyFunction(*_func);
     return reinterpret_cast<T>(engine->getPointerToFunction(_func));
 }
 
