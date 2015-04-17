@@ -13,8 +13,9 @@
         fprintf(stderr, "warning: JNI API function %s is stubbed\n", __func__); \
     } while (0);
 
-static void jni_api_stub()
+template<std::size_t Index> void jni_api_stub()
 {
+    fprintf(stderr, "JNI interface function %lu not implemented\n", Index);
     assert(0);
 }
 
@@ -282,7 +283,7 @@ static jboolean HORNET_JNI(ExceptionCheck)(JNIEnv *env)
     return JNI_FALSE;
 }
 
-#define HORNET_DEFINE_JNI_STUB(name) .name = reinterpret_cast<decltype(JNINativeInterface_::name)>(jni_api_stub)
+#define HORNET_DEFINE_JNI_STUB(name) .name = reinterpret_cast<decltype(JNINativeInterface_::name)>(jni_api_stub<offsetof(JNINativeInterface_, name)/sizeof(void*)>)
 
 const struct JNINativeInterface_ HORNET_JNI(JNINativeInterface) = {
     .reserved0 = nullptr,
