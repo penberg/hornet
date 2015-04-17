@@ -1,7 +1,15 @@
 *.o
 *.d
 /hornet
+/libjvm.a
 /tests/*.class
 /TAGS
 /tags
 /java/dynasm_x64.h
+
+# CMake generated files:
+/CMakeCache.txt
+/CMakeFiles
+/Makefile
+/cmake_install.cmake
+/install_manifest.txt
