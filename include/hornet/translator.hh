@@ -8,22 +8,13 @@
 #include <vector>
 #include <map>
 
+#include "hornet/types.hh"
+
 namespace hornet {
 
 struct method;
 struct field;
 struct klass;
-
-enum class type {
-    t_byte,
-    t_char,
-    t_short,
-    t_int,
-    t_long,
-    t_float,
-    t_double,
-    t_ref,
-};
 
 enum class unaryop {
     op_neg,
