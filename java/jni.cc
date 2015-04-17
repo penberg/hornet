@@ -204,6 +204,11 @@ static jclass HORNET_JNI(FindClass)(JNIEnv *env, const char *name)
     return hornet::to_jclass(klass.get());
 }
 
+static jint HORNET_JNI(ThrowNew)(JNIEnv* env, jclass clazz, const char* message)
+{
+    assert(0);
+}
+
 static jmethodID
 HORNET_JNI(GetStaticMethodID)(JNIEnv *env, jclass clazz, const char *name, const char *sig)
 {
@@ -313,7 +318,7 @@ const struct JNINativeInterface_ HORNET_JNI(JNINativeInterface) = {
     HORNET_DEFINE_JNI_STUB(IsAssignableFrom),
     HORNET_DEFINE_JNI_STUB(ToReflectedField),
     HORNET_DEFINE_JNI_STUB(Throw),
-    HORNET_DEFINE_JNI_STUB(ThrowNew),
+    HORNET_DEFINE_JNI(ThrowNew),
     HORNET_DEFINE_JNI_STUB(ExceptionOccurred),
     HORNET_DEFINE_JNI_STUB(ExceptionDescribe),
     HORNET_DEFINE_JNI_STUB(ExceptionClear),
