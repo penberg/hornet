@@ -4,6 +4,7 @@
 #include "hornet/vm.hh"
 
 #include <cassert>
+#include <cmath>
 #include <stack>
 
 #include <classfile_constants.h>
@@ -221,6 +222,64 @@ void op_lcmp(frame& frame)
         result = 0;
     }
     frame.ostack_push(to_value(result));
+}
+
+void op_fcmp(frame& frame, jint nan_result)
+{
+    auto value2 = from_value<jfloat>(frame.ostack_top());
+    frame.ostack_pop();
+    auto value1 = from_value<jfloat>(frame.ostack_top());
+    frame.ostack_pop();
+    jint result;
+    if (value1 > value2) {
+        result = 1;
+    } else if (value1 == value2) {
+        result = 0;
+    } else if (value1 < value2) {
+        result = -1;
+    } else if (isnanf(value1) || isnanf(value2)) {
+        result = nan_result;
+    }
+    frame.ostack_push(to_value(result));
+}
+
+void op_fcmpl(frame& frame)
+{
+    op_fcmp(frame, -1);
+}
+
+void op_fcmpg(frame& frame)
+{
+    op_fcmp(frame, 1);
+}
+
+void op_dcmp(frame& frame, jint nan_result)
+{
+    auto value2 = from_value<jdouble>(frame.ostack_top());
+    frame.ostack_pop();
+    auto value1 = from_value<jdouble>(frame.ostack_top());
+    frame.ostack_pop();
+    jint result;
+    if (value1 > value2) {
+        result = 1;
+    } else if (value1 == value2) {
+        result = 0;
+    } else if (value1 < value2) {
+        result = -1;
+    } else if (isnan(value1) || isnan(value2)) {
+        result = nan_result;
+    }
+    frame.ostack_push(to_value(result));
+}
+
+void op_dcmpl(frame& frame)
+{
+    op_dcmp(frame, -1);
+}
+
+void op_dcmpg(frame& frame)
+{
+    op_dcmp(frame, 1);
 }
 
 enum class shiftop {
@@ -596,6 +655,10 @@ enum class opc : uint8_t {
     i2s,
 
     lcmp,
+    fcmpl,
+    fcmpg,
+    dcmpl,
+    dcmpg,
 
     ifeq,
     ifne,
@@ -755,6 +818,10 @@ value_t interp(frame& frame, const char *code)
         &&op_i2s,
 
         &&op_lcmp,
+        &&op_fcmpl,
+        &&op_fcmpg,
+        &&op_dcmpl,
+        &&op_dcmpg,
 
         &&op_ifeq,
         &&op_ifne,
@@ -1145,6 +1212,22 @@ value_t interp(frame& frame, const char *code)
         }
         op_lcmp: {
             op_lcmp(frame);
+            dispatch();
+        }
+        op_fcmpl: {
+            op_fcmpl(frame);
+            dispatch();
+        }
+        op_fcmpg: {
+            op_fcmpg(frame);
+            dispatch();
+        }
+        op_dcmpl: {
+            op_dcmpl(frame);
+            dispatch();
+        }
+        op_dcmpg: {
+            op_dcmpg(frame);
             dispatch();
         }
         op_ifeq: {
@@ -1779,7 +1862,25 @@ void interp_translator::op_lcmp()
 
 void interp_translator::op_cmp(type t, cmpop op)
 {
-    assert(0);
+    switch (t) {
+    case type::t_float: {
+        switch (op) {
+        case cmpop::op_cmplt: put_opc(opc::fcmpl); break;
+        case cmpop::op_cmpgt: put_opc(opc::fcmpg); break;
+        default:              assert(0);
+        }
+        break;
+    }
+    case type::t_double: {
+        switch (op) {
+        case cmpop::op_cmplt: put_opc(opc::dcmpl); break;
+        case cmpop::op_cmpgt: put_opc(opc::dcmpg); break;
+        default:              assert(0);
+        }
+        break;
+    }
+    default: assert(0);
+    }
 }
 
 void interp_translator::op_if(type t, cmpop op, std::shared_ptr<basic_block> target)
