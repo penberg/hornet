@@ -457,6 +457,11 @@ void op_arraylength(frame& frame)
     frame.ostack_push(arrayref->length);
 }
 
+void op_athrow(frame& frame)
+{
+    assert(0);
+}
+
 void op_checkcast(frame& frame, klass* type)
 {
     auto* objectref = from_value<object*>(frame.ostack_top());
@@ -632,6 +637,8 @@ enum class opc : uint8_t {
 
     arraylength,
 
+    athrow,
+
     checkcast,
     instanceof,
 
@@ -788,6 +795,8 @@ value_t interp(frame& frame, const char *code)
         &&op_multianewarray,
 
         &&op_arraylength,
+
+        &&op_athrow,
 
         &&op_checkcast,
         &&op_instanceof,
@@ -1291,6 +1300,10 @@ value_t interp(frame& frame, const char *code)
         }
         op_arraylength: {
             op_arraylength(frame);
+            dispatch();
+        }
+        op_athrow: {
+            op_athrow(frame);
             dispatch();
         }
         op_checkcast: {
@@ -1936,7 +1949,7 @@ void interp_translator::op_arraylength()
 
 void interp_translator::op_athrow()
 {
-    assert(0);
+    put_opc(opc::athrow);
 }
 
 void interp_translator::op_checkcast(klass* klass)
