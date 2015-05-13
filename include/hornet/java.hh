@@ -157,18 +157,18 @@ public:
 
     void set(uint16_t idx, std::shared_ptr<cp_info> entry);
 
-    cp_info *get(uint16_t idx);
-    cp_info *get_class(uint16_t idx);
-    cp_info *get_fieldref(uint16_t idx);
-    cp_info *get_methodref(uint16_t idx);
-    cp_info *get_interface_methodref(uint16_t idx);
-    cp_info *get_name_and_type(uint16_t idx);
-    jint get_integer(uint16_t idx);
-    jlong get_long(uint16_t idx);
-    jfloat get_float(uint16_t idx);
-    jdouble get_double(uint16_t idx);
-    const_utf8_info *get_utf8(uint16_t idx);
-    string *get_string(uint16_t idx);
+    cp_info *get(uint16_t idx) const;
+    cp_info *get_class(uint16_t idx) const;
+    cp_info *get_fieldref(uint16_t idx) const;
+    cp_info *get_methodref(uint16_t idx) const;
+    cp_info *get_interface_methodref(uint16_t idx) const;
+    cp_info *get_name_and_type(uint16_t idx) const;
+    jint get_integer(uint16_t idx) const;
+    jlong get_long(uint16_t idx) const;
+    jfloat get_float(uint16_t idx) const;
+    jdouble get_double(uint16_t idx) const;
+    const_utf8_info *get_utf8(uint16_t idx) const;
+    string *get_string(uint16_t idx) const;
 
 private:
     std::vector<std::shared_ptr<cp_info>> _entries;

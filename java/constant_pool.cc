@@ -22,7 +22,7 @@ void constant_pool::set(uint16_t idx, std::shared_ptr<cp_info> entry)
     _entries[idx] = entry;
 }
 
-cp_info *constant_pool::get(uint16_t idx)
+cp_info *constant_pool::get(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -31,7 +31,7 @@ cp_info *constant_pool::get(uint16_t idx)
     return entry.get();
 }
 
-cp_info *constant_pool::get_class(uint16_t idx)
+cp_info *constant_pool::get_class(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -42,7 +42,7 @@ cp_info *constant_pool::get_class(uint16_t idx)
     return reinterpret_cast<cp_info*>(entry.get());
 }
 
-cp_info *constant_pool::get_fieldref(uint16_t idx)
+cp_info *constant_pool::get_fieldref(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -53,7 +53,7 @@ cp_info *constant_pool::get_fieldref(uint16_t idx)
     return reinterpret_cast<cp_info*>(entry.get());
 }
 
-cp_info *constant_pool::get_methodref(uint16_t idx)
+cp_info *constant_pool::get_methodref(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -64,7 +64,7 @@ cp_info *constant_pool::get_methodref(uint16_t idx)
     return reinterpret_cast<cp_info*>(entry.get());
 }
 
-cp_info *constant_pool::get_interface_methodref(uint16_t idx)
+cp_info *constant_pool::get_interface_methodref(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -75,7 +75,7 @@ cp_info *constant_pool::get_interface_methodref(uint16_t idx)
     return reinterpret_cast<cp_info*>(entry.get());
 }
 
-jint constant_pool::get_integer(uint16_t idx)
+jint constant_pool::get_integer(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -88,7 +88,7 @@ jint constant_pool::get_integer(uint16_t idx)
     return value->int_value;
 }
 
-jlong constant_pool::get_long(uint16_t idx)
+jlong constant_pool::get_long(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -101,7 +101,7 @@ jlong constant_pool::get_long(uint16_t idx)
     return value->long_value;
 }
 
-jfloat constant_pool::get_float(uint16_t idx)
+jfloat constant_pool::get_float(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -114,7 +114,7 @@ jfloat constant_pool::get_float(uint16_t idx)
     return value->float_value;
 }
 
-jdouble constant_pool::get_double(uint16_t idx)
+jdouble constant_pool::get_double(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -127,7 +127,7 @@ jdouble constant_pool::get_double(uint16_t idx)
     return value->double_value;
 }
 
-cp_info *constant_pool::get_name_and_type(uint16_t idx)
+cp_info *constant_pool::get_name_and_type(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -138,7 +138,7 @@ cp_info *constant_pool::get_name_and_type(uint16_t idx)
     return reinterpret_cast<cp_info*>(entry.get());
 }
 
-const_utf8_info *constant_pool::get_utf8(uint16_t idx)
+const_utf8_info *constant_pool::get_utf8(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
@@ -164,7 +164,7 @@ string* intern_string(std::string str)
     return it->second.get();
 }
 
-string *constant_pool::get_string(uint16_t idx)
+string *constant_pool::get_string(uint16_t idx) const
 {
     assert(idx < _entries.size());
 
