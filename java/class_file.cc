@@ -309,7 +309,7 @@ std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &
     return f;
 }
 
-static std::shared_ptr<klass> parse_type(klass* klass, std::string descriptor, int& pos)
+static klass* parse_type(klass* klass, std::string descriptor, int& pos)
 {
     auto ch = descriptor[pos++];
     switch (ch) {
@@ -322,7 +322,11 @@ static std::shared_ptr<klass> parse_type(klass* klass, std::string descriptor, i
     case 'S':
     case 'Z':
     case 'V': {
-        return prim_sig_to_klass(ch);
+        auto klass = prim_sig_to_klass(ch);
+        if (!klass) {
+            return nullptr;
+        }
+        return klass.get();
     }
     case 'L': {
         auto start = pos;
@@ -331,7 +335,11 @@ static std::shared_ptr<klass> parse_type(klass* klass, std::string descriptor, i
         auto len = pos-start-1;
         assert(len > 0);
         auto name = descriptor.substr(start, len);
-        return klass->load_class(name);
+        auto result = klass->load_class(name);
+        if (!result) {
+            return nullptr;
+        }
+        return result.get();
     }
     case '[':
         parse_type(klass, descriptor, pos);
@@ -350,11 +358,13 @@ static void parse_method_descriptor(std::shared_ptr<method> m)
 
     assert(m->descriptor[pos++] == '(');
 
+    auto idx = 0;
     while (m->descriptor[pos] != ')') {
-        auto klass = parse_type(m->klass, m->descriptor, pos);
-        m->arg_types.emplace_back(klass);
+        m->arg_types.reserve(idx + 1);
+        m->arg_types[idx] = parse_type(m->klass, m->descriptor, pos);
+        idx++;
     }
-    m->args_count = m->arg_types.size();
+    m->args_count = idx;
 
     m->return_type = parse_type(m->klass, m->descriptor, ++pos);
 }
