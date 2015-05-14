@@ -151,6 +151,7 @@ struct const_utf8_info : cp_info {
 };
 
 class constant_pool {
+    std::vector<std::shared_ptr<cp_info>> _entries;
 public:
     explicit constant_pool(uint16_t size);
     ~constant_pool();
@@ -173,8 +174,6 @@ public:
 private:
     template<typename Type, cp_tag Tag>
     Type* get_ty(uint16_t idx) const;
-
-    std::vector<std::shared_ptr<cp_info>> _entries;
 };
 
 enum class attr_type {
