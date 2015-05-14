@@ -1555,7 +1555,7 @@ void interp_translator::epilogue()
 
 void interp_translator::begin(std::shared_ptr<basic_block> bblock)
 {
-    _bblock_map.insert(std::make_pair(bblock, _pc));
+    _bblock_map.emplace(bblock, _pc);
 }
 
 void interp_translator::op_const(type t, int64_t value)
