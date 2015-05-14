@@ -254,16 +254,14 @@ std::shared_ptr<cp_info> class_file::read_const_utf8()
 {
     auto length = read_u2();
 
-    auto ret = new const_utf8_info();
-
-    ret->bytes = new char[length + 1];
+    auto bytes = new char[length + 1];
 
     for (auto i = 0; i < length; i++)
-        ret->bytes[i] = read_u1();
+        bytes[i] = read_u1();
 
-    ret->bytes[length] = '\0';
+    bytes[length] = '\0';
 
-    return std::shared_ptr<const_utf8_info>(ret);
+    return cp_info::const_utf8_info(bytes);
 }
 
 void class_file::read_const_method_handle()

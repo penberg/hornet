@@ -40,12 +40,19 @@ enum class cp_tag {
     const_invoke_dynamic,
 };
 
-struct cp_info {
+struct cp_info final {
     cp_tag tag;
 
     cp_info(cp_tag tag) : tag(tag) { }
 
-    virtual ~cp_info() { }
+    ~cp_info()
+    {
+        switch (tag) {
+        case cp_tag::const_utf8:
+            delete[] bytes;
+            break;
+        }
+    }
 
     cp_info(const cp_info&) = delete;
     cp_info& operator=(const cp_info&) = delete;
@@ -66,6 +73,7 @@ struct cp_info {
         jlong    long_value;
         jfloat   float_value;
         jdouble  double_value;
+        char*    bytes;
     };
 
     static inline
@@ -141,16 +149,13 @@ struct cp_info {
         ret->descriptor_index = descriptor_index;
         return ret;
     }
-};
 
-struct const_utf8_info : cp_info {
-    const_utf8_info() : cp_info(cp_tag::const_utf8) { }
-
-    ~const_utf8_info() {
-        delete[] bytes;
+    static inline
+    std::shared_ptr<cp_info> const_utf8_info(char* bytes) {
+        auto ret = std::make_shared<cp_info>(cp_tag::const_utf8);
+        ret->bytes = bytes;
+        return ret;
     }
-
-    char *bytes;
 };
 
 class constant_pool {
@@ -171,7 +176,7 @@ public:
     jlong get_long(uint16_t idx) const;
     jfloat get_float(uint16_t idx) const;
     jdouble get_double(uint16_t idx) const;
-    const const_utf8_info& get_utf8(uint16_t idx) const;
+    const cp_info& get_utf8(uint16_t idx) const;
     string *get_string(uint16_t idx) const;
 
 private:

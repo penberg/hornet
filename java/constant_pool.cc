@@ -84,9 +84,9 @@ const cp_info& constant_pool::get_name_and_type(uint16_t idx) const
     return get_ty<cp_info, cp_tag::const_name_and_type>(idx);
 }
 
-const const_utf8_info& constant_pool::get_utf8(uint16_t idx) const
+const cp_info& constant_pool::get_utf8(uint16_t idx) const
 {
-    return get_ty<const_utf8_info, cp_tag::const_utf8>(idx);
+    return get_ty<cp_info, cp_tag::const_utf8>(idx);
 }
 
 std::mutex _intern_mutex;
