@@ -161,22 +161,22 @@ public:
 
     void set(uint16_t idx, std::shared_ptr<cp_info> entry);
 
-    cp_info *get(uint16_t idx) const;
-    cp_info *get_class(uint16_t idx) const;
-    cp_info *get_fieldref(uint16_t idx) const;
-    cp_info *get_methodref(uint16_t idx) const;
-    cp_info *get_interface_methodref(uint16_t idx) const;
-    cp_info *get_name_and_type(uint16_t idx) const;
+    const cp_info& get(uint16_t idx) const;
+    const cp_info& get_class(uint16_t idx) const;
+    const cp_info& get_fieldref(uint16_t idx) const;
+    const cp_info& get_methodref(uint16_t idx) const;
+    const cp_info& get_interface_methodref(uint16_t idx) const;
+    const cp_info& get_name_and_type(uint16_t idx) const;
     jint get_integer(uint16_t idx) const;
     jlong get_long(uint16_t idx) const;
     jfloat get_float(uint16_t idx) const;
     jdouble get_double(uint16_t idx) const;
-    const_utf8_info *get_utf8(uint16_t idx) const;
+    const const_utf8_info& get_utf8(uint16_t idx) const;
     string *get_string(uint16_t idx) const;
 
 private:
     template<typename Type, cp_tag Tag>
-    Type* get_ty(uint16_t idx) const;
+    const Type& get_ty(uint16_t idx) const;
 };
 
 enum class attr_type {

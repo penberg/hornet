@@ -48,11 +48,11 @@ std::shared_ptr<klass> class_file::parse()
 
     auto klass = std::make_shared<hornet::klass>(hornet::system_loader(), const_pool);
 
-    auto klassref = const_pool->get_class(this_class);
+    auto& klassref = const_pool->get_class(this_class);
 
-    auto klass_name = const_pool->get_utf8(klassref->name_index);
+    auto& klass_name = const_pool->get_utf8(klassref.name_index);
 
-    klass->name = klass_name->bytes;
+    klass->name = klass_name.bytes;
 
     hornet::_jvm->register_class(klass);
 
@@ -288,16 +288,16 @@ std::shared_ptr<field> class_file::read_field_info(klass* klass, constant_pool &
     auto access_flags = read_u2();
     auto name_index = read_u2();
 
-    auto *cp_name = constant_pool.get_utf8(name_index);
+    auto& cp_name = constant_pool.get_utf8(name_index);
 
     auto descriptor_index = read_u2();
 
-    auto *cp_descriptor = constant_pool.get_utf8(descriptor_index);
+    auto& cp_descriptor = constant_pool.get_utf8(descriptor_index);
 
     auto f = std::make_shared<field>(klass);
 
-    f->name         = cp_name->bytes;
-    f->descriptor   = cp_descriptor->bytes;
+    f->name         = cp_name.bytes;
+    f->descriptor   = cp_descriptor.bytes;
     f->access_flags = access_flags;
 
     auto attr_count = read_u2();
@@ -365,15 +365,11 @@ std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool
 
     auto name_index = read_u2();
 
-    auto *cp_name = constant_pool.get_utf8(name_index);
-
-    assert(cp_name != nullptr);
+    auto& cp_name = constant_pool.get_utf8(name_index);
 
     auto descriptor_index = read_u2();
 
-    auto *cp_descriptor = constant_pool.get_utf8(descriptor_index);
-
-    assert(cp_descriptor != nullptr);
+    auto& cp_descriptor = constant_pool.get_utf8(descriptor_index);
 
     auto attr_count = read_u2();
 
@@ -381,8 +377,8 @@ std::shared_ptr<method> class_file::read_method_info(klass* klass, constant_pool
 
     m->klass        = klass;
     m->access_flags = access_flags;
-    m->name         = cp_name->bytes;
-    m->descriptor   = cp_descriptor->bytes;
+    m->name         = cp_name.bytes;
+    m->descriptor   = cp_descriptor.bytes;
     m->code         = nullptr;
     m->code_length  = 0;
 
@@ -415,9 +411,9 @@ class_file::read_attr_info(constant_pool& constant_pool)
 
     auto attribute_length = read_u4();
 
-    auto cp_name = constant_pool.get_utf8(attribute_name_index);
+    auto& cp_name = constant_pool.get_utf8(attribute_name_index);
 
-    if (!strcmp(cp_name->bytes, "Code")) {
+    if (!strcmp(cp_name.bytes, "Code")) {
         return read_code_attribute(constant_pool);
     }
 

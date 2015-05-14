@@ -103,8 +103,8 @@ next_insn:
     case JVM_OPC_ldc2_w: {
         auto idx = read_opc_u2(_method->code + pc);
         auto const_pool = _method->klass->const_pool();
-        auto cp_info = const_pool->get(idx);
-        switch (cp_info->tag) {
+        auto& cp_info = const_pool->get(idx);
+        switch (cp_info.tag) {
         case cp_tag::const_long: {
             auto value = const_pool->get_long(idx);
             op_const(type::t_long, value);
@@ -848,8 +848,8 @@ next_insn:
 void translator::ldc(uint16_t idx)
 {
     auto const_pool = _method->klass->const_pool();
-    auto cp_info = const_pool->get(idx);
-    switch (cp_info->tag) {
+    auto& cp_info = const_pool->get(idx);
+    switch (cp_info.tag) {
     case cp_tag::const_class: {
         auto klass = _method->klass->resolve_class(idx);
         op_const(type::t_ref, reinterpret_cast<int64_t>(&klass->object));
