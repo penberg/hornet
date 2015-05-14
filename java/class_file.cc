@@ -172,7 +172,7 @@ std::shared_ptr<cp_info> class_file::read_const_class()
 {
     auto name_index = read_u2();
 
-    return cp_info::const_class(name_index);
+    return cp_info::make_class(name_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_fieldref()
@@ -180,7 +180,7 @@ std::shared_ptr<cp_info> class_file::read_const_fieldref()
     auto class_index = read_u2();
     auto name_and_type_index = read_u2();
 
-    return cp_info::const_fieldref(class_index, name_and_type_index);
+    return cp_info::make_fieldref(class_index, name_and_type_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_methodref()
@@ -188,7 +188,7 @@ std::shared_ptr<cp_info> class_file::read_const_methodref()
     auto class_index = read_u2();
     auto name_and_type_index = read_u2();
 
-    return cp_info::const_methodref(class_index, name_and_type_index);
+    return cp_info::make_methodref(class_index, name_and_type_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_interface_methodref()
@@ -196,21 +196,21 @@ std::shared_ptr<cp_info> class_file::read_const_interface_methodref()
     auto class_index = read_u2();
     auto name_and_type_index = read_u2();
 
-    return cp_info::const_interface_methodref(class_index, name_and_type_index);
+    return cp_info::make_interface_methodref(class_index, name_and_type_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_string()
 {
     auto string_index = read_u2();
 
-    return cp_info::const_string(string_index);
+    return cp_info::make_string(string_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_integer()
 {
     auto value = read_u4();
     
-    return cp_info::const_integer(value);
+    return cp_info::make_integer(value);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_float()
@@ -221,14 +221,14 @@ std::shared_ptr<cp_info> class_file::read_const_float()
 
     memcpy(&value, &bytes, sizeof(value));
 
-    return cp_info::const_float(value);
+    return cp_info::make_float(value);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_long()
 {
     auto bytes = read_u8();
 
-    return cp_info::const_long(bytes);
+    return cp_info::make_long(bytes);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_double()
@@ -239,7 +239,7 @@ std::shared_ptr<cp_info> class_file::read_const_double()
 
     memcpy(&value, &bytes, sizeof(value));
 
-    return cp_info::const_double(value);
+    return cp_info::make_double(value);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_name_and_type()
@@ -247,7 +247,7 @@ std::shared_ptr<cp_info> class_file::read_const_name_and_type()
     auto name_index = read_u2();
     auto descriptor_index = read_u2();
 
-    return cp_info::const_name_and_type(name_index, descriptor_index);
+    return cp_info::make_name_and_type(name_index, descriptor_index);
 }
 
 std::shared_ptr<cp_info> class_file::read_const_utf8()
@@ -261,7 +261,7 @@ std::shared_ptr<cp_info> class_file::read_const_utf8()
 
     bytes[length] = '\0';
 
-    return cp_info::const_utf8_info(bytes);
+    return cp_info::make_utf8_info(bytes);
 }
 
 void class_file::read_const_method_handle()

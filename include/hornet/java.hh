@@ -77,14 +77,14 @@ struct cp_info final {
     };
 
     static inline
-    std::shared_ptr<cp_info> const_class(uint16_t name_index) {
+    std::shared_ptr<cp_info> make_class(uint16_t name_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_class);
         ret->name_index = name_index;
         return ret;
     }
 
     static inline
-    std::shared_ptr<cp_info> const_fieldref(uint16_t class_index, uint16_t name_and_type_index) {
+    std::shared_ptr<cp_info> make_fieldref(uint16_t class_index, uint16_t name_and_type_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_fieldref);
         ret->class_index = class_index;
         ret->name_and_type_index = name_and_type_index;
@@ -92,7 +92,7 @@ struct cp_info final {
     }
 
     static inline
-    std::shared_ptr<cp_info> const_methodref(uint16_t class_index, uint16_t name_and_type_index) {
+    std::shared_ptr<cp_info> make_methodref(uint16_t class_index, uint16_t name_and_type_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_methodref);
         ret->class_index = class_index;
         ret->name_and_type_index = name_and_type_index;
@@ -100,7 +100,7 @@ struct cp_info final {
     }
 
     static inline
-    std::shared_ptr<cp_info> const_interface_methodref(uint16_t class_index, uint16_t name_and_type_index) {
+    std::shared_ptr<cp_info> make_interface_methodref(uint16_t class_index, uint16_t name_and_type_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_interface_methodref);
         ret->class_index = class_index;
         ret->name_and_type_index = name_and_type_index;
@@ -108,42 +108,42 @@ struct cp_info final {
     }
 
     static inline
-    std::shared_ptr<cp_info> const_string(uint16_t string_index) {
+    std::shared_ptr<cp_info> make_string(uint16_t string_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_string);
         ret->string_index = string_index;
         return ret;
     }
 
     static inline
-    std::shared_ptr<cp_info> const_integer(jint value) {
+    std::shared_ptr<cp_info> make_integer(jint value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_integer);
         ret->int_value = value;
         return ret;
     }
 
     static inline
-    std::shared_ptr<cp_info> const_long(jlong value) {
+    std::shared_ptr<cp_info> make_long(jlong value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_long);
         ret->long_value = value;
         return ret;
     }
 
     static inline
-    std::shared_ptr<cp_info> const_float(jfloat value) {
+    std::shared_ptr<cp_info> make_float(jfloat value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_float);
         ret->float_value = value;
         return ret;
     }
 
     static inline
-    std::shared_ptr<cp_info> const_double(jdouble value) {
+    std::shared_ptr<cp_info> make_double(jdouble value) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_double);
         ret->double_value = value;
         return ret;
     }
 
     static inline
-    std::shared_ptr<cp_info> const_name_and_type(uint16_t name_index, uint16_t descriptor_index) {
+    std::shared_ptr<cp_info> make_name_and_type(uint16_t name_index, uint16_t descriptor_index) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_name_and_type);
         ret->name_index = name_index;
         ret->descriptor_index = descriptor_index;
@@ -151,7 +151,7 @@ struct cp_info final {
     }
 
     static inline
-    std::shared_ptr<cp_info> const_utf8_info(char* bytes) {
+    std::shared_ptr<cp_info> make_utf8_info(char* bytes) {
         auto ret = std::make_shared<cp_info>(cp_tag::const_utf8);
         ret->bytes = bytes;
         return ret;
