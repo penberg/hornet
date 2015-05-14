@@ -356,13 +356,11 @@ static void parse_method_descriptor(std::shared_ptr<method> m)
 
     assert(m->descriptor[pos++] == '(');
 
-    auto idx = 0;
     while (m->descriptor[pos] != ')') {
-        m->arg_types.reserve(idx + 1);
-        m->arg_types[idx] = parse_type(m->klass, m->descriptor, pos);
-        idx++;
+        auto* type = parse_type(m->klass, m->descriptor, pos);
+        m->arg_types.emplace_back(type);
     }
-    m->args_count = idx;
+    m->args_count = m->arg_types.size();
 
     m->return_type = parse_type(m->klass, m->descriptor, ++pos);
 }
