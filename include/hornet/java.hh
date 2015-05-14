@@ -171,6 +171,9 @@ public:
     string *get_string(uint16_t idx) const;
 
 private:
+    template<typename Type, cp_tag Tag>
+    Type* get_ty(uint16_t idx) const;
+
     std::vector<std::shared_ptr<cp_info>> _entries;
 };
 

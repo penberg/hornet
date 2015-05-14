@@ -33,120 +33,60 @@ cp_info *constant_pool::get(uint16_t idx) const
 
 cp_info *constant_pool::get_class(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_class);
-
-    return reinterpret_cast<cp_info*>(entry.get());
+    return get_ty<cp_info, cp_tag::const_class>(idx);
 }
 
 cp_info *constant_pool::get_fieldref(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_fieldref);
-
-    return reinterpret_cast<cp_info*>(entry.get());
+    return get_ty<cp_info, cp_tag::const_fieldref>(idx);
 }
 
 cp_info *constant_pool::get_methodref(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_methodref);
-
-    return reinterpret_cast<cp_info*>(entry.get());
+    return get_ty<cp_info, cp_tag::const_methodref>(idx);
 }
 
 cp_info *constant_pool::get_interface_methodref(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_interface_methodref);
-
-    return reinterpret_cast<cp_info*>(entry.get());
+    return get_ty<cp_info, cp_tag::const_interface_methodref>(idx);
 }
 
 jint constant_pool::get_integer(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_integer);
-
-    auto value = reinterpret_cast<cp_info*>(entry.get());
+    auto value = get_ty<cp_info, cp_tag::const_integer>(idx);
 
     return value->int_value;
 }
 
 jlong constant_pool::get_long(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_long);
-
-    auto value = reinterpret_cast<cp_info*>(entry.get());
+    auto value = get_ty<cp_info, cp_tag::const_long>(idx);
 
     return value->long_value;
 }
 
 jfloat constant_pool::get_float(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_float);
-
-    auto value = reinterpret_cast<cp_info*>(entry.get());
+    auto value = get_ty<cp_info, cp_tag::const_float>(idx);
 
     return value->float_value;
 }
 
 jdouble constant_pool::get_double(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_double);
-
-    auto value = reinterpret_cast<cp_info*>(entry.get());
+    auto value = get_ty<cp_info, cp_tag::const_double>(idx);
 
     return value->double_value;
 }
 
 cp_info *constant_pool::get_name_and_type(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_name_and_type);
-
-    return reinterpret_cast<cp_info*>(entry.get());
+    return get_ty<cp_info, cp_tag::const_name_and_type>(idx);
 }
 
 const_utf8_info *constant_pool::get_utf8(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_utf8);
-
-    return reinterpret_cast<const_utf8_info*>(entry.get());
+    return get_ty<const_utf8_info, cp_tag::const_utf8>(idx);
 }
 
 std::mutex _intern_mutex;
@@ -166,15 +106,23 @@ string* intern_string(std::string str)
 
 string *constant_pool::get_string(uint16_t idx) const
 {
-    assert(idx < _entries.size());
-
-    auto entry = _entries[idx - 1];
-
-    assert(entry->tag == cp_tag::const_string);
+    auto entry = get_ty<cp_info, cp_tag::const_string>(idx);
 
     auto utf8 = get_utf8(entry->string_index);
 
     return intern_string(std::string(utf8->bytes));
+}
+
+template<typename Type, cp_tag Tag>
+Type* constant_pool::get_ty(uint16_t idx) const
+{
+    assert(idx < _entries.size());
+
+    auto entry = _entries[idx - 1];
+
+    assert(entry->tag == Tag);
+
+    return reinterpret_cast<Type*>(entry.get());
 }
 
 }
