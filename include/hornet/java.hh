@@ -41,11 +41,14 @@ enum class cp_tag {
 };
 
 struct cp_info {
+    cp_tag tag;
+
     cp_info(cp_tag tag) : tag(tag) { }
 
     virtual ~cp_info() { }
 
-    cp_tag tag;
+    cp_info(const cp_info&) = delete;
+    cp_info& operator=(const cp_info&) = delete;
 
     union {
         struct {
