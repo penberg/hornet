@@ -163,12 +163,6 @@ static int zip_eocdr_traverse(struct zip *zip, struct zip_eocdr *eocdr)
         entry->compression	= le16_to_cpu(cdfh->compression);
 
         zip->entry_cache.emplace(s, entry);
-
-        if (!strncmp(s + filename_len - strlen(".class"), ".class", strlen(".class"))) {
-            std::string class_name {s, strlen(s) - strlen(".class")};
-
-            zip->class_cache.emplace(class_name, entry);
-        }
 next:
         p += zip_cdfh_size(cdfh);
     }
@@ -319,9 +313,9 @@ struct zip_entry *zip_entry_find(struct zip *zip, const char *pathname)
 
 struct zip_entry *zip_entry_find_class(struct zip *zip, const char *classname)
 {
-    // FIXME: Intern the class name to speed up this lookup.
-    auto it = zip->class_cache.find(classname);
-    if (it != zip->class_cache.end())
+    std::string entry_name = std::string{classname} + ".class";
+    auto it = zip->entry_cache.find(entry_name);
+    if (it != zip->entry_cache.end())
         return it->second;
     return nullptr;
 }

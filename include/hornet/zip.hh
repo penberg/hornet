@@ -32,7 +32,6 @@ struct zip {
     unsigned long nr_entries;
     struct zip_entry* entries;
     std::unordered_map<std::string, zip_entry*> entry_cache;
-    std::unordered_map<std::string, zip_entry*> class_cache;
 };
 
 struct zip *zip_open(const char *pathname);
