@@ -47,6 +47,7 @@ add_library(jvm STATIC
   java/backend.cc
   java/class_file.cc
   java/constant_pool.cc
+  java/intern.cc
   java/interp.cc
   java/jni.cc
   java/loader.cc

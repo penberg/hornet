@@ -89,21 +89,6 @@ const cp_info& constant_pool::get_utf8(uint16_t idx) const
     return get_ty<cp_info, cp_tag::const_utf8>(idx);
 }
 
-std::mutex _intern_mutex;
-std::unordered_map<std::string, std::shared_ptr<string>> _intern;
-
-string* intern_string(std::string str)
-{
-    std::lock_guard<std::mutex> lock(_intern_mutex);
-    auto it = _intern.find(str);
-    if (it == _intern.end()) {
-        auto intern = std::make_shared<string>(str.c_str());
-        _intern.insert({str, intern});
-        return intern.get();
-    }
-    return it->second.get();
-}
-
 string *constant_pool::get_string(uint16_t idx) const
 {
     auto& entry = get_ty<cp_info, cp_tag::const_string>(idx);
