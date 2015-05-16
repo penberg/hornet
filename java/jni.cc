@@ -1,6 +1,7 @@
 #include "hornet/jni.hh"
 
 #include "hornet/java.hh"
+#include "hornet/ffi.hh"
 #include "hornet/vm.hh"
 
 #include <cassert>
@@ -79,7 +80,7 @@ jint JNI_GetDefaultJavaVMInitArgs(void *args)
     }
 }
 
-static JNIEnv HORNET_JNI(JNIEnv) = {
+JNIEnv HORNET_JNI(JNIEnv) = {
     &HORNET_JNI(JNINativeInterface),
 };
 
@@ -188,6 +189,8 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
     hornet::gc_init();
 
     hornet::system_loader::init();
+
+    hornet::ffi_java_init();
 
     return JNI_OK;
 }

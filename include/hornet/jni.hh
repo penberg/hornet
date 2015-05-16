@@ -67,4 +67,6 @@ inline jmethodID to_jmethodID(method *method) {
 
 }
 
+extern JNIEnv HORNET_JNI(JNIEnv);
+
 #endif

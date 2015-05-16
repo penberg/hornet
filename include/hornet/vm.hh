@@ -281,6 +281,16 @@ struct method {
     {
        return name == n && descriptor == d;
     }
+
+    std::string jni_name() const {
+       auto result = klass->name;
+       for (size_t i = 0; i < result.size(); i++) {
+           if (result[i] == '/') {
+               result[i] = '_';
+           }
+       }
+       return "Java_" + result + "_" + name;
+    }
 };
 
 struct array {

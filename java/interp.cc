@@ -1,6 +1,8 @@
 #include "hornet/java.hh"
 
 #include "hornet/translator.hh"
+#include "hornet/ffi.hh"
+#include "hornet/jni.hh"
 #include "hornet/vm.hh"
 
 #include <cassert>
@@ -8,6 +10,7 @@
 #include <stack>
 
 #include <classfile_constants.h>
+#include <ffi.h>
 #include <jni.h>
 
 namespace hornet {
@@ -450,29 +453,74 @@ void op_invokespecial(method* target, frame& frame)
     thread->free_frame(new_frame);
 }
 
-void op_invokestatic(method* target, frame& frame)
+void op_invokestatic_ffi(method* target, frame& frame)
 {
-    value_t result;
-    target->klass->init();
-    if (target->access_flags & JVM_ACC_NATIVE) {
-        fprintf(stderr, "warning: %s: stubbed\n", target->full_name().c_str());
-        for (int i = 0; i < target->args_count; i++) {
-            frame.ostack_pop();
-        }
-        result = to_value<object*>(nullptr);
-    } else {
-       auto thread = hornet::thread::current();
-       auto new_frame = thread->make_frame(target->max_locals);
-       for (int i = 0; i < target->args_count; i++) {
-           auto arg_idx = target->args_count - i - 1;
-           new_frame->locals[arg_idx] = frame.ostack_top();
-           frame.ostack_pop();
-       }
-       result = hornet::_backend->execute(target, *new_frame);
-       thread->free_frame(new_frame);
+    auto sym = ffi_java_sym(target);
+
+    assert(sym != nullptr);
+
+    auto args_count = target->args_count + 2;
+
+    ffi_cif cif;
+    ffi_type* args[args_count];
+    void*  values[args_count];
+
+    auto env  = &HORNET_JNI(JNIEnv);
+
+    args[0]   = &ffi_type_pointer;
+    values[0] = &env;
+
+    args[1]   = &ffi_type_pointer;
+    values[1] = &target->klass;
+
+    for (int i = 0; i < target->args_count; i++) {
+        args[i+2] = klass_to_ffi_type(target->arg_types[i]);
     }
+
+    for (int i = 0; i < target->args_count; i++) {
+        auto value = from_value<object*>(frame.ostack_top());
+        frame.ostack_pop();
+
+        values[i+2] = value;
+    }
+
+    auto rtype = klass_to_ffi_type(target->return_type);
+
+    if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, args_count, rtype, args) == FFI_OK) {
+        value_t ret;
+
+        ffi_call(&cif, reinterpret_cast<void (*)()>(sym), &ret, values);
+
+        assert(target->return_type->is_void());
+    } else {
+        assert(0);
+    }
+}
+
+void op_invokestatic_java(method* target, frame& frame)
+{
+    auto thread = hornet::thread::current();
+    auto new_frame = thread->make_frame(target->max_locals);
+    for (int i = 0; i < target->args_count; i++) {
+        auto arg_idx = target->args_count - i - 1;
+        new_frame->locals[arg_idx] = frame.ostack_top();
+        frame.ostack_pop();
+    }
+    auto result = hornet::_backend->execute(target, *new_frame);
     if (target->return_type && !target->return_type->is_void()) {
         frame.ostack_push(result);
+    }
+    thread->free_frame(new_frame);
+}
+
+void op_invokestatic(method* target, frame& frame)
+{
+    target->klass->init();
+
+    if (target->access_flags & JVM_ACC_NATIVE) {
+        op_invokestatic_ffi(target, frame);
+    } else {
+        op_invokestatic_java(target, frame);
     }
 }
 
