@@ -82,9 +82,7 @@ struct klass {
     std::vector<value_t> static_values;
     std::vector<std::shared_ptr<klass>> interfaces;
 
-    klass();
-    klass(const std::string&);
-    klass(loader* loader, std::shared_ptr<constant_pool> const_pool);
+    klass(const std::string& name_, loader* loader = nullptr, std::shared_ptr<constant_pool> const_pool = nullptr);
     virtual ~klass();
 
     klass& operator=(const klass&) = delete;

@@ -46,13 +46,11 @@ std::shared_ptr<klass> class_file::parse()
 
     auto super_class = read_u2();
 
-    auto klass = std::make_shared<hornet::klass>(hornet::system_loader(), const_pool);
-
     auto& klassref = const_pool->get_class(this_class);
 
     auto& klass_name = const_pool->get_utf8(klassref.name_index);
 
-    klass->name = klass_name.bytes;
+    auto klass = std::make_shared<hornet::klass>(klass_name.bytes, hornet::system_loader(), const_pool);
 
     hornet::_jvm->register_class(klass);
 
