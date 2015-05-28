@@ -48,7 +48,6 @@ add_library(jvm STATIC
   java/class_file.cc
   java/constant_pool.cc
   java/ffi.cc
-  java/intern.cc
   java/interp.cc
   java/jni.cc
   java/loader.cc

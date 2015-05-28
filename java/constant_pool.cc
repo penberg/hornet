@@ -95,7 +95,7 @@ string *constant_pool::get_string(uint16_t idx) const
 
     auto& utf8 = get_utf8(entry.string_index);
 
-    return intern_string(std::string(utf8.bytes));
+    return hornet::_jvm->intern_string(std::string(utf8.bytes));
 }
 
 template<typename Type, cp_tag Tag>

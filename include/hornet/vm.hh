@@ -1,6 +1,7 @@
 #ifndef HORNET_VM_HH
 #define HORNET_VM_HH
 
+#include <unordered_map>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -19,6 +20,7 @@ class constant_pool;
 struct method;
 struct field;
 struct klass;
+struct string;
 class loader;
 
 class jvm {
@@ -26,8 +28,11 @@ public:
     std::shared_ptr<klass> lookup_class(std::string name);
     void register_class(std::shared_ptr<klass> klass);
     void invoke(method* method);
+    string* intern_string(std::string str);
 
 private:
+    std::mutex _intern_mutex;
+    std::unordered_map<std::string, std::shared_ptr<string>> _intern;
     std::map<std::string, std::shared_ptr<klass>> _classes;
 };
 

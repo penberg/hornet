@@ -257,7 +257,7 @@ static void HORNET_JNI(CallStaticVoidMethod)(JNIEnv *env, jclass clazz, jmethodI
 
 static jstring HORNET_JNI(NewStringUTF)(JNIEnv* env, const char* bytes)
 {
-    auto string = hornet::intern_string(std::string{bytes});
+    auto string = hornet::_jvm->intern_string(std::string{bytes});
 
     return hornet::to_jstring(string);
 }
