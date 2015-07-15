@@ -7,7 +7,7 @@
 namespace hornet {
 
 klass::klass(const std::string& name_, loader *loader, std::shared_ptr<constant_pool> const_pool)
-    : object(nullptr)
+    : object(java_lang_Class.get())
     , name(name_)
     , nr_fields(0)
     , _const_pool(const_pool)

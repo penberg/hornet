@@ -192,6 +192,8 @@ jint JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)
 
     hornet::ffi_java_init();
 
+    hornet::_jvm->init();
+
     return JNI_OK;
 }
 

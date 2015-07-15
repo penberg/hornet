@@ -2,6 +2,7 @@
 #define HORNET_VM_HH
 
 #include <unordered_map>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -25,17 +26,20 @@ class loader;
 
 class jvm {
 public:
+    void init();
     std::shared_ptr<klass> lookup_class(std::string name);
     void register_class(std::shared_ptr<klass> klass);
     void invoke(method* method);
     string* intern_string(std::string str);
-
 private:
     std::mutex _intern_mutex;
     std::unordered_map<std::string, std::shared_ptr<string>> _intern;
     std::map<std::string, std::shared_ptr<klass>> _classes;
 };
 
+extern bool bootstrap_done;
+extern std::shared_ptr<klass> java_lang_Class;
+extern std::shared_ptr<klass> java_lang_String;
 extern jvm *_jvm;
 
 using value_t = uint64_t;
@@ -330,9 +334,9 @@ struct string {
     const char* data;
 
     string(const char* data_)
-        : object(nullptr)
+        : object(java_lang_String.get())
         , data(data_)
-    { }
+    { assert(java_lang_String.get() != nullptr); }
 
     ~string()
     { }
@@ -349,6 +353,7 @@ inline bool is_array_type_name(std::string name) {
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)
 
+void prim_init();
 void gc_init();
 
 object* gc_new_object(klass* klass);

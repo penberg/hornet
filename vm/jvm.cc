@@ -1,11 +1,32 @@
 #include <hornet/vm.hh>
 
+#include <hornet/java.hh>
+
 #include <unordered_map>
 #include <mutex>
 
 namespace hornet {
 
+bool bootstrap_done = false;
+std::shared_ptr<klass> java_lang_Class;
+std::shared_ptr<klass> java_lang_String;
 jvm *_jvm;
+
+void jvm::init()
+{
+    java_lang_Class = hornet::system_loader()->load_class("java/lang/Class");
+    if (!java_lang_Class) {
+        throw std::runtime_error("Unable to look up java/lang/Class");
+    }
+    java_lang_Class->object.klass = java_lang_Class.get();
+    java_lang_String = hornet::system_loader()->load_class("java/lang/String");
+    if (!java_lang_String) {
+        throw std::runtime_error("Unable to look up java/lang/String");
+    }
+    java_lang_String->object.klass = java_lang_String.get();
+    bootstrap_done = true;
+    prim_init();
+}
 
 std::shared_ptr<klass> jvm::lookup_class(std::string name)
 {
