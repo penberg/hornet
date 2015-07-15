@@ -13,7 +13,7 @@ find_package(JNI REQUIRED)
 include_directories(${JNI_INCLUDE_DIRS})
 
 # LLVM
-find_package(LLVM)
+find_package(LLVM 3.5)
 
 if(LLVM_FOUND)
   include_directories(${LLVM_INCLUDE_DIRS})
