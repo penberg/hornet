@@ -4,6 +4,8 @@ project("hornet")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
 
+find_package(PkgConfig)
+
 include_directories("include")
 
 # Java
@@ -20,6 +22,10 @@ if(LLVM_FOUND)
   set(LIBS ${LIBS} ${LLVM_SYSTEM_LIBS})
   add_definitions(-DCONFIG_HAVE_LLVM)
 endif()
+
+# FFI
+pkg_check_modules(LIBFFI REQUIRED libffi)
+include_directories(${LIBFFI_INCLUDE_DIRS})
 
 set(CMAKE_CFLAGS "-O3 -std=c11 -g")
 set(CMAKE_CXX_FLAGS "-O3 -std=c++11 -g")
@@ -63,3 +69,4 @@ add_library(jvm STATIC
 add_executable(hornet hornet.cc)
 
 target_link_libraries(hornet jvm z pthread ${LIBS})
+target_link_libraries(hornet ${LIBFFI_LIBRARIES})
