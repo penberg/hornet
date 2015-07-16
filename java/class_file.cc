@@ -329,9 +329,14 @@ static std::shared_ptr<klass> parse_type(klass* klass, std::string descriptor, i
         auto name = descriptor.substr(start, len);
         return klass->load_class(name);
     }
-    case '[':
-        parse_type(klass, descriptor, pos);
-        break;
+    case '[': {
+        auto elem_type = parse_type(klass, descriptor, pos);
+        if (!elem_type) {
+            return nullptr;
+        }
+        std::string class_name = "[" + elem_type->name;
+        return klass->load_class(class_name);
+    }
     default:
         fprintf(stderr, "%s '%c'\n", descriptor.c_str(), ch);
         assert(0);
