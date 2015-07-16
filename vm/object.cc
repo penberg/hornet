@@ -9,8 +9,6 @@ object::object(struct klass* klass_)
     , klass(klass_)
     , _fields(klass_ ? klass_->nr_fields : 0)
 {
-    if (bootstrap_done)
-        assert(klass_ != nullptr);
 }
 
 object::~object()
