@@ -14,6 +14,7 @@ jvm *_jvm;
 
 void jvm::init()
 {
+    prim_pre_init();
     java_lang_Class = hornet::system_loader()->load_class("java/lang/Class");
     if (!java_lang_Class) {
         throw std::runtime_error("Unable to look up java/lang/Class");
@@ -25,7 +26,7 @@ void jvm::init()
     }
     java_lang_String->object.klass = java_lang_String.get();
     bootstrap_done = true;
-    prim_init();
+    prim_post_init();
 }
 
 std::shared_ptr<klass> jvm::lookup_class(std::string name)

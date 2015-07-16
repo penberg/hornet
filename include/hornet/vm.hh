@@ -353,7 +353,8 @@ inline bool is_array_type_name(std::string name) {
 #define java_lang_NoSuchMethodError reinterpret_cast<hornet::object *>(0xdeabeef)
 #define java_lang_VerifyError reinterpret_cast<hornet::object *>(0xdeabeef)
 
-void prim_init();
+void prim_pre_init();
+void prim_post_init();
 void gc_init();
 
 object* gc_new_object(klass* klass);

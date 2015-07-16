@@ -25,7 +25,7 @@ shared_ptr<jint_klass>     jvm_jint_klass;
 shared_ptr<jlong_klass>    jvm_jlong_klass;
 shared_ptr<void_klass>     jvm_void_klass;
 
-void prim_init()
+void prim_pre_init()
 {
     jvm_jboolean_klass = make_shared<jboolean_klass>("boolean", type::t_boolean);
     jvm_jchar_klass    = make_shared<jchar_klass>("char", type::t_char);
@@ -36,6 +36,19 @@ void prim_init()
     jvm_jint_klass     = make_shared<jint_klass>("int", type::t_int);
     jvm_jlong_klass    = make_shared<jlong_klass>("long", type::t_long);
     jvm_void_klass     = make_shared<void_klass>("void");
+}
+
+void prim_post_init()
+{
+    jvm_jboolean_klass->object.klass = java_lang_Class.get();
+    jvm_jchar_klass->object.klass = java_lang_Class.get();
+    jvm_jfloat_klass->object.klass = java_lang_Class.get();
+    jvm_jdouble_klass->object.klass = java_lang_Class.get();
+    jvm_jbyte_klass->object.klass = java_lang_Class.get();
+    jvm_jshort_klass->object.klass = java_lang_Class.get();
+    jvm_jint_klass->object.klass = java_lang_Class.get();
+    jvm_jlong_klass->object.klass = java_lang_Class.get();
+    jvm_void_klass->object.klass = java_lang_Class.get();
 }
 
 shared_ptr<klass> prim_sig_to_klass(char sig)
