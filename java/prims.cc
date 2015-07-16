@@ -1,5 +1,7 @@
 #include "hornet/java.hh"
 
+#include "hornet/vm.hh"
+
 #include <memory>
 
 using namespace std;
@@ -36,6 +38,16 @@ void prim_pre_init()
     jvm_jint_klass     = make_shared<jint_klass>("int", type::t_int);
     jvm_jlong_klass    = make_shared<jlong_klass>("long", type::t_long);
     jvm_void_klass     = make_shared<void_klass>("void");
+
+    _jvm->register_class(jvm_jboolean_klass);
+    _jvm->register_class(jvm_jchar_klass);
+    _jvm->register_class(jvm_jfloat_klass);
+    _jvm->register_class(jvm_jdouble_klass);
+    _jvm->register_class(jvm_jbyte_klass);
+    _jvm->register_class(jvm_jshort_klass);
+    _jvm->register_class(jvm_jint_klass);
+    _jvm->register_class(jvm_jlong_klass);
+    _jvm->register_class(jvm_void_klass);
 }
 
 void prim_post_init()
