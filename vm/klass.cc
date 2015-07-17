@@ -9,6 +9,7 @@ namespace hornet {
 klass::klass(const std::string& name_, loader *loader, std::shared_ptr<constant_pool> const_pool)
     : object(nullptr)
     , name(name_)
+    , super(nullptr)
     , nr_fields(0)
     , _const_pool(const_pool)
     , _loader(loader)
