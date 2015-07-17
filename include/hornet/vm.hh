@@ -126,6 +126,12 @@ struct klass {
         return _const_pool;
     }
 
+    /// Returns the number of fields for an object instantiated from this class.
+    ///
+    /// Note! The number of fields returned includes fields from this class as
+    /// well as all superclasses.
+    uint32_t nr_object_fields() const;
+
     bool is_subclass_of(klass* klass) {
         auto* super = this;
         while (super != nullptr) {

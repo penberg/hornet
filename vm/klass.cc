@@ -55,6 +55,17 @@ void klass::add(std::shared_ptr<method> method)
     _methods.push_back(method);
 }
 
+uint32_t klass::nr_object_fields() const
+{
+    uint32_t nr = 0;
+    auto* k = this;
+    while (k != nullptr) {
+        nr += k->nr_fields;
+        k = k->super;
+    }
+    return nr;
+}
+
 std::shared_ptr<klass> klass::load_class(std::string name)
 {
     return _loader->load_class(name);
