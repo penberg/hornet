@@ -7,8 +7,10 @@ namespace hornet {
 object::object(struct klass* klass_)
     : fwd(nullptr)
     , klass(klass_)
-    , _fields(klass_ ? klass_->nr_fields : 0)
+    , _fields()
 {
+    assert(klass_ != nullptr);
+    _fields.resize(klass_->nr_object_fields());
 }
 
 object::~object()
