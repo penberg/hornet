@@ -52,15 +52,15 @@ void prim_pre_init()
 
 void prim_post_init()
 {
-    jvm_jboolean_klass->object.klass = java_lang_Class.get();
-    jvm_jchar_klass->object.klass = java_lang_Class.get();
-    jvm_jfloat_klass->object.klass = java_lang_Class.get();
-    jvm_jdouble_klass->object.klass = java_lang_Class.get();
-    jvm_jbyte_klass->object.klass = java_lang_Class.get();
-    jvm_jshort_klass->object.klass = java_lang_Class.get();
-    jvm_jint_klass->object.klass = java_lang_Class.get();
-    jvm_jlong_klass->object.klass = java_lang_Class.get();
-    jvm_void_klass->object.klass = java_lang_Class.get();
+    jvm_jboolean_klass->link();
+    jvm_jchar_klass->link();
+    jvm_jfloat_klass->link();
+    jvm_jdouble_klass->link();
+    jvm_jbyte_klass->link();
+    jvm_jshort_klass->link();
+    jvm_jint_klass->link();
+    jvm_jlong_klass->link();
+    jvm_void_klass->link();
 }
 
 shared_ptr<klass> prim_sig_to_klass(char sig)

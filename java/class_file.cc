@@ -95,6 +95,8 @@ std::shared_ptr<klass> class_file::parse()
         klass->super = nullptr;
     }
 
+    klass->link();
+
     return klass;
 }
 

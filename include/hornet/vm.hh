@@ -82,7 +82,8 @@ enum class klass_state {
 };
 
 struct klass {
-    struct object object;
+    /// The java/lang/Class object representation of this class.
+    struct object* object;
     std::string   name;
     klass*        super;
     uint16_t      access_flags;
@@ -98,6 +99,7 @@ struct klass {
     klass(const klass&) = delete;
 
     void init();
+    void link();
     bool verify();
 
     void add(std::shared_ptr<klass> iface);

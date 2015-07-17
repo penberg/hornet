@@ -13,11 +13,20 @@ klass::klass(const std::string& name_, loader *loader, std::shared_ptr<constant_
     , _const_pool(const_pool)
     , _loader(loader)
 {
-    object.klass = this;
 }
 
 klass::~klass()
 {
+}
+
+void klass::link()
+{
+    if (!bootstrap_done) {
+        return;
+    }
+    object = gc_new_object(java_lang_Class.get());
+    // FIXME: Add a link between this klass structure and java/lang/Class. In
+    // GNU Classpath, it's in the vmdata field.
 }
 
 void klass::add(std::shared_ptr<klass> iface)

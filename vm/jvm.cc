@@ -19,13 +19,13 @@ void jvm::init()
     if (!java_lang_Class) {
         throw std::runtime_error("Unable to look up java/lang/Class");
     }
-    java_lang_Class->object.klass = java_lang_Class.get();
     java_lang_String = hornet::system_loader()->load_class("java/lang/String");
     if (!java_lang_String) {
         throw std::runtime_error("Unable to look up java/lang/String");
     }
-    java_lang_String->object.klass = java_lang_String.get();
     bootstrap_done = true;
+    java_lang_Class->link();
+    java_lang_String->link();
     prim_post_init();
 }
 
