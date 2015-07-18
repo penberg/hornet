@@ -84,13 +84,22 @@ std::shared_ptr<field> klass::lookup_field(std::string name, std::string descrip
     return nullptr;
 }
 
+std::shared_ptr<method> klass::lookup_method_this(std::string name, std::string descriptor)
+{
+    for (auto method : _methods) {
+        if (method->matches(name, descriptor))
+            return method;
+    }
+    return nullptr;
+}
+
 std::shared_ptr<method> klass::lookup_method(std::string name, std::string descriptor)
 {
     klass* klass = this;
     while (klass) {
-        for (auto method : klass->_methods) {
-            if (method->matches(name, descriptor))
-                return method;
+        auto m = lookup_method_this(name, descriptor);
+        if (m) {
+            return m;
         }
         klass = klass->super;
     }
@@ -148,7 +157,7 @@ void klass::init()
     switch (state) {
     case klass_state::loaded: {
         state = klass_state::initialized;
-        auto clinit = lookup_method("<clinit>", "()V");
+        auto clinit = lookup_method_this("<clinit>", "()V");
         if (clinit) {
             auto thread = hornet::thread::current();
             auto new_frame = thread->make_frame(0);

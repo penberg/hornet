@@ -145,6 +145,9 @@ struct klass {
 
     std::shared_ptr<klass> load_class(std::string name);
 
+    /// Lookup a method from this class only.
+    std::shared_ptr<method> lookup_method_this(std::string name, std::string desciptor);
+    /// Lookup a method from this class or any of the superclasses.
     std::shared_ptr<method> lookup_method(std::string name, std::string desciptor);
     std::shared_ptr<field> lookup_field(std::string name, std::string desciptor);
 
