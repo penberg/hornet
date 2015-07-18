@@ -733,7 +733,7 @@ next_insn:
         auto target = _method->klass->resolve_method(idx);
         assert(target != nullptr);
         if (_method->klass->access_flags & JVM_ACC_SUPER
-                && target->klass->is_subclass_of(_method->klass->super)
+                && _method->klass->super->is_subclass_of(target->klass)
                 && !target->is_init()) {
             target = _method->klass->super->lookup_method(target->name, target->descriptor);
             assert(target != nullptr);
