@@ -384,9 +384,9 @@ void op_putstatic(field* field, frame& frame)
 void op_getfield(field* field, frame& frame)
 {
     assert(field != nullptr);
-    field->klass->init();
     auto objectref = from_value<object*>(frame.ostack_top());
     frame.ostack_pop();
+    objectref->klass->init();
     auto value = objectref->get_field(field->offset);
     frame.ostack_push(value);
 }
@@ -394,11 +394,11 @@ void op_getfield(field* field, frame& frame)
 void op_putfield(field* field, frame& frame)
 {
     assert(field != nullptr);
-    field->klass->init();
     auto value = frame.ostack_top();
     frame.ostack_pop();
     auto objectref = from_value<object*>(frame.ostack_top());
     frame.ostack_pop();
+    objectref->klass->init();
     objectref->set_field(field->offset, value);
 }
 
