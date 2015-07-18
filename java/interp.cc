@@ -410,7 +410,7 @@ void op_invokevirtual(method* desc, frame& frame)
     auto args_count = desc->args_count+1;
     auto new_frame = thread->make_frame(args_count);
     for (int i = 1; i < args_count; i++) {
-        auto arg_idx = args_count - i - 1;
+        auto arg_idx = args_count - i;
         new_frame->locals[arg_idx] = frame.ostack_top();
         frame.ostack_pop();
     }
@@ -438,7 +438,7 @@ void op_invokespecial(method* target, frame& frame)
     auto new_frame = thread->make_frame(target->max_locals+1);
     auto args_count = target->args_count+1;
     for (int i = 1; i < args_count; i++) {
-        auto arg_idx = args_count - i - 1;
+        auto arg_idx = args_count - i;
         new_frame->locals[arg_idx] = frame.ostack_top();
         frame.ostack_pop();
     }
