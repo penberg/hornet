@@ -541,6 +541,7 @@ void op_new(klass* klass, frame& frame)
 void op_newarray(uint8_t atype, frame& frame)
 {
     auto count = from_value<jint>(frame.ostack_top());
+    frame.ostack_pop();
     auto klass = atype_to_klass(atype);
     auto* arrayref = gc_new_object_array(klass.get(), count);
     frame.ostack_push(to_value(arrayref));
@@ -549,6 +550,7 @@ void op_newarray(uint8_t atype, frame& frame)
 void op_anewarray(klass* klass, frame& frame)
 {
     auto count = from_value<jint>(frame.ostack_top());
+    frame.ostack_pop();
     auto* arrayref = gc_new_object_array(klass, count);
     frame.ostack_push(to_value(arrayref));
 }
