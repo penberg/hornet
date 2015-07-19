@@ -422,8 +422,9 @@ void op_invokespecial(method* target, frame& frame)
 void op_invokestatic_ffi(method* target, frame& frame)
 {
     auto sym = ffi_java_sym(target);
-
-    assert(sym != nullptr);
+    if (!sym) {
+        throw std::runtime_error("symbol " + target->jni_name() + " FFI lookup failed");
+    }
 
     auto args_count = target->args_count + 2;
 
