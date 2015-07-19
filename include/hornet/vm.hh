@@ -371,6 +371,48 @@ void gc_init();
 object* gc_new_object(klass* klass);
 array* gc_new_object_array(klass* klass, size_t length);
 
+template<typename T>
+inline
+value_t to_value(T x)
+{
+    return static_cast<value_t>(x);
+}
+
+template<>
+inline
+value_t to_value(object* obj)
+{
+    return reinterpret_cast<value_t>(obj);
+}
+
+template<>
+inline
+value_t to_value(array* arrayref)
+{
+    return reinterpret_cast<value_t>(arrayref);
+}
+
+template<typename T>
+inline
+T from_value(value_t value)
+{
+    return static_cast<T>(value);
+}
+
+template<>
+inline
+array* from_value<array*>(value_t value)
+{
+    return reinterpret_cast<array*>(value);
+}
+
+template<>
+inline
+object* from_value<object*>(value_t value)
+{
+    return reinterpret_cast<object*>(value);
+}
+
 }
 
 #endif

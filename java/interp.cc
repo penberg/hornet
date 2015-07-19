@@ -16,42 +16,6 @@
 namespace hornet {
 
 template<typename T>
-value_t to_value(T x)
-{
-    return static_cast<value_t>(x);
-}
-
-template<>
-value_t to_value(object* obj)
-{
-    return reinterpret_cast<value_t>(obj);
-}
-
-template<>
-value_t to_value(array* arrayref)
-{
-    return reinterpret_cast<value_t>(arrayref);
-}
-
-template<typename T>
-T from_value(value_t value)
-{
-    return static_cast<T>(value);
-}
-
-template<>
-array* from_value<array*>(value_t value)
-{
-    return reinterpret_cast<array*>(value);
-}
-
-template<>
-object* from_value<object*>(value_t value)
-{
-    return reinterpret_cast<object*>(value);
-}
-
-template<typename T>
 void op_const(frame& frame, T value)
 {
     frame.ostack_push(to_value<T>(value));
